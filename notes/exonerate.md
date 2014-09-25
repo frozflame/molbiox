@@ -66,14 +66,14 @@ Note:
 
 --------
 
-Replace all ambiguous bases with N
+Replace all ambiguous bases with N  
 把所有模糊碱基换成N
 
     $ fastaclean -a true sample.seq > sample.clean
 
 -------
 
-Split a fasta-file into 10 pieces, preserving integrity of each seq
+Split a fasta-file into 10 pieces, preserving integrity of each seq  
 将一个序列文件分割成10块，每块上都是完整的一条或若干条序列
 
     $ fastasplit -c 10 sample.seq sample.chunks
@@ -83,7 +83,7 @@ Split a fasta-file into 10 pieces, preserving integrity of each seq
 
 -------
 
-Translate DNA sequence into peptide sequence:
+Translate DNA sequence into peptide sequence  
 将DNA序列翻译成氨基酸序列
 
     $ fastatranslate -F 1 sample.seq > sample.pep
