@@ -2,8 +2,8 @@
 Notes on `exonerate`
 =======
 
-*exonerate*
-suite for investigating DNA and RNA sequence similarities
+`exonerate` is a suite for investigating DNA 
+and RNA sequence similarities
 
     $ fasta* --help # for more information
     $ man fastalength  # for a list
@@ -14,9 +14,6 @@ fastasoftmask
 fastahardmask
 fastaclip
 
-.seq 0 100
-# fastasubseq fname start length
-# start is ZERO-based
 
 -------
 
@@ -58,6 +55,9 @@ Sort sequences in a fasta-file
 Slice (get subseq of) a single-seq fasta-file
 
     $ fastasubseq sample.seq 0 100 > sample_0-100.seq
+
+Synopsis:
+    $ fastasubseq FILENAME START LENGTH
 
 Note:
     * Zero-base index 
