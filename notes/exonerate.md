@@ -60,8 +60,8 @@ Synopsis:
     $ fastasubseq FILENAME START LENGTH
 
 Note:
-    * Zero-base index 
-    * If multi-seq is given, only the first seq is considered
+* Zero-base index 
+* If multi-seq is given, only the first seq is considered
 
 
 --------
