@@ -2,18 +2,59 @@
 Notes on `exonerate`
 =======
 
+
+
 `exonerate` is a suite for investigating DNA 
 and RNA sequence similarities
 
-    $ fasta* --help # for more information
-    $ man fastalength  # for a list
+**Install** it on Ubuntu
+
+    $ sudo apt-get install exonerate
+
+-------
+
+Get specific help for each command
+
+    $ fastalength --help
+    $ fastasubseq --help
+    ...
+
+Get a list of available commands from exonerate
+
+    $ man fastalength
+
+Or see below
+
+    fastata2esd
+    fastaannotatecdna
+    fastachecksum
+    fastaclean
+    fastaclip
+    fastacomposition
+    fastadiff
+    fastaexplode
+    fastafetch
+    fastahardmask
+    fastaindex
+    fastalength
+    fastanrdb
+    fastaoverlap
+    fastareformat
+    fastaremove
+    fastarevcomp
+    fastasoftmask
+    fastasort
+    fastasplit
+    fastasubseq
+    fastatranslate
+    fastavalidcds
 
 
 尚不了解的：
-fastasoftmask
-fastahardmask
-fastaclip
 
+    fastasoftmask
+    fastahardmask
+    fastaclip
 
 -------
 
