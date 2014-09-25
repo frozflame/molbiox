@@ -78,8 +78,8 @@ Split a fasta-file into 10 pieces, preserving integrity of each seq
 
     $ fastasplit -c 10 sample.seq sample.chunks
 
-`sample.chunks` is an existing directory
-`sample.chunks` 是一个已经存在的文件夹
+`sample.chunks` is an existing directory  
+`sample.chunks` 是一个已经存在的文件夹  
 
 -------
 
