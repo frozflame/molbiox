@@ -57,6 +57,7 @@ Slice (get subseq of) a single-seq fasta-file
     $ fastasubseq sample.seq 0 100 > sample_0-100.seq
 
 Synopsis:
+
     $ fastasubseq FILENAME START LENGTH
 
 Note:
