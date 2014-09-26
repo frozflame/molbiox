@@ -12,7 +12,3 @@ Utilities, tutorials and protocols for bioinformatics
 * emboss
 
 
-
-
-dqfdad
-
