@@ -1,0 +1,2 @@
+class BlobIntegrityError(Exception):
+    pass
