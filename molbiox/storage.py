@@ -2,10 +2,10 @@
 import gzip
 import hashlib
 from os.path import join, exists
-from molbiox.getconf import mbxpath, mbxconf
-from molbiox.exceptions import BlobIntegrityError
+from molbiox.mbxconf import mbxpath, confdic
+from molbiox.mbxconf import BlobIntegrityError
 
-fasta_line_length = mbxconf['fasta_line_length']
+fasta_line_length = confdic['fasta_line_length']
 
 class Blob(object):
     """
@@ -24,7 +24,7 @@ class Blob(object):
     
     @staticmethod
     def blobpath(address): 
-        return join(mbxpath, address) + mbxconf['extblob']
+        return join(mbxpath, address) + confdic['zipblob']
 
     def save(self, overwrite=False):
         path = Blob.blobpath(self.address) 
