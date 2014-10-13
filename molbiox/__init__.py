@@ -1,4 +1,4 @@
 
 from molbiox.storage import Blob
-# from molbiox.getconf import getMBXpath, initMBXpdir
-# from molbiox.ioformat import iterateFastA, storeFastA
+# from molbiox.mbxconf import getMBXpath, initMBXpdir
+# from molbiox.xformat import iterateFastA, storeFastA
