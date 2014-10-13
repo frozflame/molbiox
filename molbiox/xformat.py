@@ -3,9 +3,9 @@ import re
 import os
 
 from molbiox.storage import Blob
-from molbiox.getconf import mbxconf
+from molbiox.mbxconf import confdic
 
-fasta_line_length = mbxconf['fasta_line_length']
+fasta_line_length = confdic['fasta_line_length']
 fasta_read_blksize = 1024
 
 def guessName(fname):
