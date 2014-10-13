@@ -10,8 +10,6 @@ if __name__ == "__main__":
     for fname in sys.argv[1:]:
         try:
             fasta = FastA(fname)
-            for dic in fasta:
-                print(dic)
             fasta.store()
         except Exception as err:
             print(err, file=sys.stderr)
