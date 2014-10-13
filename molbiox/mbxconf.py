@@ -1,14 +1,17 @@
 
 import os
 
-mbxconf = {
+confdic = {
     'dirname': '.molbiox',
-    'extblob': '.mbxblob',
+    'txtblob': '.txtblob',
+    'zipblob': '.zipblob',
     'fasta_line_length': 60,
-
 }
 
 class MBXDirNotFound(Exception):
+    pass
+
+class BlobIntegrityError(Exception):
     pass
 
 def getMBXpath(path=None):
