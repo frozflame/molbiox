@@ -1,6 +1,0 @@
-__pycache__/
-*.py[cod]
-test/*
-*.blob
-*.txtblob
-*.zipblob
