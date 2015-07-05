@@ -20,6 +20,10 @@ FMT7_FIELDS = [
 ]
 
 
+def read_fmt6(filename, fields=FMT7_FIELDS):
+    return read_fmt7(filename, fields=fields)
+
+
 def read_fmt7(filename, fields=FMT7_FIELDS):
     for line in open(filename):
         if line.startswith('#'):
