@@ -11,7 +11,7 @@ else:
     zrange = xrange
 
 
-def read(filename):
+def read(handle):
     """
     Read a FASTQ file and yield dicts.
 
@@ -32,8 +32,11 @@ def read(filename):
 
     """
 
-    # input FASTQ file
-    infile = open(filename)
+    # `handle` is either a file object or a string
+    if hasattr(handle, 'write'):
+        infile = handle
+    else:
+        infile = open(handle, 'w')
 
     while True:
         title = infile.readline().strip()
@@ -47,11 +50,22 @@ def read(filename):
             raise ValueError('fastq file "{}" is corrupted'.format(filename))
         yield dict(title=title[1:], sequence=sequence, qualiseq=qualiseq)
 
+    if infile is not handle:
+        infile.close()
 
-def write(filename, seqdicts, linesep=os.linesep):
-    outfile = open(filename, 'w')
+
+def write(handle, seqdicts, linesep=os.linesep):
+    # `handle` is either a file object or a string
+    if hasattr(handle, 'write'):
+        outfile = handle
+    else:
+        outfile = open(handle, 'w')
+
     template = '@{title}{eol}{sequence}{eol}+{qualiseq}{eol}'
     for seqdict in seqdicts:
         block = template.format(eol=linesep, **seqdict)
         outfile.write(block)
+
+    if outfile is not handle:
+        outfile.close()
 

@@ -6,7 +6,7 @@ from __future__ import unicode_literals
 __author__ = 'Hailong'
 
 
-def read(filename, verbose=False):
+def read(handle, verbose=False):
     """
     Parse file format like `wc` or `fastalength` output
 
@@ -30,8 +30,13 @@ def read(filename, verbose=False):
             'picasa.mac.39.dmg': (181167, 1408149, 48452451),
         }
     """
+    if hasattr(handle, 'read'):
+        infile = handle
+    else:
+        infile = open(handle)
+
     resdict = dict()
-    for line in open(filename):
+    for line in infile:
         line = line.strip()
 
         # skip empty line or comment
@@ -46,6 +51,10 @@ def read(filename, verbose=False):
         else:
             val = int(itemlist[0])
         resdict[key] = val
+
+    if infile is not handle:
+        infile.close()
+
     return resdict
 
 

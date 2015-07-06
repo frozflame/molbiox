@@ -2,16 +2,10 @@
 # encoding: utf-8
 
 import os
-import sys
-
-# be Python 3 compatible
-if sys.version.startswith('3'):
-    zrange = range
-else:
-    zrange = xrange
+from molbiox.compat import zrange
 
 
-def read(filename):
+def read(handle):
     """
     Reading a FASTA file should NOT be complicated!
 
@@ -50,10 +44,13 @@ def read(filename):
             print(seqdict['title'], len(seqdict['sequence']))
     """
 
-    title = ''
+    # `handle` is either a file object or a string
+    if hasattr(handle, 'read'):
+        infile = handle
+    else:
+        infile = open(handle)
 
-    # input FASTA file
-    infile = open(filename)
+    title = ''
 
     # sequence lines not yielded
     seqlines = []
@@ -78,23 +75,40 @@ def read(filename):
     if seqlines:
         yield dict(title=title, sequence=''.join(seqlines))
 
+    # close the file only if it is opened within this func
+    if infile is not handle:
+        infile.close()
 
-def write(filename, seqdicts, linesep=os.linesep, linewidth=60):
+
+def write(handle, seqdicts, linesep=os.linesep, linewidth=60):
     """
     Reverse of `fasta.read`.
 
-    :param filename: path of the output FASTA file
+    :param handle: a file-like object or path to the output FASTA file
     :param seqdicts: an iterable like
         [{'title': 'SEQ1', 'sequence': 'ATCTC...T'}, ...]
     :return: None
     """
-    outfile = open(filename, 'w')
+    # TODO: open mode `w` or `wb`?
+    # `handle` is either a file object or a string
+    if hasattr(handle, 'write'):
+        outfile = handle
+    else:
+        outfile = open(handle, 'w')
+
+    # accept a single seqdict
+    if isinstance(seqdicts, dict):
+        seqdicts = [seqdicts]
+
     for seqdict in seqdicts:
-        outfile.write(seqdict['title'])
-        outfile.write(linesep)
+        tline = '>{}{}'.format(seqdict['title'], linesep)
+        outfile.write(tline)
         sequence = seqdict['sequence']
         for i in zrange(0, len(sequence), linewidth):
             outfile.write(sequence[i:i+linewidth])
             outfile.write(linesep)
-    outfile.close()
+
+    # close the file only if it is opened within this func
+    if outfile is not handle:
+        outfile.close()
 

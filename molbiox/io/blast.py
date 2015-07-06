@@ -20,12 +20,18 @@ FMT7_FIELDS = [
 ]
 
 
-def read_fmt6(filename, fields=FMT7_FIELDS):
-    return read_fmt7(filename, fields=fields)
+def read_fmt6(handle, fields=FMT7_FIELDS):
+    return read_fmt7(handle, fields=fields)
 
 
-def read_fmt7(filename, fields=FMT7_FIELDS):
-    for line in open(filename):
+def read_fmt7(handle, fields=FMT7_FIELDS):
+
+    if hasattr(handle, 'read'):
+        infile = handle
+    else:
+        infile = open(handle)
+
+    for line in infile:
         if line.startswith('#'):
             continue
         values = line.strip().split('\t')
@@ -37,5 +43,8 @@ def read_fmt7(filename, fields=FMT7_FIELDS):
                 val = type_(val)
             pairs.append((key, val))
         yield OrderedDict(pairs)
+
+    if infile is not handle:
+        infile.close()
 
 
