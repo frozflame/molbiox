@@ -29,7 +29,7 @@ def print_rand_seq(number=1, length=1000, seqtype=None):
 
 
 if __name__ == '__main__':
-    number_ = safe_bracket(sys.argv, 1, default=1, cast=int)
-    length_ = safe_bracket(sys.argv,21, default=1000, cast=int)
+    number_ = safe_bracket(sys.argv, 1, cast=int, default=1)
+    length_ = safe_bracket(sys.argv, 2, cast=int, default=1000)
 
     print_rand_seq(number_, length_)
