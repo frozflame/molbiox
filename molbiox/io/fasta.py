@@ -2,7 +2,7 @@
 # encoding: utf-8
 
 import os
-from molbiox.compat import zrange
+from molbiox import compatible
 
 
 def read(handle):
@@ -20,12 +20,10 @@ def read(handle):
 
         [
             {
-                'count': 0,
                 'title': 'ORF00024',
                 'sequence': 'ATCTGTCCTACTCCCGTC...TC'
             },
             {
-                'count': 1,
                 'title': 'ORF00025',
                 'sequence': 'GTCTGTCCTACTCCCGTC...TC'
             }
@@ -37,11 +35,11 @@ def read(handle):
         seqiter = fasta.read('contigs.fas')
         seqiter, seqiter1 = itertools.tee(seqiter)
 
-        for seqdict in seqiter:
-            print(seqdict['title'], len(seqdict['sequence']))
+        for seqrecord in seqiter:
+            print(seqrecord['title'], len(seqrecord['sequence']))
 
-        for seqdict in seqiter1:
-            print(seqdict['title'], len(seqdict['sequence']))
+        for seqrecord in seqiter1:
+            print(seqrecord['title'], len(seqrecord['sequence']))
     """
 
     # `handle` is either a file object or a string
@@ -51,6 +49,10 @@ def read(handle):
         infile = open(handle)
 
     title = ''
+    start = '>'
+    if 'b' in infile.mode:
+        title = title.encode('ascii')
+        start = start.encode('ascii')
 
     # sequence lines not yielded
     seqlines = []
@@ -58,7 +60,7 @@ def read(handle):
         line = line.strip()
 
         # a new sequence in a multi-seq fasta
-        if line.startswith('>'):
+        if line.startswith(start):
             if seqlines:
                 # yield previous sequence
                 title = title or 'Anonymous.SEQ'
@@ -80,12 +82,12 @@ def read(handle):
         infile.close()
 
 
-def write(handle, seqdicts, linesep=os.linesep, linewidth=60):
+def write(handle, seqrecords, linesep=os.linesep, linewidth=60):
     """
     Reverse of `fasta.read`.
 
     :param handle: a file-like object or path to the output FASTA file
-    :param seqdicts: an iterable like
+    :param seqrecords: an iterable like
         [{'title': 'SEQ1', 'sequence': 'ATCTC...T'}, ...]
     :return: None
     """
@@ -96,15 +98,15 @@ def write(handle, seqdicts, linesep=os.linesep, linewidth=60):
     else:
         outfile = open(handle, 'w')
 
-    # accept a single seqdict
-    if isinstance(seqdicts, dict):
-        seqdicts = [seqdicts]
+    # accept a single seqrecord
+    if isinstance(seqrecords, dict):
+        seqrecords = [seqrecords]
 
-    for seqdict in seqdicts:
-        tline = '>{}{}'.format(seqdict['title'], linesep)
+    for seqrecord in seqrecords:
+        tline = '>{}{}'.format(seqrecord['title'], linesep)
         outfile.write(tline)
-        sequence = seqdict['sequence']
-        for i in zrange(0, len(sequence), linewidth):
+        sequence = seqrecord['sequence']
+        for i in compatible.zrange(0, len(sequence), linewidth):
             outfile.write(sequence[i:i+linewidth])
             outfile.write(linesep)
 
