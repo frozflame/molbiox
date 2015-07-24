@@ -23,7 +23,7 @@ def read(handle, verbose=False):
             'picasa.mac.39.dmg': 181167,
         }
 
-    Or if `tupl` is True
+    Or if `verbose` is True
 
         {
             'google.chrome.dmg': (264531, 2045177, 65877908),

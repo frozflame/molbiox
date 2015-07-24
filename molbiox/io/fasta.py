@@ -3,8 +3,9 @@
 
 import os
 from molbiox import compatible
+from molbiox import tolerant
 
-
+@tolerant.castable
 def read(handle):
     """
     Reading a FASTA file should NOT be complicated!

@@ -141,6 +141,7 @@ def read(handle):
         infile.close()
 
 
+@tolerant.castable
 def read_sequences(handle):
     """
     Read a GenBank file and get sequences as seqdicts
@@ -237,6 +238,7 @@ def test_read_seq(name):
 
 def test_read(name):
     return list(read(name))
+
 
 def test_j2(gbdict):
     tmpl = jinja2.Template(open(locate_template('d.genbank.tpl')).read())

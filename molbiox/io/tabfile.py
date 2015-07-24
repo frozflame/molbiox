@@ -4,7 +4,10 @@
 from __future__ import unicode_literals, print_function
 from collections import OrderedDict
 
+from molbiox import tolerant
 
+
+@tolerant.castable
 def read(handle, fields, sep=None):
     """
     Read a tab file

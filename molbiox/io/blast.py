@@ -1,5 +1,8 @@
+#!/usr/bin/env python3
+# encoding: utf-8
 
 from collections import OrderedDict
+from molbiox import tolerant
 
 __author__ = 'Hailong'
 
@@ -20,6 +23,7 @@ FMT7_FIELDS = [
 ]
 
 
+@tolerant.castable
 def read_fmt6(handle, fields=FMT7_FIELDS):
     return read_fmt7(handle, fields=fields)
 
