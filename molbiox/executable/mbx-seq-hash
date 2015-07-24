@@ -1,0 +1,89 @@
+#!/usr/bin/env python3
+# coding: utf-8
+
+from __future__ import unicode_literals
+import sys
+import hashlib
+import argparse
+
+from molbiox.io import fasta
+from molbiox.compatible import unistr
+
+
+ext_hseq = '.h-seq'
+ext_htab = '.h-tab'
+
+
+def hash_sequence(sequence):
+    if isinstance(sequence, unistr):
+        s = sequence.upper().encode('ascii')
+    else:
+        s = sequence.upper()
+    return hashlib.sha1(s).hexdigest()
+
+
+def hdump(htab_file, hseq_file, seqrecords, filename=None):
+    for sr in seqrecords:
+        hv = hash_sequence(sr['sequence'])
+        if htab_file:
+            if filename:
+                l = '{}\t{}\t{}\n'.format(hv, filename, sr['title'])
+            else:
+                l = '{}\t{}\n'.format(hv, sr['title'])
+            htab_file.write(l)
+        if hseq_file:
+            sr['title'] = 'sha1-' + hv
+            fasta.write(hseq_file, sr)
+
+
+if __name__ == '__main__':
+
+    parser = argparse.ArgumentParser(description='Calculate hashsums of sequences')
+
+    parser.add_argument(
+        'filenames', metavar='FASTA-file', nargs='+',
+        help='a FASTA-file containing 1 or multiple sequences')
+
+    parser.add_argument(
+        '--htab', action='store_true',
+        help='save hash-title table to files ({})'.format(ext_htab))
+
+    parser.add_argument(
+        '--hseq', action='store_true',
+        help='save hash-titled FASTA-files ({})'.format(ext_hseq))
+
+    parser.add_argument(
+        '--hdump', action='store_true',
+        help='equivolent to "--hseq --htab"')
+
+    parser.add_argument(
+        '--wfname', action='store_true',
+        help='with filename, i.e. output hash-filename-title table')
+
+    args = parser.parse_args()
+    dump_htab = args.htab or args.hdump
+    dump_hseq = args.hseq or args.hdump
+
+    for name in args.filenames:
+
+        # .h-tab or STDOUT
+        if dump_htab:
+            htab_file = open(name + ext_htab, 'w')
+        else:
+            htab_file = sys.stdout
+
+        # .h-seq or not
+        if dump_hseq:
+            hseq_file = open(name + ext_hseq, 'w')
+        else:
+            hseq_file = None
+
+        seqrecords = fasta.read(name)
+        if args.wfname:
+            hdump(htab_file, hseq_file, seqrecords, name)
+        else:
+            hdump(htab_file, hseq_file, seqrecords, None)
+
+
+
+
