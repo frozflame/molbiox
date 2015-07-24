@@ -71,6 +71,15 @@ sql/alembic
 alembic.ini
 
 *.swp
+
+# sample data files
 *.fa
 *.fas
 *.fasta
+*.ffa
+*.fna
+*.faa
+
+
+# just as local reference
+old-code/*
