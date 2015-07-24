@@ -83,3 +83,4 @@ alembic.ini
 
 # just as local reference
 old-code/*
+tmp/*
