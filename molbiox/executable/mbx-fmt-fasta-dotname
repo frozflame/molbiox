@@ -1,0 +1,46 @@
+#!/usr/bin/env python3
+# coding: utf-8
+
+from __future__ import unicode_literals, print_function
+import re
+import sys
+from molbiox.tolerant import safe_bracket
+
+# for fasta downloaded from uniport
+regex = re.compile(r'GN=(\S+)')
+
+
+def make_new_title(title, name_global):
+    items = title.split()
+    if not name_global:
+        mat = regex.search(l)
+        if mat:
+            name = mat.groups()[0]
+        else:
+            name = None
+    else:
+        name = name_global
+
+    if name:
+        items[0] = items[0] + '.' + name
+    # TODO: do not change the white space chars
+    return ' '.join(items)
+
+
+if __name__ == '__main__':
+
+    filename = safe_bracket(sys.argv, 1)
+
+    if not filename:
+        sys.exit('Please tell me which file you want to convert, OK?')
+
+    genename = safe_bracket(sys.argv, 2)
+
+    for l in open(filename):
+        l = l.strip()
+        if l.startswith('>'):
+            # functionality
+            seqtitle = make_new_title(l[1:].strip(), genename)
+            print('>' + seqtitle)
+        else:
+            print(l)
