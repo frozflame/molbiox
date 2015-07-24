@@ -1,0 +1,35 @@
+#!/usr/bin/env python3
+# coding: utf-8
+
+from __future__ import unicode_literals, print_function
+import sys
+import random
+
+from molbiox.io import fasta
+from molbiox.tolerant import safe_bracket
+from molbiox.compatible import zrange
+
+
+def print_rand_seq(number=1, length=1000, seqtype=None):
+    """
+    :param number: number of sequences
+    :param length: length of each sequence
+    :param seqtype: not supported yet
+    :return:
+    """
+
+    alphabet = 'ATCG'
+    for i in zrange(number):
+        title = "randSEQ." + str(i)
+        letters = [random.choice(alphabet) for j in zrange(length)]
+        sequence = ''.join(letters)
+        seqrecord = dict(title=title, sequence=sequence)
+
+        fasta.write(sys.stdout, seqrecord)
+
+
+if __name__ == '__main__':
+    number_ = safe_bracket(sys.argv, 1, default=1, cast=int)
+    length_ = safe_bracket(sys.argv,21, default=1000, cast=int)
+
+    print_rand_seq(number_, length_)
