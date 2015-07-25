@@ -25,8 +25,11 @@ for DIR in $@; do
     ${MERGE} *.paired?  final.fq
     rm -f *.trimmed.*
 
-    velveth hv29 29 -fastq -shortPaired final.fq
-    velvetg hv29 -cov_cutoff 18
+    # velveth hv29 29 -fastq -shortPaired final.fq
+    # velvetg hv29 -cov_cutoff 18
+    velvetoptimiser -s 15 -e 31 -x 2 -t ${NTHREADS} \
+        -f '-fastq -shortPaired final.fq' \
+        -o '-cov_cutoff 10 -scaffolding yes'
 
     mv hv29/contigs.fa .
 
