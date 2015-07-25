@@ -1,0 +1,24 @@
+#!/usr/bin/env python3
+# coding: utf-8
+
+from __future__ import unicode_literals, print_function
+
+import argparse
+import multiprocessing
+
+
+def get_cpu_count():
+    return multiprocessing.cpu_count()
+
+
+if __name__ == '__main__':
+
+    parser = argparse.ArgumentParser(description='Get environment info')
+
+    parser.add_argument('command', metavar='COMMAND')
+
+    args = parser.parse_args()
+
+    if args.command == 'cpu-count':
+        count = get_cpu_count()
+        print(count)

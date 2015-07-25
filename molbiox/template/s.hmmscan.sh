@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 
-NTHREADS="6"
+# NTHREADS="6"
+NTHREADS=`mbx-env cpu-count`
 
 DBDIR="$HOME/Public/dbxbio"
 # DBDIR="/mnt/fx6300/hailong/Public/dbxbio"

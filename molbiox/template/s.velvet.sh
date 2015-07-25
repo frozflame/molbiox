@@ -4,6 +4,10 @@ DTRIM=/opt/sequencing/DynamicTrim.pl
 LSORT=/opt/sequencing/LengthSort.pl
 MERGE=/opt/sequencing/PairMerge.pl
 
+# NTHREADS="6"
+NTHREADS=`mbx-env cpu-count`
+
+# TODO: use optimiser and use multiple cores
 
 for DIR in $@; do
 
