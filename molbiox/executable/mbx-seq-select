@@ -12,7 +12,7 @@ filename_keys = sys.argv[2]
 keys = [l.split()[0] for l in open(filename_keys) if l.split()]
 keys = set(keys)
 
-for seqrecord in fasta.read(sys.argv[2]):
+for seqrecord in fasta.read(filename_fasta):
     # use title.split()[0] to be tolerent to titles with description
     if seqrecord['title'].split()[0] in keys:
         fasta.write(sys.stdout, seqrecord)
