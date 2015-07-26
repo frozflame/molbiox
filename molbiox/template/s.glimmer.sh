@@ -3,6 +3,7 @@
 G3I="g3-iterated.csh"
 
 EXTRACT="/usr/local/Cellar/glimmer3/3.02b/libexec/multi-extract"
+# EXTRACT="/usr/bin/tigr-glimmer multi-extract"
 
 predfile () {
 
@@ -25,7 +26,7 @@ for name in $@; do
 
     ${G3I} ${name} ${name} > g3i.log 2>&1
 
-    mbx-fmt-glimmer3-mcoordz `predfile ${name}` ${name}.mcoordz
+    mbx-tab-g3mcoordz `predfile ${name}` ${name}.mcoordz
 
     ${EXTRACT} ${name} ${name}.mcoordz > ${name}.ffa
 
