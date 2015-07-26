@@ -3,7 +3,7 @@
 
 from __future__ import unicode_literals
 
-gene_protein_map = {
+lps_gene_prot_map = {
     'wzx':  'O-antigen flippase Wzx',
     'wzy':  'O-antigen polymerase Wzy',
     'wzz':  'Chain length determinant protein Wzz',
