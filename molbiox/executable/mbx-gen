@@ -10,6 +10,7 @@ from molbiox.locate import locate_template
 templates = {
     'test':     's.mbxtest.py',
     'blast':    's.blast.sh',
+    'blastfmt':    's.blast-formatter.sh',
     'velvet':   's.velvet.sh',
     'python':   's.script.py',
     'glimmer':  's.glimmer.sh',
