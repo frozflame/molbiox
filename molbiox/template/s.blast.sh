@@ -20,6 +20,16 @@ DATABASE="ncbi/nr"
 
 EVALUE="1e-5"
 
+
+# ALLFIELDS="qseqid qgi qacc qaccver qlen sseqid sallseqid sgi sallgi sacc"
+# ALLFIELDS="${ALLFIELDS} saccver sallacc slen qstart qend sstart send qseq"
+# ALLFIELDS="${ALLFIELDS} sseq evalue bitscore score length pident nident"
+# ALLFIELDS="${ALLFIELDS} mismatch positive gapopen gaps ppos frames qframe"
+# ALLFIELDS="${ALLFIELDS} sframe btop staxids sscinames scomnames sblastnames "
+# ALLFIELDS="${ALLFIELDS} sskingdoms stitle salltitles sstrand qcovs qcovhsp"
+
+
+
 for QUERY in $@; do
 
     OUTNAME=${QUERY}.fmt11.${BLASTEXE}
@@ -33,6 +43,34 @@ for QUERY in $@; do
     # blast_formatter -archive ${OUTNAME} -outfmt 6 > ${QUERY}.fmt6.${BLASTEXE}
     # blast_formatter -archive ${OUTNAME} -outfmt 7 > ${QUERY}.fmt7.${BLASTEXE}
 
+    # blast_formatter -archive ${OUTNAME} -outfmt "6 ${ALLFIELDS}" > ${QUERY}.fmt6a.${BLASTEXE}
+    # blast_formatter -archive ${OUTNAME} -outfmt "7 ${ALLFIELDS}" > ${QUERY}.fmt7a.${BLASTEXE}
+
     echo Done!
 
 done
+
+
+# The NCBI BLAST family of programs includes:
+#
+# blastp
+#   compares an amino acid query sequence against a protein sequence database
+#
+# blastn
+#   compares a nucleotide query sequence against a nucleotide sequence database
+#
+# blastx
+#   compares a nucleotide query sequence translated in all reading frames
+#   against a protein sequence database
+#
+# tblast
+#   compares a protein query sequence against a nucleotide sequence database
+#   dynamically translated in all reading frames
+#
+# tblastx (nucl vs nucl but frameshifts are punished deadly)
+#   compares the six-frame translations of a nucleotide query sequence against
+#   the six-frame translations of a nucleotide sequence database.
+#
+#   Please note that tblastx program cannot be used with the nr database on the
+#   BLAST Web page.
+
