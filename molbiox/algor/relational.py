@@ -13,7 +13,7 @@ Functionalities resembling  a relational database
 
 def select_top_records(records, groupby, orderby=None, compare=operator.gt):
     """
-    Select top records, `select gb, max(ob) groupby gb`
+    Select top records, `select gb, max(ob) group by gb`
 
     :param records: a list of (or an iterable iterates) dicts
     :param groupby: group by this field
