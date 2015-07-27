@@ -7,13 +7,13 @@ import argparse
 from molbiox.tolerant import safe_bracket
 from molbiox.knowledge.protnames import lps_gene_prot_map
 
+
 ext = '.protname'
 
 
 def get_prot_name(line):
     items = line.split(maxsplit=7)
     gname = items[5]
-    print(gname)
     pname = safe_bracket(items, 7) or lps_gene_prot_map.get(gname) or '-'
     return pname
 
