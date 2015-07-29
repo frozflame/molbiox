@@ -16,7 +16,11 @@ templates = {
     'glimmer':  's.glimmer.sh',
     'hmmscan':  's.hmmscan.sh',
 
+    'pred-sql': 'd.feat-create.sql',
+
     'py-decorator': 'x.decorator.py',
+
+    'lgrouper': 's.lgrouper.py',
 }
 
 
