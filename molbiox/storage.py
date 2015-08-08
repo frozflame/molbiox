@@ -52,7 +52,7 @@ class Blob(object):
 
             start = 0
             while start < len(self.content):
-                line = self.content[start : start+fasta_line_length] + b'\n'
+                line = self.content[start: start+fasta_line_length] + b'\n'
                 fout.write(line)
                 start += fasta_line_length
             

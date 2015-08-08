@@ -17,7 +17,6 @@ def safe_bracket(container, key, default=None, cast=None):
 
 
 def castable(func):
-
     @wraps(func)
     def _decorated_func(*args, **kwargs):
         castfunc = None
@@ -25,12 +24,9 @@ def castable(func):
             castfunc = kwargs['castfunc']
             del kwargs['castfunc']
 
-            print(kwargs)
-
         result = func(*args, **kwargs)
         if castfunc:
             result = castfunc(result)
         return result
-
     return _decorated_func
 

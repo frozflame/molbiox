@@ -15,7 +15,6 @@ DATABASE="ncbi/nr"
 # DATABASE="uniprot/wzy.named.fasta"
 # DATABASE="uniprot/wzxy.named.fasta"
 # DATABASE="uniprot/oprm.named.fasta"
-# DATABASE="uniprot/oprm.named.fasta"
 # DATABASE="vibrio/flanking.vibrio.fasta"
 
 EVALUE="1e-5"
