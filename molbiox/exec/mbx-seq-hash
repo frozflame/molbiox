@@ -6,7 +6,7 @@ import sys
 import hashlib
 import argparse
 
-from molbiox.io import fasta
+from molbiox.iofmt import fasta
 from molbiox.compatible import unistr
 
 

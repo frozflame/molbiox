@@ -1,0 +1,74 @@
+#!/usr/bin/env python3
+# coding: utf-8
+
+from __future__ import unicode_literals, print_function
+
+import os
+import sys
+import re
+import argparse
+from copy import deepcopy
+
+from molbiox.iofmt import fasta
+from Bio.Seq import Seq
+
+"""
+VTTS = Verbose Title Trans-Seq
+"""
+
+extension = '.vtts'
+
+
+def tmp_revcomp(s):
+    seq = Seq(s)
+    return str(seq.reverse_complement())
+
+
+vt_regex = re.compile(r'--[a-zA-Z0-9:]+')
+
+
+def verbose_title_trans(seqrecord):
+    title = seqrecord['title']
+    sequence = seqrecord['sequence']
+
+    # get flags from title
+    flags = vt_regex.findall(title)
+
+    # remove flags from title
+    title = vt_regex.sub('', title).strip()
+
+    if '--rc' in flags:
+        title += '/RC'
+        sequence = tmp_revcomp(seqrecord['sequence'])
+
+    return dict(title=title, sequence=sequence)
+
+
+if __name__ == '__main__':
+
+    desc = 'Verbose Title Trans-Sequence'
+    parser = argparse.ArgumentParser(description=desc)
+
+    parser.add_argument(
+        '--rude', action='store_true',
+        help='overwriting existing files if needed')
+
+    parser.add_argument(
+        'filenames', metavar='FASTA-file', nargs='+',
+        help='a FASTA-file containing 1 or multiple sequences')
+
+    args = parser.parse_args()
+
+    for filename in args.filenames:
+        filename_out = filename + extension
+
+        # be polite: do not overwrite existing file
+        if not args.rude and os.path.exists(filename_out):
+            message = 'Fail: "{}" exists already'.format(filename_out)
+            print(message, file=sys.stderr)
+            continue
+
+        outfile = open(filename + extension, 'w')
+        for seqrec in fasta.read(filename):
+            seqrec_new = verbose_title_trans(seqrec)
+            fasta.write(outfile, seqrec_new)

@@ -1,0 +1,31 @@
+#!/usr/bin/env python3
+# coding: utf-8
+
+from __future__ import unicode_literals, print_function
+
+import argparse
+from molbiox.iofmt import fasta
+
+ext = '.n-join.fa'
+
+if __name__ == '__main__':
+    desc = 'MBX Script'
+    parser = argparse.ArgumentParser(description=desc)
+
+    parser.add_argument(
+        '--rude', action='store_true',
+        help='overwriting existing files if needed')
+
+    parser.add_argument(
+        'filenames', metavar='DATA-file', nargs='+',
+        help='an input data file')
+
+    args = parser.parse_args()
+
+    for filename in args.filenames:
+        outfile = open(filename + ext, 'w')
+
+        sequences = (r['sequence'] for r in fasta.read(filename))
+        sequencej = (2000*'N').join(sequences)
+        record = dict(sequence=sequencej, title=filename)
+        fasta.write(outfile, record)

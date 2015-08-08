@@ -4,7 +4,7 @@
 from __future__ import unicode_literals
 import sys
 
-from molbiox.io import fasta
+from molbiox.iofmt import fasta
 
 filename_fasta = sys.argv[1]
 filename_keys = sys.argv[2]

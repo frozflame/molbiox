@@ -1,0 +1,44 @@
+#!/usr/bin/env python3
+# coding: utf-8
+
+from __future__ import unicode_literals, print_function
+
+import os
+import sys
+import re
+import argparse
+from molbiox.iofmt import fasta
+
+ext = '.nNsplit.fas'
+regex = re.compile(r'[nN]+')
+
+if __name__ == '__main__':
+    desc = 'MBX Script'
+    parser = argparse.ArgumentParser(description=desc)
+
+    parser.add_argument(
+        '--rude', action='store_true',
+        help='overwriting existing files if needed')
+
+    parser.add_argument(
+        'filenames', metavar='FASTA-files', nargs='+',
+        help='input file in FASTA format')
+
+    args = parser.parse_args()
+
+    for filename in args.filenames:
+
+        filename_out = filename + ext
+        if not args.rude and os.path.exists(filename_out):
+            message = 'Fail: "{}" exists already'.format(filename_out)
+            print(message, file=sys.stderr)
+            continue
+
+        outfile = open(filename_out, 'w')
+        for rec in fasta.read(filename):
+            sequences = regex.split(rec['sequence'])
+            for i, seq in enumerate(sequences):
+                suffix = '.nNsplit-{}'.format(i)
+                title = fasta.fix_title(rec['title'], suffix=suffix)
+                record_out = dict(title=title, sequence=seq)
+                fasta.write(outfile, record_out)

@@ -5,7 +5,7 @@ from __future__ import unicode_literals, print_function
 import sys
 import random
 
-from molbiox.io import fasta
+from molbiox.iofmt import fasta
 from molbiox.tolerant import safe_bracket
 from molbiox.compatible import zrange
 

@@ -4,7 +4,7 @@
 from __future__ import unicode_literals, print_function
 
 from molbiox import tolerant
-from molbiox.io import tabfile
+from molbiox.iofmt import tabfile
 
 
 TBLOUT_FIELDS = [

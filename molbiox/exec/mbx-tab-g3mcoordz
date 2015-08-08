@@ -1,0 +1,15 @@
+#!/usr/bin/env python3
+# coding: utf-8
+
+from __future__ import unicode_literals
+import sys
+
+from molbiox.iofmt import glimmer
+
+ifilename = sys.argv[1]
+ofilename = sys.argv[2]
+
+predicts = glimmer.read_g3_predict(ifilename)
+predicts = list(predicts)
+
+glimmer.write_g3_mcoordz(ofilename, predicts)

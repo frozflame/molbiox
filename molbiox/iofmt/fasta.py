@@ -2,6 +2,8 @@
 # encoding: utf-8
 
 import os
+import re
+
 from molbiox import compatible
 from molbiox import tolerant
 
@@ -115,3 +117,7 @@ def write(handle, seqrecords, linesep=os.linesep, linewidth=60):
     if outfile is not handle:
         outfile.close()
 
+
+def fix_title(title, prefix='', suffix=''):
+    regex_title = re.compile(r'^\S+')
+    return regex_title.sub(prefix + r'\g<0>' + suffix, title)

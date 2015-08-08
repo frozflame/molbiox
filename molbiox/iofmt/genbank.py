@@ -165,7 +165,7 @@ def read_sequences(handle):
                 seqregion = False
                 yield {
                     'title': title,
-                    'sequence': ''.join(seqslices)}
+                    'sequence': ''.join(seqslices).upper()}
             else:
                 items = line.split()
                 seqslices.extend(items[1:])

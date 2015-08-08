@@ -1,0 +1,48 @@
+#!/usr/bin/env python3
+# coding: utf-8
+
+from __future__ import unicode_literals, print_function
+
+import sys
+import re
+import argparse
+
+from molbiox.iofmt import fasta
+
+
+vtitle_regex = re.compile(r'--[a-zA-Z0-9]')
+
+
+def vtitle_trans(seqrecord):
+
+
+
+if __name__ == '__main__':
+
+    desc = 'Concatenate FASTA-files with reformatting and transcoding'
+    parser = argparse.ArgumentParser(description=desc)
+
+    parser.add_argument(
+        'filenames', metavar='FASTA-file', nargs='+',
+        help='a FASTA-file containing 1 or multiple sequences')
+
+    parser.add_argument(
+        '--revcomp', action='store_true',
+        help='output reverse complement for each FASTA record')
+
+    parser.add_argument(
+        '--translate', action='store_true',
+        help='translate DNA seq to protein seq')
+
+
+    for filename in sys.argv[1:]:
+        try:
+            for seqrecord in fasta.read(filename):
+                pass
+
+                fasta.write(sys.stdout, seqrecord)
+        except:
+            print('fail: {}'.format(filename), file=sys.stderr)
+
+
+

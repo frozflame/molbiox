@@ -4,7 +4,7 @@
 from __future__ import unicode_literals, print_function
 import collections
 
-from molbiox.knowledge.codes import ambig_nucl_gc_equiv
+from molbiox.info.codes import ambig_nucl_gc_equiv
 
 
 def gc_content(sequence, percent=False):

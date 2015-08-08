@@ -1,0 +1,27 @@
+#!/usr/bin/env python3
+# coding: utf-8
+
+from __future__ import unicode_literals
+
+import sys
+
+from molbiox.compatible import zrange
+from molbiox.iofmt.fasta import read
+
+name1 = sys.argv[1]
+name2 = sys.argv[2]
+
+n1_seqdicts = list(read(name1))
+n2_seqdicts = list(read(name2))
+
+if len(n1_seqdicts) != len(n2_seqdicts):
+    print('{} and {} differ'.format(name1, name2))
+
+for i in zrange(len(n1_seqdicts)):
+    s1 = n1_seqdicts[1].get('sequence').replace('*', '')
+    s2 = n2_seqdicts[1].get('sequence').replace('*', '')
+    if s1 != s2:
+        print('{} and {} differ'.format(name1, name2))
+        break
+
+print('{} and {} are the same'.format(name1, name2))

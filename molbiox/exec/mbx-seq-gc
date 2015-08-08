@@ -1,0 +1,56 @@
+#!/usr/bin/env python3
+# coding: utf-8
+
+from __future__ import unicode_literals, print_function
+
+import os
+import sys
+import argparse
+
+from molbiox.algor import countx
+from molbiox.iofmt import fasta
+
+ext = '.gc-content'
+
+if __name__ == '__main__':
+    desc = 'Calculate gc contents'
+    parser = argparse.ArgumentParser(description=desc)
+
+    parser.add_argument(
+        '--rude', action='store_true',
+        help='overwriting existing files if needed')
+
+    parser.add_argument(
+        '--stdout', action='store_true',
+        help='ouput to STDOUT instead of files')
+
+    parser.add_argument(
+        'filenames', metavar='DATA-file', nargs='+',
+        help='an input data file')
+
+    args = parser.parse_args()
+
+    for filename in args.filenames:
+        seqrecords = fasta.read(filename)
+
+        filename_out = filename + ext
+
+        if not args.stdout:
+            if not args.rude and os.path.exists(filename_out):
+                msg = 'Fail: "{}" exists already'.format(filename_out)
+                print(msg, file=sys.stderr)
+                continue
+            outfile = open(filename_out, 'w')
+        else:
+            outfile = sys.stdout
+
+        if args.stdout:
+            print('# file: {}'.format(filename), file=outfile)
+
+        for rec in seqrecords:
+            gc = countx.gc_content(rec['sequence'])
+            line = '{}\t{}\n'.format(gc, rec['title'])
+            outfile.write(line)
+
+        if not args.stdout:
+            outfile.close()

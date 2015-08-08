@@ -1,0 +1,26 @@
+#!/usr/bin/env python3
+# coding: utf-8
+
+from __future__ import unicode_literals
+
+import sys
+from molbiox.iofmt import fasta
+from Bio.Seq import Seq
+from Bio.Alphabet import generic_dna
+
+
+def translate(seqdicts):
+    for seqdict in seqdicts:
+        dna = Seq(seqdict['sequence'], generic_dna)
+
+        sequence = str(dna.translate())
+        if sequence.endswith('*'):
+            sequence = sequence[:-1]
+        seqdict['sequence'] = sequence
+        seqdict['title'] = '.'.join(seqdict['title'].split()[:2])
+        yield seqdict
+
+filename = sys.argv[1]
+seqdicts = fasta.read(filename)
+fasta.write(sys.stdout, translate(seqdicts))
+
