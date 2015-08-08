@@ -22,7 +22,7 @@ for name in $@; do
 
     cd ${name}.dir
 
-    ln -s ../${name} && echo "ini ${name}"
+    ln -s ../${name} && echo -n "predict ${name} ... "
 
     ${G3I} ${name} ${name} > g3i.log 2>&1
 
@@ -33,6 +33,6 @@ for name in $@; do
     # fastatranslate -F 1 ${name}.ffa | sed -e 's:\[translate\(1\)\]::' > ${name}.faa
     mbx-seq-translate ${name}.ffa > ${name}.faa
 
-    cd .. && echo "fin ${name}"
+    cd .. && echo "Done!"
 
 done
