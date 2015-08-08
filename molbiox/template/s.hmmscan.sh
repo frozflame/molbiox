@@ -10,8 +10,8 @@ DATABASE="pfam/Pfam-A.hmm"
 # DATABASE="pfam/Pfam-B.hmm"
 
 # Prepare HMM file
-gunzip ${DATABASE}.gz
-hmmpress
+# gunzip ${DATABASE}.gz
+# hmmpress
 
 # EVALUE="1e-5"
 
