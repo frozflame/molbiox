@@ -5,7 +5,7 @@ from __future__ import unicode_literals, print_function
 
 import argparse
 from molbiox.tolerant import safe_bracket
-from molbiox.knowledge.protnames import lps_gene_prot_map
+from molbiox.info.protnames import lps_gene_prot_map
 
 
 ext = '.protname'
