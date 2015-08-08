@@ -14,3 +14,10 @@ else:
     binstr = str
     unistr = unicode
 
+
+# maketrans
+if sys.version.startswith('3'):
+    maketrans = str.maketrans
+else:
+    import string
+    maketrans = string.maketrans
