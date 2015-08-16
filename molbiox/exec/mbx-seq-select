@@ -4,15 +4,23 @@
 from __future__ import unicode_literals
 import sys
 
+from collections import OrderedDict
+
 from molbiox.iofmt import fasta
 
 filename_fasta = sys.argv[1]
 filename_keys = sys.argv[2]
 
-keys = [l.split()[0] for l in open(filename_keys) if l.split()]
-keys = set(keys)
+keys = [l.split()[0] for l in open(filename_keys) if l.strip()]
+selection = OrderedDict((k, None) for k in keys)
 
 for seqrecord in fasta.read(filename_fasta):
     # use title.split()[0] to be tolerent to titles with description
-    if seqrecord['title'].split()[0] in keys:
+    title = seqrecord['title'].split()[0]
+    if title in selection:
+        selection[title] = seqrecord['sequence']
+
+for title, sequence in selection.items():
+    if sequence:
+        seqrecord = dict(title=title, sequence=sequence)
         fasta.write(sys.stdout, seqrecord)
