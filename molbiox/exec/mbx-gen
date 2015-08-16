@@ -23,8 +23,8 @@ commands = {
     'blast-pair':   's.blast-pair.sh',
     'blast-self':   's.blast-self.sh',
 
-    'bwa':          's.bwa-pe.sh',
-    'bwa-pe':       's.bwa-pe.sh',
+    'bwa':          's.bwa.sh',
+    'bwa-pe':       's.bwa.sh',
     'bwa-se':       '',
 
     'sspace':       's.sspace.sh',
