@@ -6,7 +6,7 @@ QR2=$3
 
 # NTHREADS="6"
 NTHREADS=`mbx-env cpu-count`
-TMPDIR="${REF}.bwa.dir"
+TMPDIR="${REF%.*}.bwa.dir"
 
 MISMATCH=0.04
 

@@ -11,7 +11,7 @@ EXEC="perl /opt/gapfiller/GapFiller.pl"
 
 
 # base name (default standard_output)
-PREFIX=${REF}.filler
+PREFIX=${REF%.*}.filler
 
 rm -f .gapfiller.libs.txt
 echo "lib1 bwa ${QR1} ${QR2} 450 0.35 FR" > .gapfiller.libs.txt
@@ -20,12 +20,13 @@ ${EXEC} -s ${REF} -l .gapfiller.libs.txt -T ${NTHREADS} -b ${PREFIX} -d 500
 
 
 
-# ... from README file in gapfiller 
+# ... from README file in gapfiller (default values in parentheses)
+#
 # General Parameters:
 # -l  Library file containing two mate pate files with insert size, error and orientation indication
 # -s  Fasta file containing scaffold sequences used for extension
 #
-# Extension Parameters (default values in brackets):
+# Extension Parameters:
 # -m  Minimum number of overlapping bases with the sequences around the gap(30)
 # -t  Number of bases to trim of from edges of the gap, usually containing misassemblies (10)
 # -o  Minimum number of reads needed to call a base during an extension (2)
