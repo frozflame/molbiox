@@ -24,9 +24,27 @@ def castable(func):
             castfunc = kwargs['castfunc']
             del kwargs['castfunc']
 
+            # shortcut to pick up nth record
+            if isinstance(castfunc, int):
+                number = castfunc
+                castfunc = lambda result: pick_nth(result, number)
+
         result = func(*args, **kwargs)
         if castfunc:
             result = castfunc(result)
         return result
     return _decorated_func
 
+
+def pick_nth(items, n):
+    # avoid dead loop
+    if not isinstance(n, int):
+        return None
+
+    for i, x in enumerate(items):
+        if i == n:
+            return x
+        elif i < n:
+            continue
+        else:
+            return None
