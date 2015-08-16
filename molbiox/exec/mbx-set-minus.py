@@ -12,7 +12,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description=desc)
 
     parser.add_argument(
-        '--sep', metavar='SEPARATOR', choices=[]
+        '--sep', metavar='SEPARATOR', choices=[],
         help='overwriting existing files if needed')
 
     parser.add_argument(
@@ -23,4 +23,3 @@ if __name__ == '__main__':
 
     for filename in args.filenames:
         filename_out = filename + ext
-        
