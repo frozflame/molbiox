@@ -39,13 +39,15 @@ for QUERY in $@; do
                  -out ${OUTNAME}  -num_threads ${NTHREADS}  -evalue ${EVALUE}
 
     # blast_formatter -archive ${OUTNAME} -outfmt 0 > ${QUERY}.fmt0.${BLASTEXE}
-    # blast_formatter -archive ${OUTNAME} -outfmt 6 > ${QUERY}.fmt6.${BLASTEXE}
+    blast_formatter -archive ${OUTNAME} -outfmt 6 > ${QUERY}.fmt6.${BLASTEXE}
     # blast_formatter -archive ${OUTNAME} -outfmt 7 > ${QUERY}.fmt7.${BLASTEXE}
 
     # blast_formatter -archive ${OUTNAME} -outfmt "6 ${ALLFIELDS}" > ${QUERY}.fmt6a.${BLASTEXE}
     # blast_formatter -archive ${OUTNAME} -outfmt "7 ${ALLFIELDS}" > ${QUERY}.fmt7a.${BLASTEXE}
 
     echo Done!
+
+    # rm ${OUTNAME}
 
 done
 
