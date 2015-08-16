@@ -30,7 +30,7 @@ def read(handle, fieldlist, sep=None):
 
         pairs = []
         for (key, cast), val in zip(fieldlist, values):
-            if cast:
+            if cast is not None:
                 val = cast(val)
             pairs.append((key, val))
 
