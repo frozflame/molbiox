@@ -26,26 +26,26 @@ error_message () {
 
 run_bwa_se (){
 
-    set -e; echo -n 'bwa-pe ... '
+    set -e; echo '#. ^_^ bwa-se start ... '
 
     bwa index ref.fa
     bwa aln -n ${MISMATCH} -t ${NTHREADS} ref.fa query.1.fq > aln.1.sai
     bwa samse ref.fa aln.1.sai query.1.fq > aln.sam
 
-    set +e; echo 'Done!'
+    set +e; echo '# ^_^ bwa-se done!'
 
 }
 
 run_bwa_pe (){
 
-    set -e; echo -n 'bwa-pe ... '
+    set -e; echo '#. ^_^ bwa-pe start ... '
 
     bwa index ref.fa
     bwa aln -n ${MISMATCH} -t ${NTHREADS} ref.fa query.1.fq > aln.1.sai
     bwa aln -n ${MISMATCH} -t ${NTHREADS} ref.fa query.2.fq > aln.2.sai
     bwa sampe ref.fa aln.{1,2}.sai query.{1,2}.fq > aln.sam
 
-    set +e; echo 'Done!'
+    set +e; echo '# ^_^ bwa-pe done!'
 
 }
 
@@ -58,7 +58,7 @@ fi
 
 
 
-echo -n "samtools ... "
+echo "#. ^_^ samtools start ... "
 
     samtools faidx ref.fa \
         >> samtools.out.log 2>> samtools.err.log \
@@ -76,5 +76,5 @@ echo -n "samtools ... "
         >> samtools.out.log 2>> samtools.err.log \
         || error_message
 
-echo Done!
+echo "#. ^_^ samtools done!"
 cd ..
