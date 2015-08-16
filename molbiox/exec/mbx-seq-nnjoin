@@ -11,7 +11,7 @@ from molbiox.iofmt import fasta
 ext = '.n-join.fas'
 
 if __name__ == '__main__':
-    desc = 'MBX Script'
+    desc = 'Join sequences with N+'
     parser = argparse.ArgumentParser(description=desc)
 
     parser.add_argument(

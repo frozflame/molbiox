@@ -17,7 +17,7 @@ regex = re.compile(r'[nN]+')
 
 
 if __name__ == '__main__':
-    desc = 'MBX Script'
+    desc = 'Split sequences with separator N+'
     parser = argparse.ArgumentParser(description=desc)
 
     parser.add_argument(
