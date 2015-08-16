@@ -5,6 +5,7 @@ from __future__ import unicode_literals, print_function
 
 import os
 import sys
+import re
 import argparse
 import stat
 
@@ -13,22 +14,38 @@ import stat
 from molbiox.locate import locate_template
 
 
-templates = {
+commands = {
     'test':         's.mbxtest.py',
-    'blast':        's.blast.sh',
+
     'blastfmt':     's.blast-formatter.sh',
+    'blast':        's.blast.sh',
+    'blast-norm':   's.blast.sh',
+    'blast-pair':   's.blast-pair.sh',
+    'blast-self':   's.blast-self.sh',
+
+    'bwa':          's.bwa-pe.sh',
+    'bwa-pe':       's.bwa-pe.sh',
+    'bwa-se':       '',
+
+    'sspace':       's.sspace.sh',
+    'gapfiller':    's.sspace-gapfiller.sh',
+
     'velvet':       's.velvet.sh',
     'python':       's.script.py',
     'glimmer':      's.glimmer.sh',
     'hmmscan':      's.hmmscan.sh',
     'muscle':       's.muscle.sh',
-    'tmhmm':       's.tmhmm.sh',
+    'tmhmm':        's.tmhmm.sh',
 
     'pred-sql': 'd.feat-create.sql',
 
     'py-decorator': 'x.decorator.py',
     'lgrouper': 's.lgrouper.py',
 }
+
+
+def make_name(template):
+    return re.sub(r'^s\.', 'run-', commands.get(template, 'run'))
 
 
 if __name__ == '__main__':
@@ -45,26 +62,27 @@ if __name__ == '__main__':
         help='name of template to start from')
 
     parser.add_argument(
-        'filename', default='-', nargs='?',
+        'filename', nargs='?',
         help='path to the output file, default STDOUT')
 
     args = parser.parse_args()
 
-    tpl_path = locate_template(templates.get(args.template, 's.script.py'))
+    tpl_path = locate_template(commands.get(args.template, 's.script.py'))
     tpl = open(tpl_path).read()
 
     if args.filename == '-':
         sys.stdout.write(tpl)
     else:
-        if not args.rude and os.path.exists(args.filename):
-            message = 'Fail: "{}" exists already'.format(args.filename)
+        filename = args.filename or make_name(args.template)
+        if not args.rude and os.path.exists(filename):
+            message = 'error: "{}" exists already'.format(filename)
             print(message, file=sys.stderr)
             sys.exit()
 
-        outfile = open(args.filename, 'w')
+        outfile = open(filename, 'w')
         outfile.write(tpl)
         outfile.close()
 
         # chmod +x
-        st = os.stat(args.filename)
-        os.chmod(args.filename, st.st_mode | stat.S_IEXEC)
+        st = os.stat(filename)
+        os.chmod(filename, st.st_mode | stat.S_IEXEC)
