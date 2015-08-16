@@ -9,8 +9,12 @@ import re
 import argparse
 from molbiox.iofmt import fasta
 
-ext = '.nNsplit.fas'
+ext = '.n-split.fas'
 regex = re.compile(r'[nN]+')
+
+
+# TODO: --verbose: report split positions and sizes of splits
+
 
 if __name__ == '__main__':
     desc = 'MBX Script'
