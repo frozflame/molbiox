@@ -85,6 +85,14 @@ def read(handle):
         infile.close()
 
 
+def read1(handle):
+    return read(handle, castfunc=0)
+
+
+def readseq(handle):
+    return read(handle, castfunc=0)['sequence']
+
+
 def write(handle, seqrecords, linesep=os.linesep, linewidth=60):
     """
     Reverse of `fasta.read`.
