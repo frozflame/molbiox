@@ -14,9 +14,9 @@ EXEC="perl /opt/gapfiller/GapFiller.pl"
 PREFIX=${REF}.filler
 
 rm -f .gapfiller.libs.txt
-echo "lib1 bwa ${QR1} ${QR2} 400 0.35 FR" > .gapfiller.libs.txt
+echo "lib1 bwa ${QR1} ${QR2} 450 0.35 FR" > .gapfiller.libs.txt
 
-${EXEC} -s ${REF} -l .gapfiller.libs.txt -T ${NTHREADS} -b ${PREFIX}
+${EXEC} -s ${REF} -l .gapfiller.libs.txt -T ${NTHREADS} -b ${PREFIX} -d 500
 
 
 
