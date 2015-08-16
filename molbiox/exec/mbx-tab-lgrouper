@@ -2,15 +2,13 @@
 # coding: utf-8
 
 from __future__ import unicode_literals, print_function
-from molbiox.iofmt.tabfile import LGrouper
+from molbiox.iofmt.tabular import LGrouper
 
 import os
 import sys
 import argparse
 
 ext = '.lgrouped'
-col = 2
-
 
 def groupby_func(line, col):
     if line.startswith('#'):
@@ -28,6 +26,10 @@ if __name__ == '__main__':
         help='overwriting existing files if needed')
 
     parser.add_argument(
+        '-c', '--column', type=int, default=0,
+        help='overwriting existing files if needed')
+
+    parser.add_argument(
         'filenames', metavar='DATA-file', nargs='+',
         help='an input data file')
 
@@ -37,11 +39,12 @@ if __name__ == '__main__':
         filename_out = filename + ext
 
         if not args.rude and os.path.exists(filename_out):
-            message = 'Fail: "{}" exists already'.format(filename_out)
+            message = 'error: "{}" exists already'.format(filename_out)
             print(message, file=sys.stderr)
             continue
 
-        lgrouper = LGrouper(groupby_func)
+        lgrouper = LGrouper(lambda l: groupby_func(l, args.column))
+
         for l in open(filename):
             lgrouper.feed(l.strip())
 
