@@ -48,8 +48,8 @@ if __name__ == '__main__':
             print('# file: {}'.format(filename), file=outfile)
 
         for rec in seqrecords:
-            gc = countx.gc_content(rec['sequence'])
-            line = '{}\t{}\n'.format(gc, rec['title'])
+            gc = countx.gc_content(rec['seq'])
+            line = '{}\t{}\n'.format(gc, rec['cmt'])
             outfile.write(line)
 
         if not args.stdout:

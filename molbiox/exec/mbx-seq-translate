@@ -11,13 +11,13 @@ from Bio.Alphabet import generic_dna
 
 def translate(seqdicts):
     for seqdict in seqdicts:
-        dna = Seq(seqdict['sequence'], generic_dna)
+        dna = Seq(seqdict['seq'], generic_dna)
 
         sequence = str(dna.translate())
         if sequence.endswith('*'):
             sequence = sequence[:-1]
-        seqdict['sequence'] = sequence
-        seqdict['title'] = '.'.join(seqdict['title'].split()[:2])
+        seqdict['seq'] = sequence
+        seqdict['cmt'] = '.'.join(seqdict['cmt'].split()[:2])
         yield seqdict
 
 filename = sys.argv[1]

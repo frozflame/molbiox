@@ -24,15 +24,15 @@ def hash_sequence(sequence):
 
 def hdump(htab_file, hseq_file, seqrecords, filename=None):
     for sr in seqrecords:
-        hv = hash_sequence(sr['sequence'])
+        hv = hash_sequence(sr['seq'])
         if htab_file:
             if filename:
-                l = '{}\t{}\t{}\n'.format(hv, filename, sr['title'])
+                l = '{}\t{}\t{}\n'.format(hv, filename, sr['cmt'])
             else:
-                l = '{}\t{}\n'.format(hv, sr['title'])
+                l = '{}\t{}\n'.format(hv, sr['cmt'])
             htab_file.write(l)
         if hseq_file:
-            sr['title'] = 'sha1-' + hv
+            sr['cmt'] = 'sha1-' + hv
             fasta.write(hseq_file, sr)
 
 
@@ -46,11 +46,11 @@ if __name__ == '__main__':
 
     parser.add_argument(
         '--htab', action='store_true',
-        help='save hash-title table to files ({})'.format(ext_htab))
+        help='save hash-comment table to files ({})'.format(ext_htab))
 
     parser.add_argument(
         '--hseq', action='store_true',
-        help='save hash-titled FASTA-files ({})'.format(ext_hseq))
+        help='save hash-commented FASTA-files ({})'.format(ext_hseq))
 
     parser.add_argument(
         '--hdump', action='store_true',
@@ -58,7 +58,7 @@ if __name__ == '__main__':
 
     parser.add_argument(
         '--wfname', action='store_true',
-        help='with filename, i.e. output hash-filename-title table')
+        help='with filename, i.e. output hash-filename-cmt table')
 
     args = parser.parse_args()
     dump_htab = args.htab or args.hdump
