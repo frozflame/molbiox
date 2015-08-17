@@ -3,13 +3,14 @@
 
 from __future__ import unicode_literals, print_function
 
+import itertools
 from collections import OrderedDict
 
 from molbiox import tolerant
 
 
 @tolerant.castable
-def read(handle, fieldlist, sep=None):
+def read(handle, fieldlist=None, sep=None):
     """
     Read a tab file
     """
@@ -17,6 +18,10 @@ def read(handle, fieldlist, sep=None):
         infile = handle
     else:
         infile = open(handle)
+
+    # if fieldlist is NOT given, generate list-like dicts
+    if not fieldlist:
+        fieldlist = ((i, None) for i in itertools.count())
 
     for line in infile:
         line = line.strip()
@@ -41,7 +46,7 @@ def read(handle, fieldlist, sep=None):
 
 
 @tolerant.castable
-def read_lenfile(handle, verbose=False):
+def read_lenfile(handle, multi=False):
     """
     Parse file format like `wc` or `fastalength` output
 
@@ -58,7 +63,7 @@ def read_lenfile(handle, verbose=False):
             'picasa.mac.39.dmg': 181167,
         }
 
-    Or if `verbose` is True
+    Or if `multi` is True
 
         {
             'google.chrome.dmg': (264531, 2045177, 65877908),
@@ -81,7 +86,7 @@ def read_lenfile(handle, verbose=False):
         itemlist = line.split()
         key = itemlist[-1]
 
-        if verbose:
+        if multi:
             val = tuple(int(x) for x in itemlist[:-1])
         else:
             val = int(itemlist[0])
