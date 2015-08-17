@@ -6,6 +6,7 @@ import re
 
 from molbiox import compatible
 from molbiox import tolerant
+from molbiox.common import Dict
 
 @tolerant.castable
 def read(handle):
@@ -23,12 +24,12 @@ def read(handle):
 
         [
             {
-                'title': 'ORF00024',
-                'sequence': 'ATCTGTCCTACTCCCGTC...TC'
+                'cmt': 'ORF00024',
+                'seq': 'ATCTGTCCTACTCCCGTC...TC'
             },
             {
-                'title': 'ORF00025',
-                'sequence': 'GTCTGTCCTACTCCCGTC...TC'
+                'cmt': 'ORF00025',
+                'seq': 'GTCTGTCCTACTCCCGTC...TC'
             }
         ]
 
@@ -39,10 +40,10 @@ def read(handle):
         seqiter, seqiter1 = itertools.tee(seqiter)
 
         for seqrecord in seqiter:
-            print(seqrecord['title'], len(seqrecord['sequence']))
+            print(seqrecord['cmt'], len(seqrecord['seq']))
 
         for seqrecord in seqiter1:
-            print(seqrecord['title'], len(seqrecord['sequence']))
+            print(seqrecord['cmt'], len(seqrecord['seq']))
     """
 
     # `handle` is either a file object or a string
@@ -51,26 +52,26 @@ def read(handle):
     else:
         infile = open(handle)
 
-    title = ''
-    start = '>'
+    cmt = ''
+    beg = '>'
     if 'b' in infile.mode:
-        title = title.encode('ascii')
-        start = start.encode('ascii')
+        cmt = cmt.encode('ascii')
+        beg = beg.encode('ascii')
 
     # sequence lines not yielded
     seqlines = []
+
     for line in infile:
         line = line.strip()
 
         # a new sequence in a multi-seq fasta
-        if line.startswith(start):
+        if line.startswith(beg):
             if seqlines:
                 # yield previous sequence
-                title = title or 'Anonymous.SEQ'
-                sequence = ''.join(seqlines)
-                yield dict(title=title, sequence=sequence)
+                cmt = cmt or 'Anonymous.SEQ'
+                yield Dict(cmt=cmt, seq=''.join(seqlines))
             # begin a new sequence
-            title = line[1:]
+            cmt = line[1:]
             seqlines = []
 
         else:
@@ -78,7 +79,7 @@ def read(handle):
 
     # yield last sequence
     if seqlines:
-        yield dict(title=title, sequence=''.join(seqlines))
+        yield Dict(cmt=cmt, seq=''.join(seqlines))
 
     # close the file only if it is opened within this func
     if infile is not handle:
@@ -90,7 +91,7 @@ def read1(handle):
 
 
 def readseq(handle):
-    return read(handle, castfunc=0)['sequence']
+    return read(handle, castfunc=0)['seq']
 
 
 def write(handle, seqrecords, linesep=os.linesep, linewidth=60):
@@ -99,7 +100,7 @@ def write(handle, seqrecords, linesep=os.linesep, linewidth=60):
 
     :param handle: a file-like object or path to the output FASTA file
     :param seqrecords: an iterable like
-        [{'title': 'SEQ1', 'sequence': 'ATCTC...T'}, ...]
+        [{'cmt': 'SEQ1', 'seq': 'ATCTC...T'}, ...]
     :return: None
     """
     # TODO: open mode `w` or `wb`?
@@ -114,11 +115,11 @@ def write(handle, seqrecords, linesep=os.linesep, linewidth=60):
         seqrecords = [seqrecords]
 
     for seqrecord in seqrecords:
-        tline = '>{}{}'.format(seqrecord['title'], linesep)
-        outfile.write(tline)
-        sequence = seqrecord['sequence']
-        for i in compatible.zrange(0, len(sequence), linewidth):
-            outfile.write(sequence[i:i+linewidth])
+        cmtline = '>{}{}'.format(seqrecord['cmt'], linesep)
+        outfile.write(cmtline)
+        seq = seqrecord['seq']
+        for i in compatible.zrange(0, len(seq), linewidth):
+            outfile.write(seq[i:i+linewidth])
             outfile.write(linesep)
 
     # close the file only if it is opened within this func
@@ -126,6 +127,13 @@ def write(handle, seqrecords, linesep=os.linesep, linewidth=60):
         outfile.close()
 
 
-def fix_title(title, prefix='', suffix=''):
-    regex_title = re.compile(r'^\S+')
-    return regex_title.sub(prefix + r'\g<0>' + suffix, title)
+def fix_comment(comment, prefix='', suffix=''):
+    """
+    Fix seqrecord comment
+
+        >(prefix)Key(suffix) other_descriptions
+        ATTCGGGGGTCTGGCTAG...
+
+    """
+    regex_key = re.compile(r'^\S+')
+    return regex_key.sub(prefix + r'\g<0>' + suffix, comment)
