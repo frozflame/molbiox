@@ -20,3 +20,30 @@ class SRecord(object):
         length = len(self.seq)
         slices = (self.seq[i:i+L] for i in zrange(0, length, L))
         return '>{}\n{}'.format(self.key, '\n'.join(slices))
+
+
+
+class Dict(dict):
+    """
+    Friendly with interactive Python shell
+    better displayed if it contains long string
+
+    example:
+
+        {'cmt': 'randSEQ', 'seq': 'TGCTTGGGGAATGTCT'~1000}
+
+    """
+    @staticmethod
+    def _formatter(s, length=16):
+        # always use str.format to support non-string type s
+        if len(s) <= length:
+            return '{}'.format(repr(s))
+        else:
+            return '{}~{}'.format(repr(s[:length]), len(s))
+
+    def __repr__(self):
+        fmt = Dict._formatter
+        kvs = ('{}: {}'.format(repr(k), fmt(v)) for k, v in self.items())
+        return '{{{}}}'.format(', '.join(kvs))
+
+    # TODO: provide a __str__ method
