@@ -1,8 +1,9 @@
 #!/usr/bin/env bash
 
-# TODO: support AA also (currently for ATGC only)_
+if [ a.$1 == 'a.' ]; then
+    echo 'usage: {{this_script}} sequence.fa'; exit 1
+fi
 
-#
 QRFILE=$1; DBFILE=$1; OUTPREFIX=$1
 if [ x.${OUTPREFIX} = x. ]; then OUTPREFIX=${QRFILE}; fi
 

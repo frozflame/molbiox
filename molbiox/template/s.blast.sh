@@ -1,5 +1,11 @@
 #!/usr/bin/env bash
 
+if [ a.$1 == 'a.' ]; then
+    echo 'usage: {{this_script}} seq1.fa seq2.fa seq3.fa ...'
+    echo '.....: edit the script to change database'
+    exit 1
+fi
+
 
 DBDIR="$HOME/Public/dbxbio"
 # DBDIR="."

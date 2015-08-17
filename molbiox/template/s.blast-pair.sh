@@ -1,9 +1,11 @@
 #!/usr/bin/env bash
 
-# TODO: support AA also (currently for ATGC only)_
+if [ a.$1 == 'a.' ] || [ a.$2 == 'a.' ]; then
+    echo 'usage: {{this_script}} query.fa database.fa prefix'; exit e
+fi
 
 QRFILE=$1; DBFILE=$2; OUTPREFIX=$3
-if [ x.${OUTPREFIX} = x. ]; then OUTPREFIX=${QRFILE}; fi
+if [ a.${OUTPREFIX} = a. ]; then OUTPREFIX=${QRFILE}; fi
 
 # protein or nucleotides
 QRT=`mbx-seq-type ${QRFILE}`
