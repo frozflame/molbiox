@@ -26,7 +26,7 @@ error_message () {
 
 run_bwa_se (){
 
-    set -e; echo '#. ^_^ bwa-se start ... '
+    set -e; echo '# ^_^ bwa-se start ... '
 
     bwa index ref.fa
     bwa aln -n ${MISMATCH} -t ${NTHREADS} ref.fa query.1.fq > aln.1.sai
@@ -38,7 +38,7 @@ run_bwa_se (){
 
 run_bwa_pe (){
 
-    set -e; echo '#. ^_^ bwa-pe start ... '
+    set -e; echo '# ^_^ bwa-pe start ... '
 
     bwa index ref.fa
     bwa aln -n ${MISMATCH} -t ${NTHREADS} ref.fa query.1.fq > aln.1.sai
@@ -58,7 +58,7 @@ fi
 
 
 
-echo "#. ^_^ samtools start ... "
+echo "# ^_^ samtools start ... "
 
     samtools faidx ref.fa \
         >> samtools.out.log 2>> samtools.err.log \
@@ -76,7 +76,7 @@ echo "#. ^_^ samtools start ... "
         >> samtools.out.log 2>> samtools.err.log \
         || error_message
 
-echo "#. ^_^ samtools done!"
+echo "# ^_^ samtools done!"
 
 # remove the bulky .sam
 rm aln.sam
