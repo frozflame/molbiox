@@ -4,19 +4,20 @@ REF=$1
 QR1=$2
 QR2=$3
 
-
-# NTHREADS="6"
-NTHREADS=`mbx-env cpu-count`
 EXEC="perl /opt/gapfiller/GapFiller.pl"
+
+# number of threads
+NTHR=`mbx-env cpu-count`
+# NTHR="6"
 
 
 # base name (default standard_output)
-PREFIX=${REF%.*}.filler
+PREFIX=${REF%.*}.sf
 
-rm -f .gapfiller.libs.txt
-echo "lib1 bwa ${QR1} ${QR2} 450 0.35 FR" > .gapfiller.libs.txt
+rm -f .sspace.libs.txt
+echo "lib1 bwa ${QR1} ${QR2} 450 0.35 FR" > .sspace.libs.txt
 
-${EXEC} -s ${REF} -l .gapfiller.libs.txt -T ${NTHREADS} -b ${PREFIX} -d 500
+${EXEC} -s ${REF} -l .gapfiller.libs.txt -T ${NTHR} -b ${PREFIX}
 
 
 
