@@ -18,8 +18,8 @@ if len(n1_seqdicts) != len(n2_seqdicts):
     print('{} and {} differ'.format(name1, name2))
 
 for i in zrange(len(n1_seqdicts)):
-    s1 = n1_seqdicts[1].get('sequence').replace('*', '')
-    s2 = n2_seqdicts[1].get('sequence').replace('*', '')
+    s1 = n1_seqdicts[1].get('seq').replace('*', '')
+    s2 = n2_seqdicts[1].get('seq').replace('*', '')
     if s1 != s2:
         print('{} and {} differ'.format(name1, name2))
         break

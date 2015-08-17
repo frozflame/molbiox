@@ -17,8 +17,8 @@ seqdicts = []
 for feat in record.features:
     if feat.type == 'CDS':
         seqdict = {
-            'title': ';'.join(feat.qualifiers['locus_tag']),
-            'sequence': feat.qualifiers['translation'][0]
+            'cmt': ';'.join(feat.qualifiers['locus_tag']),
+            'seq': feat.qualifiers['translation'][0]
         }
         seqdicts.append(seqdict)
 

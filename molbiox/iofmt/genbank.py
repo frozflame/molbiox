@@ -153,7 +153,7 @@ def read_sequences(handle):
         infile = open(handle, 'r')
 
     seqregion = False
-    title, seqslices = ('a.SEQ', [])
+    cmt, seqslices = ('a.SEQ', [])
     for line in infile:
         # do NOT strip!
         # line = line.strip()
@@ -164,16 +164,16 @@ def read_sequences(handle):
             if line.startswith('//'):
                 seqregion = False
                 yield {
-                    'title': title,
-                    'sequence': ''.join(seqslices).upper()}
+                    'cmt': cmt,
+                    'seq': ''.join(seqslices).upper()}
             else:
                 items = line.split()
                 seqslices.extend(items[1:])
             continue
 
-        # a new sequence/contig: reset title and seqslices
+        # a new sequence/contig: reset cmt and seqslices
         if line.startswith('LOCUS'):
-            title = re.sub(r'^LOCUS', '', line).strip()
+            cmt = re.sub(r'^LOCUS', '', line).strip()
             seqslices = []
             continue
         if line.startswith('ORIGIN'):
@@ -223,7 +223,7 @@ def write(handle, gbdicts, linesep=os.linesep):
         outfile.write(b"ORIGIN" + linesep)
 
         for i in zrange(0, len(sequence), 60):
-            l = '{0:>9}'.format(idx + 1) + s.join(textwrap.wrap(sequence[i:i+60], 10))
+            l = '{0:>9}'.format(i + 1) + s.join(textwrap.wrap(sequence[i:i+60], 10))
             outfile.write(l + linesep)
 
         outfile.write("//" + linesep)

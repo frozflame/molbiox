@@ -26,9 +26,9 @@ def read(handle):
     Then we will get
 
         {
-            'title': 'HWI-ST1426:113:HGTH7ADXX:1:1101:1358:2170 1:N:0:ATCACG',
-            'sequence': 'ATATGAGGACAAACGATAATACCGCCGCCTTGGTTATCTAGGATCTCT...',
-            'qualiseq': 'BBBFFFFFFFFFFIIIIIIIIIIIIIIIIIIIIFIIIIIIIIIIIIII...',
+            'cmt':  'HWI-ST1426:113:HGTH7ADXX:1:1101:1358:2170 1:N:0:ATCACG',
+            'seq':  'ATATGAGGACAAACGATAATACCGCCGCCTTGGTTATCTAGGATCTCT...',
+            'qual': 'BBBFFFFFFFFFFIIIIIIIIIIIIIIIIIIIIFIIIIIIIIIIIIII...',
         }
 
     """
@@ -40,19 +40,23 @@ def read(handle):
         infile = open(handle, 'w')
 
     while True:
-        title = infile.readline().strip()
-        sequence = infile.readline().strip()
-        plussign = infile.readline().strip()
-        qualiseq = infile.readline().strip()
+        cmt = infile.readline().strip()
+        seq = infile.readline().strip()
+        plus = infile.readline().strip()
+        qual = infile.readline().strip()
 
-        if not title:
+        if not cmt:
             break
-        if not title.startswith('@') or plussign != '+':
-            raise ValueError('fastq file "{}" is corrupted'.format(filename))
-        yield dict(title=title[1:], sequence=sequence, qualiseq=qualiseq)
+        if not cmt.startswith('@') or plus != '+':
+            raise ValueError('fastq file "{}" is corrupted'.format(handle))
+        yield dict(cmt=cmt[1:], seq=seq, qual=qual)
 
     if infile is not handle:
         infile.close()
+
+
+def read1(handle):
+    return read(handle, castfunc=0)
 
 
 def write(handle, seqdicts, linesep=os.linesep):
@@ -62,7 +66,7 @@ def write(handle, seqdicts, linesep=os.linesep):
     else:
         outfile = open(handle, 'w')
 
-    template = '@{title}{eol}{sequence}{eol}+{qualiseq}{eol}'
+    template = '@{cmt}{eol}{seq}{eol}+{qual}{eol}'
     for seqdict in seqdicts:
         block = template.format(eol=linesep, **seqdict)
         outfile.write(block)

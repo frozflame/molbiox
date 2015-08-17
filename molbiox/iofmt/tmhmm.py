@@ -3,8 +3,9 @@
 
 from __future__ import unicode_literals, print_function
 
-import sys
 import re
+
+from molbiox.common import Dict
 from molbiox import tolerant
 
 @tolerant.castable
@@ -38,11 +39,11 @@ def read(handle):
             continue
 
         if line.startswith('?0'):
-            record['tm.sequence'] += line.split()[1]
+            record['tm.seq'] += line.split()[1]
             continue
 
         if line.startswith(' ' * 3):
-            record['sequence'] += line.strip()
+            record['seq'] += line.strip()
 
     # last record (no '>' to mark end)
     if record:
@@ -55,11 +56,11 @@ def read(handle):
 
 def build_tmhmm_record(record=None):
     if not record:
-        record = dict(title='protein.A', sequence='')
-        record['tm.sequence'] = ''
+        record = Dict(cmt='protein.A', seq='')
+        record['tm.seq'] = ''
         return record
 
-    tmseq = record['tm.sequence']
+    tmseq = record['tm.seq']
     record['tm.m.spans'] = [mat.span() for mat in re.finditer(r'M+', tmseq)]
     record['tm.i.spans'] = [mat.span() for mat in re.finditer(r'i+', tmseq)]
     record['tm.o.spans'] = [mat.span() for mat in re.finditer(r'o+', tmseq)]
