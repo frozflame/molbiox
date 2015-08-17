@@ -47,9 +47,6 @@ echo -n "${BLASTEXE} ${QRFILE} ${DBFILE} ... "
     ${BLASTEXE}  -query ${QRFILE}  -db ${DBFILE}  -outfmt 11 \
                  -out ${FMT11}  -num_threads ${NTHR}  -evalue ${EVALUE}
 
-    # blast_formatter -archive ${FMT11} -outfmt 0 > ${QUERY}.fmt0.${BLASTEXE}
-    # blast_formatter -archive ${FMT11} -outfmt 6 > ${QUERY}.fmt6.${BLASTEXE}
-    # blast_formatter -archive ${FMT11} -outfmt 7 > ${QUERY}.fmt7.${BLASTEXE}
 
     # TODO: include tabfmt to MBX
     blast_formatter -archive ${FMT11} -outfmt "6 ${FMTS_MIN}" \
@@ -57,6 +54,10 @@ echo -n "${BLASTEXE} ${QRFILE} ${DBFILE} ... "
     | tabfmt > ${OUTPREFIX}.fmt6m.${BLASTEXE}
 
     # blast_formatter -archive ${OUTNAME} -outfmt "7 ${FMTS_MIN}" > ${OUTPREFIX}.fmt7m.${BLASTEXE}
+
+    # blast_formatter -archive ${FMT11} -outfmt 0 > ${QUERY}.fmt0.${BLASTEXE}
+    # blast_formatter -archive ${FMT11} -outfmt 6 > ${QUERY}.fmt6.${BLASTEXE}
+    # blast_formatter -archive ${FMT11} -outfmt 7 > ${QUERY}.fmt7.${BLASTEXE}
 
     # remove makeblastdb files
     rm -f ${DBFILE}.{nhr,nin,nsq,phr,pin,psq}

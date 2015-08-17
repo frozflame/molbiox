@@ -89,24 +89,6 @@ fieldlist_all = [
 ]
 
 
-blast7m = """
-    qseqid sseqid pident length qstart qend sstart ssend
-    """.split()
-
-blast7d = """
-    qseqid sseqid pident length mismatch gapopen
-    qstart qend sstart ssend evalue bitscore
-    """.split()
-
-blast7a = """
-    qseqid qgi qacc qaccver qlen sseqid sallseqid sgi sallgi
-    sacc saccver sallacc slen qstart qend sstart send qseq
-    sseq evalue bitscore score length pident nident mismatch
-    positive gapopen gaps ppos frames qframe sframe btop
-    staxids sscinames scomnames sblastnames sskingdoms
-    stitle salltitles sstrand qcovs qcovhsp""".split()
-
-
 @tolerant.castable
 def read_fmt6m(handle):
     return tabular.read(handle, fieldlist_mini)

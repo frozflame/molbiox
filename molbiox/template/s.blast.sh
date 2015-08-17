@@ -18,6 +18,7 @@ NTHR=`mbx-env cpu-count`
 
 # format specifiers
 FMTS_MIN=`mbx-etc blast-mini`
+FMTS_ALL=`mbx-etc blast-all`
 
 # e-value
 EVALUE="1e-5"
