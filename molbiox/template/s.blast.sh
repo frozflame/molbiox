@@ -1,53 +1,57 @@
 #!/usr/bin/env bash
 
-# NTHREADS="6"
-NTHREADS=`mbx-env cpu-count`
 
-BLASTEXE="blastp"
-
-# DBDIR="."
-# DBDIR="/mnt/fx6300/hailong/Public/dbxbio"
 DBDIR="$HOME/Public/dbxbio"
+# DBDIR="."
 
-DATABASE="ncbi/nr"
-# DATABASE="uniprot/uniprot_sprot.named.fasta"
-# DATABASE="uniprot/wzx.named.fasta"
-# DATABASE="uniprot/wzy.named.fasta"
-# DATABASE="uniprot/wzxy.named.fasta"
-# DATABASE="uniprot/oprm.named.fasta"
-# DATABASE="vibrio/flanking.vibrio.fasta"
+DBT=prot; DB="ncbi/nr"
+# DBT=prot; DB="uniprot/uniprot_sprot.named.fasta"
+# DBT=prot; DB="uniprot/wzx.named.fasta"
+# DBT=prot; DB="uniprot/wzy.named.fasta"
+# DBT=prot; DB="uniprot/wzxy.named.fasta"
+# DBT=prot; DB="uniprot/oprm.named.fasta"
+# DBT=prot; DB="vibrio/flanking.vibrio.fasta"
 
+# number of threads
+NTHR=`mbx-env cpu-count`
+# NTHR="6"
+
+# format specifiers
+FMTS_MIN=`mbx-etc blast-mini`
+
+# e-value
 EVALUE="1e-5"
-
-
-# ALLFIELDS="qseqid qgi qacc qaccver qlen sseqid sallseqid sgi sallgi sacc"
-# ALLFIELDS="${ALLFIELDS} saccver sallacc slen qstart qend sstart send qseq"
-# ALLFIELDS="${ALLFIELDS} sseq evalue bitscore score length pident nident"
-# ALLFIELDS="${ALLFIELDS} mismatch positive gapopen gaps ppos frames qframe"
-# ALLFIELDS="${ALLFIELDS} sframe btop staxids sscinames scomnames sblastnames "
-# ALLFIELDS="${ALLFIELDS} sskingdoms stitle salltitles sstrand qcovs qcovhsp"
-
 
 
 for QUERY in $@; do
 
-    OUTNAME=${QUERY}.fmt11.${BLASTEXE}
+
+    # detect query seq-type
+    QRT=`mbx-seq-type ${QUERY}`
+
+    # determine type of blast to use
+    if   [ ${QRT}.${DBT} == 'prot.prot' ]; then BLASTEXE='blastp';
+    elif [ ${QRT}.${DBT} == 'nucl.nucl' ]; then BLASTEXE='blastn';
+    elif [ ${QRT}.${DBT} == 'nucl.prot' ]; then BLASTEXE='blastx';
+    elif [ ${QRT}.${DBT} == 'prot.nucl' ]; then BLASTEXE='tblastn'; fi
+
+    FMT11=${QUERY}.fmt11.${BLASTEXE}
 
     echo -n "${BLASTEXE} ${QUERY} ... "
 
-    ${BLASTEXE}  -query ${QUERY}  -db ${DBDIR}/${DATABASE}  -outfmt 11 \
-                 -out ${OUTNAME}  -num_threads ${NTHREADS}  -evalue ${EVALUE}
+    ${BLASTEXE}  -query ${QUERY}  -db ${DBDIR}/${DB}  -outfmt 11 \
+                 -out ${FMT11}  -num_threads ${NTHR}  -evalue ${EVALUE}
 
-    # blast_formatter -archive ${OUTNAME} -outfmt 0 > ${QUERY}.fmt0.${BLASTEXE}
-    blast_formatter -archive ${OUTNAME} -outfmt 6 > ${QUERY}.fmt6.${BLASTEXE}
-    # blast_formatter -archive ${OUTNAME} -outfmt 7 > ${QUERY}.fmt7.${BLASTEXE}
+      blast_formatter -archive ${FMT11} -outfmt "6 ${FMTS_MIN}" > ${QUERY}.fmt6m.${BLASTEXE}
+    # blast_formatter -archive ${FMT11} -outfmt "7 ${FMTS_MIN}" > ${QUERY}.fmt7m.${BLASTEXE}
+    # blast_formatter -archive ${FMT11} -outfmt "6 ${FMTS_ALL}" > ${QUERY}.fmt6a.${BLASTEXE}
+    # blast_formatter -archive ${FMT11} -outfmt "7 ${FMTS_ALL}" > ${QUERY}.fmt7a.${BLASTEXE}
 
-    # blast_formatter -archive ${OUTNAME} -outfmt "6 ${ALLFIELDS}" > ${QUERY}.fmt6a.${BLASTEXE}
-    # blast_formatter -archive ${OUTNAME} -outfmt "7 ${ALLFIELDS}" > ${QUERY}.fmt7a.${BLASTEXE}
+    # blast_formatter -archive ${FMT11} -outfmt 0 > ${QUERY}.fmt0.${BLASTEXE}
 
     echo Done!
 
-    # rm ${OUTNAME}
+    # rm ${FMT11}
 
 done
 
@@ -64,7 +68,7 @@ done
 #   compares a nucleotide query sequence translated in all reading frames
 #   against a protein sequence database
 #
-# tblast
+# tblastn
 #   compares a protein query sequence against a nucleotide sequence database
 #   dynamically translated in all reading frames
 #

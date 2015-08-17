@@ -2,33 +2,40 @@
 
 # TODO: support AA also (currently for ATGC only)_
 
-#
 QRFILE=$1; DBFILE=$2; OUTPREFIX=$3
 if [ x.${OUTPREFIX} = x. ]; then OUTPREFIX=${QRFILE}; fi
 
-# NTHREADS="6"
-NTHREADS=`mbx-env cpu-count`
+# protein or nucleotides
+QRT=`mbx-seq-type ${QRFILE}`
+DBT=`mbx-seq-type ${DBFILE}`
 
-BLASTEXE="blastn"
-FMTDBEXE="makeblastdb"
+# determine type of blast to use
+if   [ ${QRT}.${DBT} == 'prot.prot' ]; then BLASTEXE='blastp';
+elif [ ${QRT}.${DBT} == 'nucl.nucl' ]; then BLASTEXE='blastn';
+elif [ ${QRT}.${DBT} == 'nucl.prot' ]; then BLASTEXE='blastx';
+elif [ ${QRT}.${DBT} == 'prot.nucl' ]; then BLASTEXE='tblastn'; fi
 
 # make sure 2 commands exist; otherwise exit
+FMTDBEXE="makeblastdb"
 ${BLASTEXE} -h > /dev/null; if [ $? -ne 0 ]; then exit; fi
 ${FMTDBEXE} -h > /dev/null; if [ $? -ne 0 ]; then exit; fi
 
+# number of threads
+NTHR=`mbx-env cpu-count`
+# NTHR="6"
 
+# format specifiers
+FMTS_MIN=`mbx-etc blast-mini`
 
-EVALUE="1e-6"
+# e-value
+EVALUE="1e-5"
 
-MINFIELDS="qseqid qlen slen sseqid length pident qstart qend sstart send"
-
-OUTNAME=${OUTPREFIX}.fmt11.${BLASTEXE}
+# -outfmt 11
+FMT11=${OUTPREFIX}.fmt11.${BLASTEXE}
 
 echo -n "${FMTDBEXE} ${DBFILE} ... "
 
-    ${FMTDBEXE} -dbtype nucl -in ${DBFILE} > /dev/null
-
-
+    ${FMTDBEXE} -dbtype ${DBT} -in ${DBFILE} > /dev/null
 
 echo Done!
 
@@ -36,28 +43,21 @@ echo Done!
 echo -n "${BLASTEXE} ${QRFILE} ${DBFILE} ... "
 
     ${BLASTEXE}  -query ${QRFILE}  -db ${DBFILE}  -outfmt 11 \
-                 -out ${OUTNAME}  -num_threads ${NTHREADS}  -evalue ${EVALUE}
+                 -out ${FMT11}  -num_threads ${NTHR}  -evalue ${EVALUE}
 
-    # blast_formatter -archive ${OUTNAME} -outfmt 0 > ${QUERY}.fmt0.${BLASTEXE}
-    # blast_formatter -archive ${OUTNAME} -outfmt 6 > ${QUERY}.fmt6.${BLASTEXE}
-    # blast_formatter -archive ${OUTNAME} -outfmt 7 > ${QUERY}.fmt7.${BLASTEXE}
+    # blast_formatter -archive ${FMT11} -outfmt 0 > ${QUERY}.fmt0.${BLASTEXE}
+    # blast_formatter -archive ${FMT11} -outfmt 6 > ${QUERY}.fmt6.${BLASTEXE}
+    # blast_formatter -archive ${FMT11} -outfmt 7 > ${QUERY}.fmt7.${BLASTEXE}
 
     # TODO: include tabfmt to MBX
-    blast_formatter -archive ${OUTNAME} -outfmt "6 ${MINFIELDS}" | tabfmt > ${OUTPREFIX}.fmt6m.${BLASTEXE}
-    # blast_formatter -archive ${OUTNAME} -outfmt "7 ${MINFIELDS}" > ${OUTPREFIX}.fmt7m.${BLASTEXE}
+      blast_formatter -archive ${FMT11} -outfmt "6 ${FMTS_MIN}" | tabfmt > ${OUTPREFIX}.fmt6m.${BLASTEXE}
+    # blast_formatter -archive ${FMT11} -outfmt "7 ${FMTS_MIN}" > ${OUTPREFIX}.fmt7m.${BLASTEXE}
 
-    # remove makeblastdb files -- nucl
-    rm -f ${DBFILE}.nhr
-    rm -f ${DBFILE}.nin
-    rm -f ${DBFILE}.nsq
-
-    # remove makeblastdb files -- prot
-    rm -f ${DBFILE}.phr
-    rm -f ${DBFILE}.pin
-    rm -f ${DBFILE}.psq
+    # remove makeblastdb files
+    rm -f ${DBFILE}.{nhr,nin,nsq,phr,pin,psq}
 
     # remove fmt11
-    rm -f ${OUTNAME}
+    rm -f ${FMT11}
 
 echo Done!
 

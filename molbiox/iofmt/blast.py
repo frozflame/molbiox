@@ -15,7 +15,7 @@ fieldlist_mini = [
     ('subject.length',      int),
     ('subject.id',          None),
     ('alignment.length',    int),
-    ('identity',            float),
+    ('percent.identity',    float),
     ('q.start',             int),
     ('q.end',               int),
     ('s.start',             int),
@@ -27,7 +27,7 @@ fieldlist_mini = [
 fieldlist_default = [
     ('query.id',         None),
     ('subject.id',       None),
-    ('identity',         float),
+    ('precent.identity', float),
     ('alignment.length', int),
     ('mismatches',       int),
     ('gap.opens',        int),
