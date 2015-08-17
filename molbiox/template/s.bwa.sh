@@ -77,4 +77,8 @@ echo "#. ^_^ samtools start ... "
         || error_message
 
 echo "#. ^_^ samtools done!"
+
+# remove the bulky .sam
+rm aln.sam
+
 cd ..
