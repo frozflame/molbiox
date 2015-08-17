@@ -127,13 +127,22 @@ def write(handle, seqrecords, linesep=os.linesep, linewidth=60):
         outfile.close()
 
 
-def fix_comment(comment, prefix='', suffix=''):
+def fix_comment(cmt, prefix='', suffix=''):
     """
     Fix seqrecord comment
 
         >(prefix)Key(suffix) other_descriptions
         ATTCGGGGGTCTGGCTAG...
-
     """
     regex_key = re.compile(r'^\S+')
-    return regex_key.sub(prefix + r'\g<0>' + suffix, comment)
+    return regex_key.sub(prefix + r'\g<0>' + suffix, cmt)
+
+
+def fix_filename(name, prefix='', suffix=''):
+    """
+    Remove common fasta extensions and join with prefix & suffix
+
+        (prefix)N2700.contigs<.fa>(suffix)
+    """
+    regex_ext = re.compile(r'\.(fa|fas|fasta|fna|ffn|faa|frn)$')
+    return prefix + regex_ext.sub('', name) + suffix

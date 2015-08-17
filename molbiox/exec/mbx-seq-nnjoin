@@ -8,7 +8,7 @@ from molbiox.iofmt import fasta
 
 # TODO: --interactive mode: ask user for gap size
 
-ext = '.n-join.fas'
+EXT = '.n-join.fas'
 
 if __name__ == '__main__':
     desc = 'Join sequences with N+'
@@ -23,13 +23,27 @@ if __name__ == '__main__':
         help='number of Ns to pad')
 
     parser.add_argument(
+        '--extkeep', action='store_true',
+        help='keep original file extension in new filename(s)')
+
+    parser.add_argument(
         'filenames', metavar='DATA-file', nargs='+',
         help='an input data file')
 
     args = parser.parse_args()
 
+    # debug
+    print(args.extkeep)
+
     for filename in args.filenames:
-        outfile = open(filename + ext, 'w')
+        if args.extkeep:
+            filename_new = filename + EXT
+        else:
+            filename_new = fasta.fix_filename(filename, suffix=EXT)
+
+        print(filename_new)
+
+        outfile = open(filename_new, 'w')
 
         sequences = (r['seq'] for r in fasta.read(filename))
         sequencej = (args.size*'N').join(sequences)

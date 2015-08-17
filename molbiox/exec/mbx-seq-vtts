@@ -16,7 +16,7 @@ from Bio.Seq import Seq
 VTTS = Verbose Title Trans-Seq
 """
 
-extension = '.vtts'
+EXT = '.vtts'
 
 
 def tmp_revcomp(s):
@@ -54,21 +54,28 @@ if __name__ == '__main__':
         help='overwriting existing files if needed')
 
     parser.add_argument(
+        '--extkeep', action='store_true',
+        help='keep original file extension in new filename(s)')
+
+    parser.add_argument(
         'filenames', metavar='FASTA-file', nargs='+',
         help='a FASTA-file containing 1 or multiple sequences')
 
     args = parser.parse_args()
 
     for filename in args.filenames:
-        filename_out = filename + extension
+        if args.extkeep:
+            filename_out = filename + EXT
+        else:
+            filename_out = fasta.fix_filename(filename, suffix=EXT)
 
         # be polite: do not overwrite existing file
         if not args.rude and os.path.exists(filename_out):
-            message = 'Fail: "{}" exists already'.format(filename_out)
+            message = 'fail: "{}" exists already'.format(filename_out)
             print(message, file=sys.stderr)
             continue
 
-        outfile = open(filename + extension, 'w')
+        outfile = open(filename + EXT, 'w')
         for seqrec in fasta.read(filename):
             seqrec_new = verbose_title_trans(seqrec)
             fasta.write(outfile, seqrec_new)

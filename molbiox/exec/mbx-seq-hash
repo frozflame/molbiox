@@ -57,6 +57,10 @@ if __name__ == '__main__':
         help='equivolent to "--hseq --htab"')
 
     parser.add_argument(
+        '--extkeep', action='store_true',
+        help='keep original file extension in new filename(s)')
+
+    parser.add_argument(
         '--wfname', action='store_true',
         help='with filename, i.e. output hash-filename-cmt table')
 
@@ -65,16 +69,22 @@ if __name__ == '__main__':
     dump_hseq = args.hseq or args.hdump
 
     for name in args.filenames:
+        if args.extkeep:
+            htab_filename = name + ext_htab
+            hseq_filename = name + ext_hseq
+        else:
+            htab_filename = fasta.fix_filename(name, suffix=ext_htab)
+            hseq_filename = fasta.fix_filename(name, suffix=ext_hseq)
 
         # .h-tab or STDOUT
         if dump_htab:
-            htab_file = open(name + ext_htab, 'w')
+            htab_file = open(htab_filename, 'w')
         else:
             htab_file = sys.stdout
 
         # .h-seq or not
         if dump_hseq:
-            hseq_file = open(name + ext_hseq, 'w')
+            hseq_file = open(hseq_filename, 'w')
         else:
             hseq_file = None
 
