@@ -15,7 +15,7 @@ NTHR=`mbx-env cpu-count`
 PREFIX=${REF%.*}.sf
 
 rm -f .sspace.libs.txt
-echo "lib1 bwa ${QR1} ${QR2} 450 0.35 FR" > .sspace.libs.txt
+echo "lib1 bwa ${QR1} ${QR2} 450 0.35 FR" > .gapfiller.libs.txt
 
 ${EXEC} -s ${REF} -l .gapfiller.libs.txt -T ${NTHR} -b ${PREFIX}
 
