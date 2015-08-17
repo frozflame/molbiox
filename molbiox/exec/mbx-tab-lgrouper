@@ -27,7 +27,11 @@ if __name__ == '__main__':
 
     parser.add_argument(
         '-c', '--column', type=int, default=0,
-        help='overwriting existing files if needed')
+        help='order by nth column')
+
+    parser.add_argument(
+        '-d', '--delete', action='store_true', default=False,
+        help='delete source files if succeeded')
 
     parser.add_argument(
         'filenames', metavar='DATA-file', nargs='+',
@@ -45,9 +49,14 @@ if __name__ == '__main__':
 
         lgrouper = LGrouper(lambda l: groupby_func(l, args.column))
 
-        for l in open(filename):
-            lgrouper.feed(l.strip())
+        for line in open(filename):
+            line = line.strip()
+            if line:
+                lgrouper.feed(line)
 
-        outfile = open(filename_out, 'w')
-        for l in lgrouper.harvest():
-            print(l, file=outfile)
+        with open(filename_out, 'w') as outfile:
+            for l in lgrouper.harvest():
+                print(l, file=outfile)
+
+        if args.delete:
+            os.remove(filename)
