@@ -17,15 +17,13 @@ from molbiox.locate import locate_template
 commands = {
     'test':         's.mbxtest.py',
 
-    'blastfmt':     's.blast-formatter.sh',
     'blast':        's.blast.sh',
     'blast-norm':   's.blast.sh',
     'blast-pair':   's.blast-pair.sh',
     'blast-self':   's.blast-self.sh',
+    'blast-fmt':    's.blast-formatter.sh',
 
     'bwa':          's.bwa.sh',
-    'bwa-pe':       's.bwa.sh',
-    'bwa-se':       '',
 
     'sspace':       's.sspace.sh',
     'gapfiller':    's.sspace-gapfiller.sh',
@@ -40,7 +38,6 @@ commands = {
     'pred-sql': 'd.feat-create.sql',
 
     'py-decorator': 'x.decorator.py',
-    'lgrouper': 's.lgrouper.py',
 }
 
 
