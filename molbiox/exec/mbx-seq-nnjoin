@@ -31,7 +31,7 @@ if __name__ == '__main__':
     for filename in args.filenames:
         outfile = open(filename + ext, 'w')
 
-        sequences = (r['sequence'] for r in fasta.read(filename))
+        sequences = (r['seq'] for r in fasta.read(filename))
         sequencej = (args.size*'N').join(sequences)
-        record = dict(sequence=sequencej, title=filename)
+        record = dict(seq=sequencej, cmt=filename)
         fasta.write(outfile, record)

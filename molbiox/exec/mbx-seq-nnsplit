@@ -40,9 +40,9 @@ if __name__ == '__main__':
 
         outfile = open(filename_out, 'w')
         for rec in fasta.read(filename):
-            sequences = regex.split(rec['sequence'])
+            sequences = regex.split(rec['seq'])
             for i, seq in enumerate(sequences):
                 suffix = '.nNsplit-{}'.format(i)
-                title = fasta.fix_title(rec['title'], suffix=suffix)
-                record_out = dict(title=title, sequence=seq)
+                cmt = fasta.fix_comment(rec['cmt'], suffix=suffix)
+                record_out = dict(cmt=cmt, seq=seq)
                 fasta.write(outfile, record_out)

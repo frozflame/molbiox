@@ -20,10 +20,9 @@ def print_rand_seq(number=1, length=1000, seqtype=None):
 
     alphabet = 'ATCG'
     for i in zrange(number):
-        title = "randSEQ." + str(i)
+        cmt = "randSEQ." + str(i)
         letters = [random.choice(alphabet) for j in zrange(length)]
-        sequence = ''.join(letters)
-        seqrecord = dict(title=title, sequence=sequence)
+        seqrecord = dict(cmt=cmt, seq=''.join(letters))
 
         fasta.write(sys.stdout, seqrecord)
 
