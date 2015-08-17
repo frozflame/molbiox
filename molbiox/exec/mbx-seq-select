@@ -16,11 +16,11 @@ selection = OrderedDict((k, None) for k in keys)
 
 for seqrecord in fasta.read(filename_fasta):
     # use title.split()[0] to be tolerent to titles with description
-    title = seqrecord['title'].split()[0]
-    if title in selection:
-        selection[title] = seqrecord['sequence']
+    cmt = seqrecord['cmt'].split()[0]
+    if cmt in selection:
+        selection[cmt] = seqrecord['seq']
 
-for title, sequence in selection.items():
-    if sequence:
-        seqrecord = dict(title=title, sequence=sequence)
+for cmt, seq in selection.items():
+    if seq:
+        seqrecord = dict(cmt=cmt, seq=seq)
         fasta.write(sys.stdout, seqrecord)
