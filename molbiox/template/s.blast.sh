@@ -34,7 +34,7 @@ for QUERY in $@; do
 
 
     # detect query seq-type
-    QRT=`mbx-seq-type ${QUERY}`
+    QRT=`mbx-seq-info -a type ${QUERY}`
 
     # determine type of blast to use
     if   [ ${QRT}.${DBT} == 'prot.prot' ]; then BLASTEXE='blastp';
@@ -58,6 +58,7 @@ for QUERY in $@; do
 
     echo Done!
 
+    # remove fmt11 output rm11
     # rm ${FMT11}
 
 done

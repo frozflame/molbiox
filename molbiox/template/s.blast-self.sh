@@ -8,8 +8,8 @@ QRFILE=$1; DBFILE=$1; OUTPREFIX=$1
 if [ x.${OUTPREFIX} = x. ]; then OUTPREFIX=${QRFILE}; fi
 
 # protein or nucleotides
-QRT=`mbx-seq-type ${QRFILE}`
-DBT=`mbx-seq-type ${DBFILE}`
+QRT=`mbx-seq-info -a type ${QRFILE}`
+DBT=`mbx-seq-info -a type ${DBFILE}`
 
 # determine type of blast to use
 if   [ ${QRT}.${DBT} == 'prot.prot' ]; then BLASTEXE='blastp';
