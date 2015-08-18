@@ -32,16 +32,11 @@ if __name__ == '__main__':
 
     args = parser.parse_args()
 
-    # debug
-    print(args.extkeep)
-
     for filename in args.filenames:
         if args.extkeep:
             filename_new = filename + EXT
         else:
             filename_new = fasta.fix_filename(filename, suffix=EXT)
-
-        print(filename_new)
 
         outfile = open(filename_new, 'w')
 
