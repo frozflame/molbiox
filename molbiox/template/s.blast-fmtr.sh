@@ -1,26 +1,24 @@
 #!/usr/bin/env bash
 
+# format specifiers
+FMTS_MIN=`mbx-etc blast-mini`
+FMTS_ALL=`mbx-etc blast-all`
 
+for NAME in $@; do
 
-ALLFIELDS="qseqid qgi qacc qaccver qlen sseqid sallseqid sgi sallgi sacc"
-ALLFIELDS="${ALLFIELDS} saccver sallacc slen qstart qend sstart send qseq"
-ALLFIELDS="${ALLFIELDS} sseq evalue bitscore score length pident nident"
-ALLFIELDS="${ALLFIELDS} mismatch positive gapopen gaps ppos frames qframe"
-ALLFIELDS="${ALLFIELDS} sframe btop staxids sscinames scomnames sblastnames "
-ALLFIELDS="${ALLFIELDS} sskingdoms stitle salltitles sstrand qcovs qcovhsp"
+    echo -n "blast_formatter for ${NAME} ... "
 
-for FILENAME in $@; do
+    NAME=${NAME//.fmt11./.}
 
-    echo -n "run blast_formatter for ${FILENAME} ... "
+    # blast_formatter -archive ${NAME} -outfmt 0 > ${NAME}.fmt0
+    # blast_formatter -archive ${NAME} -outfmt 6 > ${NAME}.fmt6
+    # blast_formatter -archive ${NAME} -outfmt 7 > ${NAME}.fmt7
 
-    NAME=${FILENAME//.fmt11./.}
+    blast_formatter -archive ${NAME} -outfmt "6 ${FMTS_MIN}" > ${NAME}.fmt6m
+    blast_formatter -archive ${NAME} -outfmt "7 ${FMTS_MIN}" > ${NAME}.fmt7m
 
-    blast_formatter -archive ${FILENAME} -outfmt 0 > ${NAME}.fmt0
-    blast_formatter -archive ${FILENAME} -outfmt 6 > ${NAME}.fmt6
-    blast_formatter -archive ${FILENAME} -outfmt 7 > ${NAME}.fmt7
-
-    blast_formatter -archive ${FILENAME} -outfmt "6 ${ALLFIELDS}" > ${NAME}.fmt6a
-    blast_formatter -archive ${FILENAME} -outfmt "7 ${ALLFIELDS}" > ${NAME}.fmt7a
+    # blast_formatter -archive ${NAME} -outfmt "6 ${FMTS_ALL}" > ${NAME}.fmt6a
+    # blast_formatter -archive ${NAME} -outfmt "7 ${FMTS_ALL}" > ${NAME}.fmt7a
 
     echo Done!
 
