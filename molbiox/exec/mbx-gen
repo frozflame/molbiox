@@ -21,7 +21,7 @@ commands = {
     'blast-norm':   's.blast.sh',
     'blast-pair':   's.blast-pair.sh',
     'blast-self':   's.blast-self.sh',
-    'blast-fmt':    's.blast-formatter.sh',
+    'blast-fmt':    's.blast-fmtr.sh',
 
     'bwa':          's.bwa.sh',
 
