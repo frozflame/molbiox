@@ -2,8 +2,7 @@
 
 FQ1=$1
 FQ2=$2
-
-if [ a.$3 == a. ]; then DIR="velvet.run.dir"; else DIR=$3; fi
+DIR=${3:-velvet.run.dir}
 
 set -e
 
