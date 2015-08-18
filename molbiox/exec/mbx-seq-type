@@ -10,6 +10,10 @@ from collections import Counter
 from molbiox.iofmt import fasta
 
 
+# DEPRECATED!!
+# replaced by mbx-seq-info type some.fa
+
+
 if __name__ == '__main__':
 
     desc = 'Test whether a FastA file contains protein or nucleotides'

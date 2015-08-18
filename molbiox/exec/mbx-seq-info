@@ -1,10 +1,37 @@
-#!/usr/bin/env bash
+#!/usr/bin/env python3
+# coding: utf-8
 
-for name in $@; do
+from __future__ import unicode_literals, print_function
 
-    echo
-    echo '# ~*-*~' ${name} '~^_^~'
-    fastalength ${name}
+import sys
+import argparse
 
-done
 
+from molbiox.algor import countx
+from molbiox.iofmt import fasta
+
+if __name__ == '__main__':
+
+    desc = 'Get various info from a FastA file'
+    parser = argparse.ArgumentParser(description=desc)
+
+    parser.add_argument(
+        '-a', '--ask', default='type',
+        help='what info do you want?')
+
+    parser.add_argument(
+        'filename', metavar='FASTA-file',
+        help='a FASTA-file containing 1 or multiple sequences')
+
+    args = parser.parse_args()
+
+    if args.ask == 'type':
+        seq = fasta.readseq(args.filename)
+        seqtype = countx.guess_type(seq)
+        print(seqtype)
+
+    elif args.ask == 'n50':
+        seqrecords = fasta.read(args.filename)
+        lengths = (len(r['seq']) for r in seqrecords)
+        n50 = countx.n50_stats(lengths)
+        print(n50)
