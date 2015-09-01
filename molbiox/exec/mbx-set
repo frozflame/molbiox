@@ -5,15 +5,12 @@ from __future__ import unicode_literals, print_function
 
 import argparse
 
-ext = '.mbx-script-output'
+
 
 if __name__ == '__main__':
-    desc = 'Calculate set operation set1 - set2'
+    
+    desc = 'Calculate set operation set1 - set2 - set3 - ...'
     parser = argparse.ArgumentParser(description=desc)
-
-    parser.add_argument(
-        '--sep', metavar='SEPARATOR', choices=[],
-        help='overwriting existing files if needed')
 
     parser.add_argument(
         'filenames', metavar='DATA-file', nargs='+',
@@ -21,5 +18,14 @@ if __name__ == '__main__':
 
     args = parser.parse_args()
 
-    for filename in args.filenames:
-        filename_out = filename + ext
+    result = set(l.strip() for l in open(args.filenames[0]))
+
+    for filename in args.filenames[1:]:
+        sub = set(l.strip() for l in open(filename))
+        if not sub:
+            continue
+        result -= sub
+        if not result:
+            break
+
+
