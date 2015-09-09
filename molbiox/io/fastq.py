@@ -74,3 +74,7 @@ def write(handle, seqdicts, linesep=os.linesep):
     if outfile is not handle:
         outfile.close()
 
+
+# TODO
+# <instrument>:<run number>:<flowcell ID>:<lane>:<tile>:<x-pos>:<y-pos> <read>:<is filtered>:<control number>:<index sequence>
+# http://support.illumina.com/help/SequencingAnalysisWorkflow/Content/Vault/Informatics/Sequencing_Analysis/CASAVA/swSEQ_mCA_FASTQFiles.htm

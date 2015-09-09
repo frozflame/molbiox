@@ -6,7 +6,7 @@ from __future__ import unicode_literals, print_function
 import argparse
 from jinja2 import Template
 
-from molbiox.iofmt import glimmer
+from molbiox.io import glimmer
 from molbiox.locate import locate_template
 
 

@@ -4,7 +4,7 @@
 from __future__ import unicode_literals, print_function
 
 import argparse
-from molbiox.iofmt import fasta
+from molbiox.io import fasta
 
 # TODO: --interactive mode: ask user for gap size
 

@@ -3,7 +3,7 @@
 
 from collections import OrderedDict
 from molbiox import tolerant
-from molbiox.iofmt import tabular
+from molbiox.io import tabular
 
 __author__ = 'Hailong'
 

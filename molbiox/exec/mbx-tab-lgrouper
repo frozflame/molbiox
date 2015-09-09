@@ -2,7 +2,7 @@
 # coding: utf-8
 
 from __future__ import unicode_literals, print_function
-from molbiox.iofmt.tabular import LGrouper
+from molbiox.io.tabular import LGrouper
 
 import os
 import sys

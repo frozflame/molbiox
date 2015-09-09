@@ -146,3 +146,11 @@ def fix_filename(name, prefix='', suffix=''):
     """
     regex_ext = re.compile(r'\.(fa|fas|fasta|fna|ffn|faa|frn)$')
     return prefix + regex_ext.sub('', name) + suffix
+
+
+def match_contig_name(names, keyword):
+    keyword = re.escape(keyword)
+    regex = re.compile(r'^(.*[^a-zA-Z0-9]+)?' + keyword + '([^a-zA-Z0-9]+.*)?$', re.I)
+    for name in names:
+        if regex.match(name):
+            return name

@@ -6,7 +6,7 @@ import sys
 
 from collections import OrderedDict
 
-from molbiox.iofmt import fasta
+from molbiox.io import fasta
 
 filename_fasta = sys.argv[1]
 filename_keys = sys.argv[2]

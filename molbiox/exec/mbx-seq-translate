@@ -4,7 +4,7 @@
 from __future__ import unicode_literals
 
 import sys
-from molbiox.iofmt import fasta
+from molbiox.io import fasta
 from Bio.Seq import Seq
 from Bio.Alphabet import generic_dna
 

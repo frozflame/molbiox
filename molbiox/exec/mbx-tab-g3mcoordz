@@ -4,7 +4,7 @@
 from __future__ import unicode_literals
 import sys
 
-from molbiox.iofmt import glimmer
+from molbiox.io import glimmer
 
 ifilename = sys.argv[1]
 ofilename = sys.argv[2]

@@ -7,7 +7,7 @@ import sys
 import re
 import argparse
 
-from molbiox.iofmt import fasta
+from molbiox.io import fasta
 
 
 if __name__ == '__main__':

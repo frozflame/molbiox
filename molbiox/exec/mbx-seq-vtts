@@ -9,7 +9,7 @@ import re
 import argparse
 from copy import deepcopy
 
-from molbiox.iofmt import fasta
+from molbiox.io import fasta
 from Bio.Seq import Seq
 
 """

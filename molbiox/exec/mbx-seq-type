@@ -7,11 +7,11 @@ import sys
 import argparse
 from collections import Counter
 
-from molbiox.iofmt import fasta
+from molbiox.io import fasta
 
 
 # DEPRECATED!!
-# replaced by mbx-seq-info type some.fa
+# replaced by mbx-seq-info -a type some.fa
 
 
 if __name__ == '__main__':
