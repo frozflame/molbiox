@@ -8,7 +8,7 @@ import argparse
 import dataset
 
 from molbiox.algor import relational
-from molbiox.iofmt import blast
+from molbiox.io import blast
 
 
 def convert_url(url):

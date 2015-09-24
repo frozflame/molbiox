@@ -7,8 +7,8 @@ import os
 import sys
 import argparse
 
-from molbiox.iofmt import fasta
-from molbiox.iofmt import genbank
+from molbiox.io import fasta
+from molbiox.io import genbank
 
 
 ext_nts = '.fas'

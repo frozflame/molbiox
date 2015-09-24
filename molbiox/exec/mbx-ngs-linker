@@ -9,7 +9,7 @@ import sys
 import pysam
 
 from molbiox.algor import mapping
-from molbiox.iofmt import fasta
+from molbiox.io import fasta
 
 ext = '.ctg-link'
 

@@ -5,7 +5,7 @@ from __future__ import unicode_literals
 import sys
 
 from Bio import SeqIO
-from molbiox.iofmt import fasta
+from molbiox.io import fasta
 
 # TODO: remove dependency to Biopython
 

@@ -8,16 +8,16 @@ import argparse
 
 def get_blast_cols(name):
     if name == 'mini':
-        from molbiox.iofmt.blast import fieldlist_mini
-        from molbiox.info.ncbi import blast_fieldmap
+        from molbiox.io.blast import fieldlist_mini
+        from molbiox.info.blast import blast_fieldmap
         return [blast_fieldmap[k[0]] for k in fieldlist_mini]
-    elif name == 'all':
-        from molbiox.iofmt.blast import fieldlist_all
-        from molbiox.info.ncbi import blast_fieldmap
+    elif name == 'full':
+        from molbiox.io.blast import fieldlist_all
+        from molbiox.info.blast import blast_fieldmap
         return [blast_fieldmap[k[0]] for k in fieldlist_all]
     else:
-        from molbiox.iofmt.blast import fieldlist_default
-        from molbiox.info.ncbi import blast_fieldmap
+        from molbiox.io.blast import fieldlist_default
+        from molbiox.info.blast import blast_fieldmap
         return [blast_fieldmap[k[0]] for k in fieldlist_default]
 
 
@@ -32,5 +32,5 @@ if __name__ == '__main__':
 
     if args.command == 'blast-mini':
         print(' '.join(get_blast_cols('mini')))
-    if args.command == 'blast-all':
-        print(' '.join(get_blast_cols('all')))
+    if args.command == 'blast-full':
+        print(' '.join(get_blast_cols('full')))

@@ -8,12 +8,13 @@ import sys
 import argparse
 
 from molbiox.algor import countx
-from molbiox.iofmt import fasta
+from molbiox.io import fasta
 
 ext = '.gc-content'
 
 if __name__ == '__main__':
-    desc = 'Calculate gc contents'
+
+    desc = 'Calculate gc ratios'
     parser = argparse.ArgumentParser(description=desc)
 
     parser.add_argument(
@@ -23,6 +24,14 @@ if __name__ == '__main__':
     parser.add_argument(
         '--stdout', action='store_true',
         help='ouput to STDOUT instead of files')
+
+    parser.add_argument(
+        '--precision', default=2, type=int,
+        help='decimal precision (number of digits after decimal point)')
+
+    parser.add_argument(
+        '--percent', action='store_true',
+        help='as percentage (100 for GCCGGG intead of 1)')
 
     parser.add_argument(
         'filenames', metavar='DATA-file', nargs='+',
@@ -37,7 +46,7 @@ if __name__ == '__main__':
 
         if not args.stdout:
             if not args.rude and os.path.exists(filename_out):
-                msg = 'Fail: "{}" exists already'.format(filename_out)
+                msg = 'error: "{}" exists already'.format(filename_out)
                 print(msg, file=sys.stderr)
                 continue
             outfile = open(filename_out, 'w')
@@ -49,7 +58,11 @@ if __name__ == '__main__':
 
         for rec in seqrecords:
             gc = countx.gc_content(rec['seq'])
-            line = '{}\t{}\n'.format(gc, rec['cmt'])
+
+            if args.percent:
+                gc *= 100
+
+            line = '{0:.{1}f}\t{2}\n'.format(gc, args.precision, rec['cmt'])
             outfile.write(line)
 
         if not args.stdout:
