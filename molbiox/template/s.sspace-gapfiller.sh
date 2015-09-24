@@ -17,8 +17,12 @@ PREFIX=${REF%.*}.sf
 rm -f .sspace.libs.txt
 echo "lib1 bwa ${QR1} ${QR2} 450 0.35 FR" > .gapfiller.libs.txt
 
+# execute
 ${EXEC} -s ${REF} -l .gapfiller.libs.txt -T ${NTHR} -b ${PREFIX}
 
+# avoid edit
+RSEQ=${PREFIX}/${PREFIX}.gapfilled.final.fa
+chmod -w ${RSEQ}
 
 
 # ... from README file in gapfiller (default values in parentheses)
