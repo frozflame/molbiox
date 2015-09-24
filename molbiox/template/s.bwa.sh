@@ -78,6 +78,9 @@ echo "# ^_^ samtools start ... "
 
 echo "# ^_^ samtools done!"
 
+# avoid accidental write
+chmod -w aln.sorted.bam
+
 # remove the bulky .sam
 rm aln.sam
 
