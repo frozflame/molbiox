@@ -3,6 +3,7 @@
 FQ1=$1
 FQ2=$2
 DIR=${3:-velvet.run.dir}
+if [ a.$3 == a. ]; then DIR="velvet.run.dir"; else DIR=$3; fi
 
 set -e
 
@@ -29,7 +30,7 @@ assert_exist ${LSORT}
 assert_exist ${MERGE}
 
 # use pigz if available otherwise gzip
-if which pigz; then GZIP=pigz; else GZIP=gzip; fi
+if which pigz > /dev/null; then GZIP=pigz; else GZIP=gzip; fi
 
 
 NTHR=`mbx-env cpu-count`
@@ -41,11 +42,11 @@ mkdir  ${DIR}
 # unzip if FQ? are gzipped otherwise symlink
 case ${FQ1} in
     *.gz)   ${GZIP} -dc ${FQ1} > ${DIR}/r1.fq;;
-    *)      ln -s ${DIR}/r1.fq ${FQ1};;
+    *)      ln -s ../${FQ1} ${DIR}/r1.fq;;
 esac
 case ${FQ2} in
     *.gz)   ${GZIP} -dc ${FQ2} > ${DIR}/r2.fq;;
-    *)      ln -s ${DIR}/r2.fq ${FQ2};;
+    *)      ln -s ../${FQ2} ${DIR}/r2.fq;;
 esac
 
 # work in $DIR afterwards
@@ -56,11 +57,11 @@ ${DTRIM} r2.fq
 ${LSORT} *.trimmed
 ${MERGE} *.paired?  rxm.fq
 
-# velveth hv29 29 -fastq -shortPaired final.fq
+# velveth hv29 29 -fastq -shortPaired rxm.fq
 # velvetg hv29 -cov_cutoff 18
 velvetoptimiser -s 25 -e 31 -x 2 -t ${NTHR} \
     -f '-fastq -shortPaired rxm.fq' \
-    -o '-ins_length 400 -scaffolding yes'
+    -o '-cov_cutoff 20 -exp_cov 150'
 
 cd ..
 
