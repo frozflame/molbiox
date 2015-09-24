@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 
 if [ a.$1 == 'a.' ]; then
-    echo 'usage: {{this_script}} seq1.fa seq2.fa seq3.fa ...'
-    echo '.....: edit the script to change database'
+    echo "usage: `basename $0` seq1.fa seq2.fa seq3.fa ..."
+    echo ".....: edit the script to change database"
     exit 1
 fi
 
@@ -12,10 +12,10 @@ DBDIR="$HOME/Public/dbxbio"
 
 DBT=prot; DB="ncbi/nr"
 # DBT=prot; DB="uniprot/uniprot_sprot.named.fasta"
-# DBT=prot; DB="uniprot/wzx.named.fasta"
-# DBT=prot; DB="uniprot/wzy.named.fasta"
-# DBT=prot; DB="uniprot/wzxy.named.fasta"
-# DBT=prot; DB="uniprot/oprm.named.fasta"
+# DBT=prot; DB="uniprot1/wzx.named.fasta"
+# DBT=prot; DB="uniprot1/wzy.named.fasta"
+# DBT=prot; DB="uniprot1/wzxy.named.fasta"
+# DBT=prot; DB="uniprot1/oprm.named.fasta"
 # DBT=prot; DB="vibrio/flanking.vibrio.fasta"
 
 # number of threads
@@ -23,11 +23,14 @@ NTHR=`mbx-env cpu-count`
 # NTHR="6"
 
 # format specifiers
-FMTS_MIN=`mbx-etc blast-mini`
-FMTS_ALL=`mbx-etc blast-all`
+FMTS_MINI=`mbx-etc blast-mini`
+FMTS_FULL=`mbx-etc blast-full`
 
 # e-value
 EVALUE="1e-5"
+
+OPT=''
+# OPT='-max_target_seqs 1'
 
 
 for QUERY in $@; do
@@ -49,17 +52,22 @@ for QUERY in $@; do
     ${BLASTEXE}  -query ${QUERY}  -db ${DBDIR}/${DB}  -outfmt 11 \
                  -out ${FMT11}  -num_threads ${NTHR}  -evalue ${EVALUE}
 
-      blast_formatter -archive ${FMT11} -outfmt "6 ${FMTS_MIN}" > ${QUERY}.fmt6m.${BLASTEXE}
-    # blast_formatter -archive ${FMT11} -outfmt "7 ${FMTS_MIN}" > ${QUERY}.fmt7m.${BLASTEXE}
-    # blast_formatter -archive ${FMT11} -outfmt "6 ${FMTS_ALL}" > ${QUERY}.fmt6a.${BLASTEXE}
-    # blast_formatter -archive ${FMT11} -outfmt "7 ${FMTS_ALL}" > ${QUERY}.fmt7a.${BLASTEXE}
+    FMTR="blast_formatter ${OPT} -archive ${FMT11}"
 
-    # blast_formatter -archive ${FMT11} -outfmt 0 > ${QUERY}.fmt0.${BLASTEXE}
+      ${FMTR} -outfmt "6 ${FMTS_MINI}" > ${QUERY}.fmt6m.${BLASTEXE}
+    # ${FMTR} -outfmt "7 ${FMTS_MINI}" > ${QUERY}.fmt7m.${BLASTEXE}
+    # ${FMTR} -outfmt "6 ${FMTS_FULL}" > ${QUERY}.fmt6a.${BLASTEXE}
+    # ${FMTR} -outfmt "7 ${FMTS_FULL}" > ${QUERY}.fmt7a.${BLASTEXE}
+
+    # ${FMTR} -outfmt 0 > ${QUERY}.fmt0.${BLASTEXE}
 
     echo Done!
 
     # remove fmt11 output rm11
     # rm ${FMT11}
+
+    # remove empty results
+    find . -name "${QUERY}.*.${BLASTEXE}" -type f -size 0 -delete
 
 done
 

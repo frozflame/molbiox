@@ -1,24 +1,29 @@
 #!/usr/bin/env bash
 
 # format specifiers
-FMTS_MIN=`mbx-etc blast-mini`
-FMTS_ALL=`mbx-etc blast-all`
+FMTS_MINI=`mbx-etc blast-mini`
+FMTS_FULL=`mbx-etc blast-full`
+
+OPT=''
+# OPT='-max_target_seqs 1'
 
 for NAME in $@; do
 
     echo -n "blast_formatter for ${NAME} ... "
 
+    FMTR="blast_formatter ${OPT} -archive ${NAME}"
+
     NAME=${NAME//.fmt11./.}
 
-    # blast_formatter -archive ${NAME} -outfmt 0 > ${NAME}.fmt0
-    # blast_formatter -archive ${NAME} -outfmt 6 > ${NAME}.fmt6
-    # blast_formatter -archive ${NAME} -outfmt 7 > ${NAME}.fmt7
+    # ${FMTR} -outfmt 0 ${OPT} > ${NAME}.fmt0
+    # ${FMTR} -outfmt 6 ${OPT} > ${NAME}.fmt6
+    # ${FMTR} -outfmt 7 ${OPT} > ${NAME}.fmt7
 
-    blast_formatter -archive ${NAME} -outfmt "6 ${FMTS_MIN}" > ${NAME}.fmt6m
-    blast_formatter -archive ${NAME} -outfmt "7 ${FMTS_MIN}" > ${NAME}.fmt7m
+    ${FMTR} -outfmt "6 ${FMTS_MINI}" > ${NAME}.fmt6m
+    ${FMTR} -outfmt "7 ${FMTS_MINI}" > ${NAME}.fmt7m
 
-    # blast_formatter -archive ${NAME} -outfmt "6 ${FMTS_ALL}" > ${NAME}.fmt6a
-    # blast_formatter -archive ${NAME} -outfmt "7 ${FMTS_ALL}" > ${NAME}.fmt7a
+    # ${FMTR} -outfmt "6 ${FMTS_FULL}" > ${NAME}.fmt6a
+    # ${FMTR} -outfmt "7 ${FMTS_FULL}" > ${NAME}.fmt7a
 
     echo Done!
 

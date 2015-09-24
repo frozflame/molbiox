@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 if [ a.$1 == 'a.' ]; then
-    echo 'usage: {{this_script}} sequence.fa'; exit 1
+    echo "usage: `basename $0` sequence.fa"; exit 1
 fi
 
 QRFILE=$1; DBFILE=$1; OUTPREFIX=$1
@@ -27,14 +27,13 @@ NTHR=`mbx-env cpu-count`
 # NTHR="6"
 
 # format specifiers
-FMTS_MIN=`mbx-etc blast-mini`
+FMTS_MINI=`mbx-etc blast-mini`
 
 # e-value
 EVALUE="1e-5"
 
 # -outfmt 11
 FMT11=${OUTPREFIX}.fmt11.${BLASTEXE}
-echo $FMT11
 
 echo -n "${FMTDBEXE} ${DBFILE} ... "
 
@@ -48,23 +47,27 @@ echo -n "${BLASTEXE} ${QRFILE} ${DBFILE} ... "
     ${BLASTEXE}  -query ${QRFILE}  -db ${DBFILE}  -outfmt 11 \
                  -out ${FMT11}  -num_threads ${NTHR}  -evalue ${EVALUE}
 
+    FMTR="blast_formatter ${OPT} -archive ${FMT11}"
 
     # TODO: include tabfmt to MBX
-    blast_formatter -archive ${FMT11} -outfmt "6 ${FMTS_MIN}" \
-    | awk '{if($1!=$4) print $0;}' \
+    ${FMTR} -outfmt "6 ${FMTS_MINI}" | awk '{if($1!=$4) print $0;}' \
     | tabfmt > ${OUTPREFIX}.fmt6m.${BLASTEXE}
 
-    # blast_formatter -archive ${OUTNAME} -outfmt "7 ${FMTS_MIN}" > ${OUTPREFIX}.fmt7m.${BLASTEXE}
 
-    # blast_formatter -archive ${FMT11} -outfmt 0 > ${QUERY}.fmt0.${BLASTEXE}
-    # blast_formatter -archive ${FMT11} -outfmt 6 > ${QUERY}.fmt6.${BLASTEXE}
-    # blast_formatter -archive ${FMT11} -outfmt 7 > ${QUERY}.fmt7.${BLASTEXE}
+    # ${FMTR} -outfmt "7 ${FMTS_MINI}" > ${OUTPREFIX}.fmt7m.${BLASTEXE}
+
+    # ${FMTR} -outfmt 0 > ${OUTPREFIX}.fmt0.${BLASTEXE}
+    # ${FMTR} -outfmt 6 > ${OUTPREFIX}.fmt6.${BLASTEXE}
+    # ${FMTR} -outfmt 7 > ${OUTPREFIX}.fmt7.${BLASTEXE}
 
     # remove makeblastdb files
     rm -f ${DBFILE}.{nhr,nin,nsq,phr,pin,psq}
 
     # remove fmt11
     rm -f ${FMT11}
+
+    # remove empty results
+    find . -name "${OUTPREFIX}.*.${BLASTEXE}" -type f -size 0 -delete
 
 echo Done!
 
