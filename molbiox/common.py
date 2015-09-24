@@ -34,7 +34,7 @@ class Dict(dict):
 
     """
     @staticmethod
-    def _formatter(s, length=16):
+    def _formatter(s, length=32):
         # always use str.format to support non-string type s
         if len(s) <= length:
             return '{}'.format(repr(s))
@@ -47,3 +47,9 @@ class Dict(dict):
         return '{{{}}}'.format(', '.join(kvs))
 
     # TODO: provide a __str__ method
+
+    def __getattr__(self, name):
+        try:
+            return self[name]
+        except KeyError:
+            raise AttributeError(name)
