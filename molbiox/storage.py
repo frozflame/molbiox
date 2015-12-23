@@ -9,7 +9,7 @@ fasta_line_length = confdic['fasta_line_length']
 
 class Blob(object):
     """
-    Store pure sequences as blobs
+    KVStore pure sequences as blobs
     Not suitable for very large sequences; consider split.
 
     Accept a `bytes` object as argument

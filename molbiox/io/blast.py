@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
 # encoding: utf-8
 
-from collections import OrderedDict
-from molbiox import tolerant
+from __future__ import unicode_literals
+
+from molbiox.frame import interactive
 from molbiox.io import tabular
 
 __author__ = 'Hailong'
@@ -89,26 +90,26 @@ fieldlist_all = [
 ]
 
 
-@tolerant.castable
+@interactive.castable
 def read_fmt6m(handle):
     return tabular.read(handle, fieldlist_mini)
 
 
-@tolerant.castable
+@interactive.castable
 def read_fmt6(handle):
     return tabular.read(handle, fieldlist_default, sep='\t')
 
 
-@tolerant.castable
+@interactive.castable
 def read_fmt6a(handle):
     return tabular.read(handle, fieldlist_all, sep='\t')
 
 
-@tolerant.castable
+@interactive.castable
 def read_fmt7(handle):
     return tabular.read(handle, fieldlist_default, sep='\t')
 
 
-@tolerant.castable
+@interactive.castable
 def read_fmt7a(handle):
     return tabular.read(handle, fieldlist_all, sep='\t')

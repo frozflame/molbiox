@@ -7,9 +7,10 @@ import os
 import re
 import textwrap
 
+import molbiox.frame.interactive
 from molbiox import tolerant
-from molbiox.compatible import zrange
-from molbiox.locate import locate_template
+from molbiox.frame.compat import zrange
+from molbiox.frame.locate import locate_template
 
 
 class MetaParser(object):
@@ -87,7 +88,7 @@ class SeqzParser(object):
     def __init__(self):
         self.seqfragments = []
 
-@tolerant.castable
+@molbiox.frame.interactive.castable
 def read(handle):
     # `handle` is either a file object or a string
     if hasattr(handle, 'read'):
@@ -141,7 +142,7 @@ def read(handle):
         infile.close()
 
 
-@tolerant.castable
+@molbiox.frame.interactive.castable
 def read_sequences(handle):
     """
     Read a GenBank file and get sequences as seqdicts
@@ -241,6 +242,7 @@ def test_read(name):
 
 
 def test_j2(gbdict):
+    import jinja2
     tmpl = jinja2.Template(open(locate_template('d.genbank.tpl')).read())
     res = tmpl.render(gbdict=gbdict, wrap=textwrap.wrap)
     return res

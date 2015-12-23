@@ -3,15 +3,19 @@
 
 import os
 import re
+import six
+from molbiox.frame import interactive
+from molbiox.frame.common import SRecord
+from molbiox.frame.compat import omni_writer
 
-from molbiox import compatible
-from molbiox import tolerant
-from molbiox.common import Dict
 
-@tolerant.castable
+@interactive.castable
 def read(handle):
     """
     Reading a FASTA file should NOT be complicated!
+
+    :param handle: a file object or a string
+    :return: a generator of SRecord objects
 
     Say we have
 
@@ -46,7 +50,6 @@ def read(handle):
             print(seqrecord['cmt'], len(seqrecord['seq']))
     """
 
-    # `handle` is either a file object or a string
     if hasattr(handle, 'read'):
         infile = handle
     else:
@@ -69,7 +72,7 @@ def read(handle):
             if seqlines:
                 # yield previous sequence
                 cmt = cmt or 'Anonymous.SEQ'
-                yield Dict(cmt=cmt, seq=''.join(seqlines))
+                yield SRecord(cmt=cmt, seq=''.join(seqlines))
             # begin a new sequence
             cmt = line[1:]
             seqlines = []
@@ -79,7 +82,7 @@ def read(handle):
 
     # yield last sequence
     if seqlines:
-        yield Dict(cmt=cmt, seq=''.join(seqlines))
+        yield SRecord(cmt=cmt, seq=''.join(seqlines))
 
     # close the file only if it is opened within this func
     if infile is not handle:
@@ -94,12 +97,12 @@ def readseq(handle):
     return read(handle, castfunc=0)['seq']
 
 
-def write(handle, seqrecords, linesep=os.linesep, linewidth=60):
+def write(handle, records, linesep=os.linesep, linewidth=60):
     """
     Reverse of `fasta.read`.
 
     :param handle: a file-like object or path to the output FASTA file
-    :param seqrecords: an iterable like
+    :param records: an iterable like
         [{'cmt': 'SEQ1', 'seq': 'ATCTC...T'}, ...]
     :return: None
     """
@@ -110,17 +113,17 @@ def write(handle, seqrecords, linesep=os.linesep, linewidth=60):
     else:
         outfile = open(handle, 'w')
 
-    # accept a single seqrecord
-    if isinstance(seqrecords, dict):
-        seqrecords = [seqrecords]
+    # accept a single record
+    if isinstance(records, dict):
+        records = [records]
 
-    for seqrecord in seqrecords:
-        cmtline = '>{}{}'.format(seqrecord['cmt'], linesep)
-        outfile.write(cmtline)
-        seq = seqrecord['seq']
-        for i in compatible.zrange(0, len(seq), linewidth):
-            outfile.write(seq[i:i+linewidth])
-            outfile.write(linesep)
+    for record in records:
+        cmtline = '>{}{}'.format(record['cmt'], linesep)
+        omni_writer(outfile, cmtline)
+        seq = record['seq']
+        for i in six.moves.range(0, len(seq), linewidth):
+            omni_writer(outfile, seq[i:i+linewidth])
+            omni_writer(outfile, linesep)
 
     # close the file only if it is opened within this func
     if outfile is not handle:

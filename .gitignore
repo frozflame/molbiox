@@ -84,4 +84,7 @@ alembic.ini
 # just as local reference
 old-code/*
 tmp/*
+tmp-scripts/*
 test/*
+
+molbox/zz.py

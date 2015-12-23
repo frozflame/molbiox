@@ -3,6 +3,8 @@
 
 import os
 import sys
+
+import molbiox.frame.interactive
 from molbiox import tolerant
 
 # be Python 3 compatible
@@ -11,7 +13,7 @@ if sys.version.startswith('3'):
 else:
     zrange = xrange
 
-@tolerant.castable
+@molbiox.frame.interactive.castable
 def read(handle):
     """
     Read a FASTQ file and yield dicts.

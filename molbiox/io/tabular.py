@@ -5,14 +5,17 @@ from __future__ import unicode_literals, print_function
 
 import itertools
 from collections import OrderedDict
+from molbiox.frame import interactive
 
-from molbiox import tolerant
 
-
-@tolerant.castable
+@interactive.castable
 def read(handle, fieldlist=None, sep=None):
     """
-    Read a tab file
+    Read a tabular text file
+    :param handle: a file object or a file path
+    :param fieldlist: [(fieldname, fieldtype), ...] see `io/blast` for examples
+    :param sep: separator use in `string.split(sep)`
+    :return: a generator, yielding OrderedDict objects
     """
     if hasattr(handle, 'read'):
         infile = handle
@@ -45,7 +48,7 @@ def read(handle, fieldlist=None, sep=None):
         infile.close()
 
 
-@tolerant.castable
+@interactive.castable
 def read_lenfile(handle, multi=False):
     """
     Parse file format like `wc` or `fastalength` output
@@ -69,6 +72,10 @@ def read_lenfile(handle, multi=False):
             'google.chrome.dmg': (264531, 2045177, 65877908),
             'picasa.mac.39.dmg': (181167, 1408149, 48452451),
         }
+
+    :param handle: a file object or a file path
+    :param multi: boolean
+    :return: a generator, yielding OrderedDict objects
     """
     if hasattr(handle, 'read'):
         infile = handle
