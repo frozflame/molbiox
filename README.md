@@ -3,12 +3,12 @@ molbiox
 
 Utilities for bioinformatics
 
+Experimental stage. Very unstable yet.
+Versions before 1.0.0 will be experimental and not ready for use.
 
-##### Existing sequence manipulating utilities
 
-* exonerate 
-* emboss
-
-issue1 new edit
-edit by flame
-edit again by flame
+    mkdir try-molbiox && cd try-molbiox 
+    virtualenv venv   
+    source venv/bin/activate
+    pip install https://github.com/frozflame/molbiox/archive/master.zip
+   
