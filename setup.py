@@ -11,7 +11,7 @@ def readfile(filename):
 
 setup(
     name="molbiox",
-    version="0.0.1",
+    version="0.0.2",
     packages=find_packages(),
     zip_safe=False,
     namespace_packages=["molbiox"],
