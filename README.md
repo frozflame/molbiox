@@ -1,9 +1,7 @@
 molbiox
 =======
 
-Utilities, tutorials and protocols for bioinformatics
-
--------
+Utilities for bioinformatics
 
 
 ##### Existing sequence manipulating utilities

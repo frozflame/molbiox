@@ -4,17 +4,11 @@
 import os
 import sys
 
-import molbiox.frame.interactive
-from molbiox import tolerant
+from molbiox.frame import interactive
 
-# be Python 3 compatible
-if sys.version.startswith('3'):
-    zrange = range
-else:
-    zrange = xrange
 
-@molbiox.frame.interactive.castable
-def read(handle):
+@interactive.castable
+def read(infile):
     """
     Read a FASTQ file and yield dicts.
 
@@ -33,50 +27,44 @@ def read(handle):
             'qual': 'BBBFFFFFFFFFFIIIIIIIIIIIIIIIIIIIIFIIIIIIIIIIIIII...',
         }
 
+    :param infile: a file object or path
+    :return: a generator
     """
 
-    # `handle` is either a file object or a string
-    if hasattr(handle, 'write'):
-        infile = handle
-    else:
-        infile = open(handle, 'w')
+    fw = interactive.FileWrapper(infile, 'r')
 
     while True:
-        cmt = infile.readline().strip()
-        seq = infile.readline().strip()
-        plus = infile.readline().strip()
-        qual = infile.readline().strip()
+        cmt = fw.file.readline().strip()
+        seq = fw.file.readline().strip()
+        plus = fw.file.readline().strip()
+        qual = fw.file.readline().strip()
 
         if not cmt:
             break
         if not cmt.startswith('@') or plus != '+':
-            raise ValueError('fastq file "{}" is corrupted'.format(handle))
+            raise ValueError('fastq file <{}> is corrupted'.format(fw.path))
         yield dict(cmt=cmt[1:], seq=seq, qual=qual)
 
-    if infile is not handle:
-        infile.close()
+    fw.close()
 
 
-def read1(handle):
-    return read(handle, castfunc=0)
+def read1(infile):
+    return read(infile, castfunc=0)
 
 
-def write(handle, seqdicts, linesep=os.linesep):
+def write(outfile, seqdicts, linesep=os.linesep):
     # `handle` is either a file object or a string
-    if hasattr(handle, 'write'):
-        outfile = handle
-    else:
-        outfile = open(handle, 'w')
+
+    # TODO: binary?
+    fw = interactive.FileWrapper(outfile, 'w')
 
     template = '@{cmt}{eol}{seq}{eol}+{qual}{eol}'
     for seqdict in seqdicts:
         block = template.format(eol=linesep, **seqdict)
-        outfile.write(block)
-
-    if outfile is not handle:
-        outfile.close()
-
+        fw.file.write(block)
+    fw.close()
 
 # TODO
-# <instrument>:<run number>:<flowcell ID>:<lane>:<tile>:<x-pos>:<y-pos> <read>:<is filtered>:<control number>:<index sequence>
+# <instrument>:<run number>:<flowcell ID>:<lane>:<tile>
+# :<x-pos>:<y-pos> <read>:<is filtered>:<control number>:<index sequence>
 # http://support.illumina.com/help/SequencingAnalysisWorkflow/Content/Vault/Informatics/Sequencing_Analysis/CASAVA/swSEQ_mCA_FASTQFiles.htm

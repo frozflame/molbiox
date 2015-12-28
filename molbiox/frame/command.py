@@ -60,12 +60,16 @@ class Command(object):
             help='overwriting existing files if needed')
 
         subparser.add_argument(
-            '-o', '--out', metavar='output-file',
-            help='output filenam')
+            '-o', '--out', metavar='filename',
+            help='output filename')
 
         subparser.add_argument(
-            'filenames', metavar='input-file', nargs='+',
-            help='input filenames')
+            '-v', '--verbose', action='store_true',
+            help='level up verbosity')
+
+        subparser.add_argument(
+            'filenames', metavar='filename', nargs='*',
+            help='input filenames; if empty, stdin is used')
         return subparser
 
     @classmethod
@@ -75,15 +79,23 @@ class Command(object):
         :param args: parser.parse_args()
         :return: None
         """
+        cls.check_existence(args)
+        if not args.filenames:
+            args.filenames = ['-']
         if args.out:
             cls.check_overwrite(args)
             with open(args.out, 'w') as outfile:
-                cls.render_output(args, outfile)
+                cls.render(args, outfile)
+                outfile.close()
         else:
-            cls.render_output(args, sys.stdout)
+            cls.render(args, sys.stdout)
 
-    @staticmethod
-    def check_overwrite(args, filename=None):
+    @classmethod
+    def render(cls, args, outfile):
+        pass
+
+    @classmethod
+    def check_overwrite(cls, args, filename=None):
         """
         Check if overwriting a file without `--rude`, print error and exit if so
         :param args: parser.parse_args()
@@ -92,7 +104,17 @@ class Command(object):
         """
         filename = filename or args.out
         if not args.rude and os.path.exists(filename):
-            message = 'error: "{}" exists already'.format(filename)
-            print(message, file=sys.stderr)
-            exit(1)
+            msg = 'error: "{}" exists already'.format(filename)
+            sys.exit(msg)
+
+    @classmethod
+    def check_existence(cls, args, filenames=None):
+        filenames = filenames or args.filenames
+        for fn in filenames:
+            if not os.path.exists(fn):
+                msg = 'error: "{}" does not exist'.format(fn)
+                sys.exit(msg)
+            if not os.path.isfile(fn):
+                msg = 'error: "{}" is not a file'.format(fn)
+                sys.exit(msg)
 

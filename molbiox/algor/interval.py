@@ -20,5 +20,3 @@ def overlap(a1, a2, b1, b2):
 
 def group_by_overlap(intervals):
     pass
-
-

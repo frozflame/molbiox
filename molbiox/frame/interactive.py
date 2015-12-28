@@ -2,9 +2,10 @@
 # coding: utf-8
 
 from __future__ import unicode_literals, print_function
+import sys
 import shelve
 from functools import wraps
-
+import six
 from molbiox import settings
 from molbiox.tolerant import pick_nth
 
@@ -70,3 +71,25 @@ def castable(func):
             result = castfunc(result)
         return result
     return _decorated_func
+
+
+class FileWrapper(object):
+    def __init__(self, file_, mode):
+        if isinstance(file_, six.string_types):
+            if file_ == '-' and 'r' in mode:
+                self.file = sys.stdin
+                self.path = ''
+            elif file_ == '-' and ('w' in mode) or ('a' in mode):
+                self.file = sys.stdout
+                self.path = ''
+            else:
+                self.file = open(file_, mode)
+                self.path = file_
+
+        else:
+            self.file = file_
+            self.path = ''
+
+    def close(self):
+        if self.path:
+            self.file.close()

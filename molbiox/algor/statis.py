@@ -7,15 +7,15 @@ import collections
 from molbiox.kb.transcode import ambig_nucl_gc_equiv
 
 
-def calc_gc_content(sequence, percent=False):
-    counter = collections.Counter(sequence.upper())
+def calc_gc_content(seq, percent=False):
+    counter = collections.Counter(seq.upper())
     count = counter['G'] + counter['C'] + 0.
 
     for x in counter:
         if x in ambig_nucl_gc_equiv:
             count += ambig_nucl_gc_equiv[x] * counter[x]
 
-    ratio = count / len(sequence)
+    ratio = count / len(seq)
 
     if percent:
         return int(ratio * 100)

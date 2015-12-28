@@ -4,18 +4,13 @@
 from __future__ import unicode_literals, print_function
 
 import argparse
-from molbiox.tolerant import safe_bracket
-from molbiox.kb.proteins import lps_gene_prot_map
 
+# from molbiox.tolerant import safe_bracket
 
-ext = '.protname'
+ext = '.mbx-script-output'
 
-
-def get_prot_name(line):
-    items = line.split(maxsplit=7)
-    gname = items[5]
-    pname = safe_bracket(items, 7) or lps_gene_prot_map.get(gname) or '-'
-    return pname
+def displ(line):
+    print(line)
 
 
 if __name__ == '__main__':
@@ -25,6 +20,21 @@ if __name__ == '__main__':
     parser.add_argument(
         '--rude', action='store_true',
         help='overwriting existing files if needed')
+
+    # example of an enumerative argument
+    parser.add_argument(
+        "-l", "--level", type=int, choices=[0, 1, 2],
+        help="change level")
+
+    # example of accumulative argument
+    parser.add_argument(
+        "-a", "--accelerate", action="count", default=0,
+        help="get faster")
+
+    # mutually exclusive
+    group = parser.add_mutually_exclusive_group()
+    group.add_argument("-v", "--verbose", action="store_true")
+    group.add_argument("-q", "--quiet", action="store_true")
 
     parser.add_argument(
         'filenames', metavar='DATA-file', nargs='+',
@@ -38,12 +48,7 @@ if __name__ == '__main__':
         infile = open(filename)
         outfile = open(filename_out, 'w')
 
-        title = infile.readline().strip()[1:]
-        for line in infile:
-            line = line.strip()
-            key = line.split()[0] + '.' + title
-            pname = get_prot_name(line)
-            print(key, pname, sep='\t', file=outfile)
+        # ~ code ~
 
         infile.close()
         outfile.close()

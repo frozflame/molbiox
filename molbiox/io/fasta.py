@@ -10,11 +10,12 @@ from molbiox.frame.compat import omni_writer
 
 
 @interactive.castable
-def read(handle):
+def read(infile, concise=True):
     """
     Reading a FASTA file should NOT be complicated!
 
-    :param handle: a file object or a string
+    :param infile: a file object or a string
+    :param concise: remove chars after first whitespace in cmt field
     :return: a generator of SRecord objects
 
     Say we have
@@ -50,68 +51,74 @@ def read(handle):
             print(seqrecord['cmt'], len(seqrecord['seq']))
     """
 
-    if hasattr(handle, 'read'):
-        infile = handle
-    else:
-        infile = open(handle)
+    # if hasattr(handle, 'read'):
+    #     infile = handle
+    # else:
+    #     infile = open(handle)
 
-    cmt = ''
+    fw = interactive.FileWrapper(infile, 'r')
+
+    cmt = 'anonym.0'
     beg = '>'
-    if 'b' in infile.mode:
+    if 'b' in fw.file.mode:
         cmt = cmt.encode('ascii')
         beg = beg.encode('ascii')
 
     # sequence lines not yielded
     seqlines = []
 
-    for line in infile:
+    # anonymous count
+    anonym = 0
+
+    for line in fw.file:
         line = line.strip()
 
         # a new sequence in a multi-seq fasta
         if line.startswith(beg):
-            if seqlines:
+            seq = ''.join(seqlines)
+            if seq:
                 # yield previous sequence
-                cmt = cmt or 'Anonymous.SEQ'
-                yield SRecord(cmt=cmt, seq=''.join(seqlines))
-            # begin a new sequence
-            cmt = line[1:]
-            seqlines = []
+                # a record with empty seq is discarded
+                yield SRecord(cmt=cmt, seq=seq)
 
+            # begin a new sequence
+            seqlines = []
+            cmt = line[1:]
+            if not cmt:
+                anonym += 1
+                cmt = 'anonym.{}'.format(anonym)
+            if concise:
+                cmt = cmt.split()[0]
         else:
             seqlines.append(line)
 
     # yield last sequence
     if seqlines:
         yield SRecord(cmt=cmt, seq=''.join(seqlines))
-
-    # close the file only if it is opened within this func
-    if infile is not handle:
-        infile.close()
+    fw.close()
 
 
-def read1(handle):
-    return read(handle, castfunc=0)
+def read1(infile, concise=True):
+    return read(infile, concise, castfunc=0)
 
 
-def readseq(handle):
-    return read(handle, castfunc=0)['seq']
+def readseq(infile):
+    return read(infile, castfunc=0)['seq']
 
 
-def write(handle, records, linesep=os.linesep, linewidth=60):
+def write(outfile, records, linesep=os.linesep, linewidth=60):
     """
     Reverse of `fasta.read`.
 
-    :param handle: a file-like object or path to the output FASTA file
-    :param records: an iterable like
-        [{'cmt': 'SEQ1', 'seq': 'ATCTC...T'}, ...]
-    :return: None
+    :param outfile: a file-like object or path to the output FASTA file
+    :param records: an iterable like [{'cmt': 'SEQ1', 'seq': 'ATCTC...T'}, ...]
+    :param linesep: newline symbol
+    :param linewidth: default 60
+    :return: a generator
     """
     # TODO: open mode `w` or `wb`?
-    # `handle` is either a file object or a string
-    if hasattr(handle, 'write'):
-        outfile = handle
-    else:
-        outfile = open(handle, 'w')
+    # TODO: use binary project wide
+    fw = interactive.FileWrapper(outfile, 'w')
 
     # accept a single record
     if isinstance(records, dict):
@@ -119,15 +126,12 @@ def write(handle, records, linesep=os.linesep, linewidth=60):
 
     for record in records:
         cmtline = '>{}{}'.format(record['cmt'], linesep)
-        omni_writer(outfile, cmtline)
+        omni_writer(fw.file, cmtline)
         seq = record['seq']
         for i in six.moves.range(0, len(seq), linewidth):
-            omni_writer(outfile, seq[i:i+linewidth])
-            omni_writer(outfile, linesep)
-
-    # close the file only if it is opened within this func
-    if outfile is not handle:
-        outfile.close()
+            omni_writer(fw.file, seq[i:i+linewidth])
+            omni_writer(fw.file, linesep)
+    fw.close()
 
 
 def fix_comment(cmt, prefix='', suffix=''):

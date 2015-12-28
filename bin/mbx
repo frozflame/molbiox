@@ -5,6 +5,7 @@ from __future__ import unicode_literals, print_function
 import os
 import re
 import sys
+import signal
 import argparse
 import importlib
 import molbiox.execute
@@ -21,6 +22,16 @@ def load_commands():
             importlib.import_module(modname)
 
 
+def sigpipe_handler(signum, frame):
+    sys.exit('@mbx: pipe broken ~')
+signal.signal(signal.SIGPIPE, sigpipe_handler)
+
+
+def sigint_handler(signum, frame):
+    sys.exit('@mbx: user terminated ~')
+signal.signal(signal.SIGINT, sigint_handler)
+
+
 desc = 'Molbiox Project'
 parser = argparse.ArgumentParser(description=desc)
 subparsers = parser.add_subparsers(dest='subcmd', help='mbx <subcommand>')
@@ -28,15 +39,20 @@ subparsers.add_parser('help')
 
 load_commands()
 
-
 for cls in Command.__trackdict__['abbr'].values():
     subparser = subparsers.add_parser(cls.name, aliases=[cls.abbr], help=cls.desc)
     cls.register(subparser)
 
 args = parser.parse_args()
-if args.subcmd in Command.__trackdict__['abbr']:
-    Command.__trackdict__['abbr'][args.subcmd].run(args)
-elif args.subcmd in Command.__trackdict__['name']:
-    Command.__trackdict__['name'][args.subcmd].run(args)
-else:
-    print('command not found', file=sys.stderr)
+
+try:
+    if args.subcmd in Command.__trackdict__['abbr']:
+        Command.__trackdict__['abbr'][args.subcmd].run(args)
+    elif args.subcmd in Command.__trackdict__['name']:
+        Command.__trackdict__['name'][args.subcmd].run(args)
+    else:
+        print('@mbx: command not found', file=sys.stderr)
+except KeyboardInterrupt:
+    print('@mbx: user terminated', file=sys.stderr)
+except BrokenPipeError:
+    print('@mbx: pipe broken', file=sys.stderr)

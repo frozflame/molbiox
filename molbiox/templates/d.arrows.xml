@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.0//EN" "http://www.w3.org/TR/2001/REC-SVG-20010904/DTD/svg10.dtd">
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:svg="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+height="100%" id="mbx-arrow-plot-svg" width="100%">
+{% for elem in elements %}
+<polygon points="{{ elem.polygon }}" style="{{ elem.style_polygon or style }}" />
+<text style="{{ elem.style_text }}" transform="{{ elem.transform_text }}" x="{{ elem.position_text[0] }}"
+      y="{{ elem.position_text[1] }}">{{ elem.text }}</text>
+{% endfor %}
+<!--
+Molbiox project by frozflame
+This template is imitating ClusterViz by Wenchao Lin:
+https://github.com/WenchaoLin/ClusterViz
+-->
+</svg>

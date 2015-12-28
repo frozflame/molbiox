@@ -2,7 +2,7 @@
 # encoding: utf-8
 
 from __future__ import unicode_literals
-
+import collections
 from molbiox.frame import interactive
 from molbiox.io import tabular
 
@@ -91,25 +91,43 @@ fieldlist_all = [
 
 
 @interactive.castable
-def read_fmt6m(handle):
-    return tabular.read(handle, fieldlist_mini)
+def read_fmt6m(infile):
+    return tabular.read(infile, fieldlist_mini)
 
 
 @interactive.castable
-def read_fmt6(handle):
-    return tabular.read(handle, fieldlist_default, sep='\t')
+def read_fmt6(infile):
+    return tabular.read(infile, fieldlist_default, sep='\t')
 
 
 @interactive.castable
-def read_fmt6a(handle):
-    return tabular.read(handle, fieldlist_all, sep='\t')
+def read_fmt6a(infile):
+    return tabular.read(infile, fieldlist_all, sep='\t')
 
 
 @interactive.castable
-def read_fmt7(handle):
-    return tabular.read(handle, fieldlist_default, sep='\t')
+def read_fmt7(infile):
+    return tabular.read(infile, fieldlist_default, sep='\t')
 
 
 @interactive.castable
-def read_fmt7a(handle):
-    return tabular.read(handle, fieldlist_all, sep='\t')
+def read_fmt7a(infile):
+    return tabular.read(infile, fieldlist_all, sep='\t')
+
+
+def aggregate(records, subsep=None):
+    """
+    :param records: an iterable of blast records
+    :param subsep: seperator use on subject name;
+                after splitting, the first part is used
+    :return: a defaultdict object, query_id's as keys
+    """
+    querydic = collections.defaultdict(set)
+    for rec in records:
+        key = rec.get('query.id')
+        if subsep:
+            val = rec.get('subject.id').split(subsep)[0]
+        else:
+            val = rec.get('subject.id')
+        querydic[key].add(val)
+    return querydic

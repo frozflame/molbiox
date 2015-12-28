@@ -82,9 +82,9 @@ alembic.ini
 
 
 # just as local reference
-old-code/*
-tmp/*
-tmp-scripts/*
-test/*
+temp/*
 
-molbox/zz.py
+# quick and dirty jobs
+run.sh
+
+

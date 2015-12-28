@@ -9,24 +9,21 @@ from molbiox.frame import interactive
 
 
 @interactive.castable
-def read(handle, fieldlist=None, sep=None):
+def read(infile, fieldlist=None, sep=None):
     """
     Read a tabular text file
-    :param handle: a file object or a file path
+    :param infile: a file object or a file path
     :param fieldlist: [(fieldname, fieldtype), ...] see `io/blast` for examples
     :param sep: separator use in `string.split(sep)`
     :return: a generator, yielding OrderedDict objects
     """
-    if hasattr(handle, 'read'):
-        infile = handle
-    else:
-        infile = open(handle)
+    fw = interactive.FileWrapper(infile, 'r')
 
     # if fieldlist is NOT given, generate list-like dicts
     if not fieldlist:
         fieldlist = ((i, None) for i in itertools.count())
 
-    for line in infile:
+    for line in fw.file:
         line = line.strip()
         if not line or line.startswith('#'):
             continue
@@ -43,13 +40,11 @@ def read(handle, fieldlist=None, sep=None):
             pairs.append((key, val))
 
         yield OrderedDict(pairs)
-
-    if infile is not handle:
-        infile.close()
+    fw.close()
 
 
 @interactive.castable
-def read_lenfile(handle, multi=False):
+def read_lenfile(infile, multi=False):
     """
     Parse file format like `wc` or `fastalength` output
 
@@ -77,13 +72,10 @@ def read_lenfile(handle, multi=False):
     :param multi: boolean
     :return: a generator, yielding OrderedDict objects
     """
-    if hasattr(handle, 'read'):
-        infile = handle
-    else:
-        infile = open(handle)
 
+    fw = interactive.FileWrapper(infile, 'r')
     resdict = dict()
-    for line in infile:
+    for line in fw.file:
         line = line.strip()
 
         # skip empty line or comment
@@ -98,9 +90,7 @@ def read_lenfile(handle, multi=False):
         else:
             val = int(itemlist[0])
         resdict[key] = val
-
-    if infile is not handle:
-        infile.close()
+    fw.close()
     return resdict
 
 
