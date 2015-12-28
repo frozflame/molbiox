@@ -12,9 +12,14 @@ def readfile(filename):
 setup(
     name="molbiox",
     version="0.0.2",
+    description="utilities for bioinformatics",
+    url="https://github.com/frozflame/molbiox",
+    author='frozflame',
+    author_email='lendoli@163.com',
+    license="GNU General Public License (GPL)",
     packages=find_packages(),
     zip_safe=False,
-    namespace_packages=["molbiox"],
+    # namespace_packages=["molbiox"],
     install_requires=readfile("requirements.txt"),
 
     # ensure copy static file to runtime directory
