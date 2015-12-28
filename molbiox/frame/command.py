@@ -102,25 +102,30 @@ class Command(object):
         pass
 
     @classmethod
-    def check_overwrite(cls, args, filename=None):
+    def check_overwrite(cls, args, filenames=None):
         """
         Check if overwriting a file without `--rude`, print error and exit if so
         :param args: parser.parse_args()
-        :param filename: if not None, check this file instead of `args.out`
+        :param filenames: if not None, check these files instead of `args.out`
         :return: None
         """
-        if not filename and not hasattr(args, 'out'):
-            return
-        filename = filename or args.out
-        if not args.rude and os.path.exists(filename):
-            msg = 'error: "{}" exists already'.format(filename)
-            sys.exit(msg)
+        if getattr(args, 'rude', False):
+            return None
+        if filenames is None and not hasattr(args, 'out'):
+            return None
+        if filenames is None:
+            filenames = [args.out]
+        for fn in filenames:
+            if os.path.exists(fn):
+                msg = 'error: "{}" exists already'.format(fn)
+                sys.exit(msg)
 
     @classmethod
     def check_existence(cls, args, filenames=None):
-        if not filenames and not hasattr(args, 'filenames'):
+        if filenames is None and not hasattr(args, 'filenames'):
             return
-        filenames = filenames or args.filenames
+        if filenames is None:
+            filenames = args.filenames
         for fn in filenames:
             if not os.path.exists(fn):
                 msg = 'error: "{}" does not exist'.format(fn)
