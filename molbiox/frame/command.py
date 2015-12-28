@@ -2,10 +2,16 @@
 # coding: utf-8
 
 from __future__ import unicode_literals, print_function
+
+import importlib
 import os
+import re
 import sys
 import six
 from collections import defaultdict
+import molbiox.execute
+import argparse
+import signal
 
 
 class Tracked(type):
@@ -80,7 +86,8 @@ class Command(object):
         :return: None
         """
         cls.check_existence(args)
-        if not args.filenames:
+        # if args has no attr filename, skip
+        if getattr(args, 'filenames', 1):
             args.filenames = ['-']
         if args.out:
             cls.check_overwrite(args)
@@ -102,6 +109,8 @@ class Command(object):
         :param filename: if not None, check this file instead of `args.out`
         :return: None
         """
+        if not filename and not hasattr(args, 'out'):
+            return
         filename = filename or args.out
         if not args.rude and os.path.exists(filename):
             msg = 'error: "{}" exists already'.format(filename)
@@ -109,6 +118,8 @@ class Command(object):
 
     @classmethod
     def check_existence(cls, args, filenames=None):
+        if not filenames and not hasattr(args, 'filenames'):
+            return
         filenames = filenames or args.filenames
         for fn in filenames:
             if not os.path.exists(fn):
@@ -118,3 +129,55 @@ class Command(object):
                 msg = 'error: "{}" is not a file'.format(fn)
                 sys.exit(msg)
 
+
+class Executor(object):
+    @staticmethod
+    def load_commands():
+        # subset of a valid module name
+        regex = re.compile(r'^([a-z][_a-z0-9]*)\.py$')
+        dirpath = os.path.dirname(molbiox.execute.__file__)
+        for filename in os.listdir(dirpath):
+            mat = regex.match(filename)
+            if mat:
+                modname = 'molbiox.execute.' + mat.groups()[0]
+                importlib.import_module(modname)
+
+    @staticmethod
+    def parse_arguments():
+        desc = 'Molbiox Project'
+        parser = argparse.ArgumentParser(description=desc)
+        subparsers = parser.add_subparsers(dest='subcmd', help='mbx <subcommand>')
+        subparsers.add_parser('help')
+
+        for cls in Command.__trackdict__['abbr'].values():
+            subparser = subparsers.add_parser(cls.name, aliases=[cls.abbr], help=cls.desc)
+            cls.register(subparser)
+        return parser.parse_args()
+
+    @staticmethod
+    def register_signal_handers():
+        def sigpipe_handler(signum, frame):
+            sys.exit('@mbx: pipe broken ~')
+        signal.signal(signal.SIGPIPE, sigpipe_handler)
+
+        def sigint_handler(signum, frame):
+            sys.exit('@mbx: user terminated ~')
+        signal.signal(signal.SIGINT, sigint_handler)
+
+    @classmethod
+    def run(cls):
+        cls.register_signal_handers()
+        cls.load_commands()
+        args = cls.parse_arguments()
+
+        try:
+            if args.subcmd in Command.__trackdict__['abbr']:
+                Command.__trackdict__['abbr'][args.subcmd].run(args)
+            elif args.subcmd in Command.__trackdict__['name']:
+                Command.__trackdict__['name'][args.subcmd].run(args)
+            else:
+                print('@mbx: command not found', file=sys.stderr)
+        except KeyboardInterrupt:
+            print('@mbx: user terminated', file=sys.stderr)
+        except BrokenPipeError:
+            print('@mbx: pipe broken', file=sys.stderr)
