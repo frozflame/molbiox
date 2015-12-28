@@ -11,8 +11,9 @@ def readfile(filename):
 
 setup(
     name="molbiox",
-    version="0.0.3",
+    version="0.0.4",
     description="utilities for bioinformatics",
+    keywords='bioinformatics',
     url="https://github.com/frozflame/molbiox",
     author='frozflame',
     author_email='lendoli@163.com',
@@ -21,6 +22,16 @@ setup(
     zip_safe=False,
     # namespace_packages=["molbiox"],
     install_requires=readfile("requirements.txt"),
+    # scripts=['bin/mbx'],
+    entry_points={
+        'console_scripts': ['mbx=molbiox.frame.command:Executor.run'],
+    },
+    classifiers=[
+        'Topic :: Scientific/Engineering',
+        'Topic :: Scientific/Engineering :: Bio-Informatics',
+        'Programming Language :: Python :: 2',
+        'Programming Language :: Python :: 3',
+    ],
 
     # ensure copy static file to runtime directory
     include_package_data=True,
