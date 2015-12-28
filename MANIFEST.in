@@ -1,1 +1,2 @@
-exclude testsuites/*
+exclude tests/*
+exclude temp/*
