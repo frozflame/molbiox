@@ -86,11 +86,11 @@ class Command(object):
         :return: None
         """
         cls.check_existence(args)
+        cls.check_overwrite(args)
         # if args has no attr filename, skip
-        if getattr(args, 'filenames', 1):
+        if hasattr(args, 'filenames') and not args.filenames:
             args.filenames = ['-']
         if args.out:
-            cls.check_overwrite(args)
             with open(args.out, 'w') as outfile:
                 cls.render(args, outfile)
                 outfile.close()
@@ -111,22 +111,24 @@ class Command(object):
         """
         if getattr(args, 'rude', False):
             return None
-        if filenames is None and not hasattr(args, 'out'):
+        if filenames is None and not getattr(args, 'out', None):
             return None
         if filenames is None:
             filenames = [args.out]
         for fn in filenames:
-            if os.path.exists(fn):
+            if fn != '-' and os.path.exists(fn):
                 msg = 'error: "{}" exists already'.format(fn)
                 sys.exit(msg)
 
     @classmethod
     def check_existence(cls, args, filenames=None):
-        if filenames is None and not hasattr(args, 'filenames'):
-            return
+        if filenames is None and not getattr(args, 'filenames', []):
+            return None
         if filenames is None:
             filenames = args.filenames
         for fn in filenames:
+            if fn == '-':
+                continue
             if not os.path.exists(fn):
                 msg = 'error: "{}" does not exist'.format(fn)
                 sys.exit(msg)
