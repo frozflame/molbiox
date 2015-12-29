@@ -1,22 +1,15 @@
 #!/usr/bin/env python3
 # coding: utf-8
 from __future__ import unicode_literals, print_function
+import itertools
 
 
-Dict = dict
+class IDict(dict):
 
-
-class SRecord(dict):
-    """
-    Friendly with interactive Python shell
-    better displayed if it contains long string
-
-    example:
-
-        {'cmt': 'randSEQ', 'seq': 'TGCTTGGGGAATGTCT'~1000}
-
-    """
-    __dot_accessible__ = {'cmt', 'seq'}
+    def __init__(self, *args, **kwargs):
+        super(IDict, self).__init__(*args, **kwargs)
+        self.__dict__['attributes'] = set()
+        self.__dict__['invisibles'] = set()
 
     def __repr__(self):
         def fmt(s, length=32):
@@ -25,19 +18,52 @@ class SRecord(dict):
                 return '{}'.format(repr(s))
             else:
                 return '{}~{}'.format(repr(s[:length]), len(s))
-        kvs = ('{}: {}'.format(repr(k), fmt(v)) for k, v in self.items())
-        return '{{{}}}'.format(', '.join(kvs))
+        pairs = ((k, self[k]) for k in sorted(self) if k not in self.invisibles)
+        parts = ('{}: {}'.format(fmt(k), fmt(v)) for k, v in pairs)
+        return '{{{}}}'.format(', '.join(parts))
 
     # TODO: provide a __str__ method
 
     def __getattr__(self, key):
-        if key in SRecord.__dot_accessible__:
-            return self.get(key, None)
-        else:
+        try:
             return self.__getattribute__(key)
+        except AttributeError:
+            if key in self.attributes:
+                return self.get(key, None)
+            else:
+                raise
 
     def __setattr__(self, key, value):
-        if key in SRecord.__dot_accessible__:
+        if key in self.attributes:
             self[key] = value
         else:
             self.__dict__[key] = value
+
+
+class SRecord(IDict):
+    """
+    Friendly with interactive Python shell
+    better displayed if it contains long string
+
+    example:
+
+        {'cmt': 'randSEQ', 'seq': 'TGCTTGGGGAATGTCT'~1000}:@5000
+
+    where 5000 is the offset value
+    """
+    def __init__(self, *args, **kwargs):
+        super(SRecord, self).__init__(*args, **kwargs)
+        self.attributes.update({'cmt', 'seq', 'offset'})
+        self.invisibles.add('offset')
+
+    def __repr__(self):
+        repr_ = super(SRecord, self).__repr__()
+        if self.offset:
+            repr_ += ':@{}'.format(self.offset)
+        return repr_
+
+    def divide(self, limit):
+        for offset in itertools.count(0, limit):
+            seq = self.seq[offset : offset+limit]
+            yield SRecord(cmt=self.cmt, seq=seq, offset=offset)
+
