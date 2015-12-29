@@ -3,7 +3,6 @@
 import re
 import string
 import six
-import random
 from molbiox.io import fasta
 from molbiox.frame.locate import locate_tests
 
@@ -34,22 +33,23 @@ def test_cmtstate():
 
 def _test_fasta_read(path):
     recs = fasta.read(path, limit=50, castfunc=list)
+    print(len(recs))
     assert len(recs) == 4 * 3
     for rec in recs:
-        assert re.match(r'^(anonym|randseq)\.\d$', rec.cmt)
+        assert re.match(r'^(anonym|randseq)\.\d$', six.u(rec.cmt))
         assert len(rec.seq) in (50, 20)
 
 
 def test_fasta_read():
     # anonym
-    path = locate_tests('data/test_fasta/test.anonym.fa')
+    path = locate_tests('data/test_fasta/test.anonym.fa_')
     assert path.startswith('/')
     _test_fasta_read(path)
 
     # empty lines
-    path = locate_tests('data/test_fasta/test.empty-lines.fa')
+    path = locate_tests('data/test_fasta/test.empty-lines.fa_')
     _test_fasta_read(path)
 
     # normal lines
-    path = locate_tests('data/test_fasta/test.normal.fa')
+    path = locate_tests('data/test_fasta/test.normal.fa_')
     _test_fasta_read(path)

@@ -72,7 +72,7 @@ alembic.ini
 
 *.swp
 
-# sample data files
+# sample data files: use .fa_ when needed
 *.fa
 *.fas
 *.fasta
