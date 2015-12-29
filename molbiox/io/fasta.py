@@ -13,6 +13,7 @@ from molbiox.frame.compat import omni_writer
 
 class Buffer(object):
     def __init__(self, size):
+        self._check(size)
         self.free = size
         self.size = size
         self.queue = deque()
@@ -33,6 +34,13 @@ class Buffer(object):
             self.queue.append(string)
             self.free -= len(string)
             return ''
+
+    @staticmethod
+    def _check(size):
+        if not isinstance(size, six.integer_types):
+            raise TypeError("size must be an integer")
+        if size < 0:
+            raise ValueError("size must be a non-negative integer")
 
 
 class CommentState(object):
@@ -174,25 +182,31 @@ def write(outfile, records, concise=False, linesep=os.linesep, linewidth=60):
     if isinstance(records, dict):
         records = [records]
 
-    offset = 0
     cstate = CommentState()
+    offset_expected = 0
 
-    # first rec: rec.cmt != cstate.get() always true
+    # first rec: cmt != cstate.get() always true even cmt == 'anonym.xx'
     cstate.cmt = 1
 
     for rec in records:
-        if rec.cmt != cstate.get():
-            offset = 0
-            cstate.update(rec.cmt, concise)
-        if rec.offset is not None and rec.offset != offset:
+        cmt = rec.get('cmt')  # if empty, cstate will provide one
+        seq = rec.get('seq')  # if empty, skip
+        offset = rec.get('offset')
+        if not seq:
+            continue
+        # after set offset to 0, always treat rec as offseted
+        if cmt != cstate.get():
+            offset_expected = 0
+            cstate.update(cmt, concise)
+        if offset is not None and offset != offset_expected:
             raise ValueError('bad offset, your data might be corrupted')
-        if offset == 0:
+        if offset_expected == 0:
             cmtline = '>{}{}'.format(cstate.get(), linesep)
             omni_writer(fw.file, cmtline)
 
-        offset += len(rec.seq)
-        for i in six.moves.range(0, len(rec.seq), linewidth):
-            omni_writer(fw.file, rec.seq[i:i+linewidth])
+        offset_expected += len(seq)
+        for i in six.moves.range(0, len(seq), linewidth):
+            omni_writer(fw.file, seq[i:i+linewidth])
             omni_writer(fw.file, linesep)
     fw.close()
 
