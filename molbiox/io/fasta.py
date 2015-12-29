@@ -34,7 +34,7 @@ class Buffer(object):
         else:
             self.queue.append(string)
             self.free -= len(string)
-            return b''
+            return ''
 
     @staticmethod
     def _check(size):
