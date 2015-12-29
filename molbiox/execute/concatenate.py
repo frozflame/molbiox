@@ -81,9 +81,8 @@ class CommandCat(Command):
             print(msg, file=sys.stderr)
             sys.exit('error: invalid regex')
 
-        # regex implies verbose
         for fn in args.filenames:
-            recs = fasta.read(fn, args.regex or not args.verbose)
+            recs = fasta.read(fn, args.concise)
             if args.velvet:
                 recs = cls.filter_velvet_concise(recs)
             if args.insert_filename:
@@ -98,3 +97,19 @@ class CommandCat(Command):
                 recs = cls.filter_regex(recs, regexon)
 
             fasta.write(outfile, recs, linewidth=args.width)
+
+
+class CommandNNJoin(Command):
+    abbr = 'nnj'
+    name = 'nn-join'
+    desc = 'join sequences with Ns'
+    __trackable__ = False
+
+
+class CommandNNSplit(Command):
+    abbr = 'nns'
+    name = 'nn-split'
+    desc = 'split sequences where N appears'
+    __trackable__ = False
+
+

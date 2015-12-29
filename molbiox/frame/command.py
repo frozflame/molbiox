@@ -70,8 +70,12 @@ class Command(object):
             help='output filename')
 
         subparser.add_argument(
-            '-v', '--verbose', action='store_true',
-            help='level up verbosity')
+            '-c', '--concise', action='store_true',
+            help='concise mode reading fasta data')
+
+        subparser.add_argument(
+            '-q', '--quiet', action='store_true',
+            help='suppress messages')
 
         subparser.add_argument(
             'filenames', metavar='filename', nargs='*',

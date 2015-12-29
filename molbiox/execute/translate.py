@@ -32,11 +32,12 @@ class CommandTranslate(Command):
         dic = translate.get_transl_table(args.table)
         tab = CodonTable(dic)
         for fn in args.filenames:
-            for rec in fasta.read(fn, not args.verbose):
+            for rec in fasta.read(fn, args.concise):
                 if len(rec.seq) % 3:
-                    msg = 'warning: lenth of seq not a multiple of 3\n'
-                    msg += '^debug:\t{}\t{}\t{}'.format(len(rec.seq), fn, rec.cmt)
-                    print(msg, file=sys.stderr)
+                    if not args.quiet:
+                        msg = 'warning: lenth of seq not a multiple of 3\n'
+                        msg += '^debug:\t{}\t{}\t{}'.format(len(rec.seq), fn, rec.cmt)
+                        print(msg, file=sys.stderr)
                     if args.skip:
                         continue
                     l = len(rec.seq)

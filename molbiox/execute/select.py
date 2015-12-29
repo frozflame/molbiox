@@ -48,7 +48,8 @@ class CommandSel(Command):
             for rec in records:
                 cmt = rec.cmt.split()[0]
                 if cmt in keys:
-                    outrec = rec if args.verbose else dict(cmt=cmt, seq=rec.seq)
+                    outrec = dict(cmt=cmt, seq=rec.seq) if args.concise else rec
+
                     fasta.write(outfile, outrec)
             return  # simple and fast
 
@@ -65,5 +66,5 @@ class CommandSel(Command):
                     selection[cmt] = rec
             for cmt in selection:
                 rec = selection[cmt]
-                outrec = rec if args.verbose else dict(cmt=cmt, seq=rec.seq)
+                outrec = dict(cmt=cmt, seq=rec.seq) if args.concise else rec
                 fasta.write(outfile, outrec)
