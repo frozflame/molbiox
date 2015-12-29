@@ -2,10 +2,9 @@
 # coding: utf-8
 
 from __future__ import unicode_literals, print_function
-import sys
 import re
-import operator
 import six
+from string import whitespace
 
 
 class Regexon(object):
@@ -138,3 +137,14 @@ class Regexon(object):
         """Replace all whitepaces with tab"""
         return cls.new(r'\s+', ' ')
 
+
+def remove_whitespaces(string):
+    """
+    Efficiently remove all whitespaces from string
+    :param string: bytes or unicode
+    :return:
+    """
+    if isinstance(string, six.text_type):
+        return six.text_type().join(string.split())
+    if isinstance(string, six.binary_type):
+        return string.translate(None, six.b(whitespace))

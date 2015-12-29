@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 # encoding: utf-8
 
+from __future__ import unicode_literals, print_function
 import os
 import re
 import six
@@ -8,7 +9,7 @@ import itertools
 from collections import deque
 from molbiox.frame import interactive
 from molbiox.frame.common import SRecord
-from molbiox.frame.compat import omni_writer
+from molbiox.frame.regexon import remove_whitespaces
 
 
 class Buffer(object):
@@ -33,7 +34,7 @@ class Buffer(object):
         else:
             self.queue.append(string)
             self.free -= len(string)
-            return ''
+            return b''
 
     @staticmethod
     def _check(size):
@@ -75,6 +76,23 @@ class CommentState(object):
         else:
             self.cmt = cmtline.lstrip()
         return retval
+
+
+def iterate_chunks(fw):
+    cmtreg = re.compile(r'>[^>]*?\n')
+    headpos = 0
+    while True:
+        chunk = fw.read(2**20)
+        if not chunk:
+            break
+        for mat in cmtreg.finditer(chunk):
+            if mat.start() != headpos:
+                seq = chunk[headpos:mat.start()]
+                yield remove_whitespaces(seq)
+            yield mat.group().strip()
+            headpos = mat.end()
+        seq = chunk[headpos:]
+        yield remove_whitespaces(seq)
 
 
 @interactive.castable
@@ -119,16 +137,16 @@ def read(infile, concise=True, limit=10**9):
         for rec in reciter1:
             print(rec.cmt, rec.seq)
     """
-    if limit < 1:
-        limit = 10**9
-
     fw = interactive.FileWrapper(infile, 'r')
-    fw_lines = (l.strip() for l in fw.file)
-    fw_lines = itertools.chain(fw_lines, ['>epilogue'])
 
     beg = '>'
-    if 'b' in fw.file.mode:
-        beg = beg.encode('ascii')
+
+    # fw_lines = (l.strip() for l in fw.file)  # the slow version
+    fw_lines = iterate_chunks(fw)
+    fw_lines = itertools.chain(fw_lines, ['>epilogue'])
+
+    if limit < 1:
+        limit = 10**9
 
     offset = 0
     buffer = Buffer(limit)
@@ -176,7 +194,7 @@ def write(outfile, records, concise=False, linesep=os.linesep, linewidth=60):
     """
     # TODO: open mode `w` or `wb`?
     # TODO: use binary project wide
-    fw = interactive.FileWrapper(outfile, 'w')
+    fw = interactive.FileWrapper(outfile, 'wb')
 
     # accept a single record
     if isinstance(records, dict):
@@ -202,12 +220,12 @@ def write(outfile, records, concise=False, linesep=os.linesep, linewidth=60):
             raise ValueError('bad offset, your data might be corrupted')
         if offset_expected == 0:
             cmtline = '>{}{}'.format(cstate.get(), linesep)
-            omni_writer(fw.file, cmtline)
+            fw.write(cmtline)
 
         offset_expected += len(seq)
         for i in six.moves.range(0, len(seq), linewidth):
-            omni_writer(fw.file, seq[i:i+linewidth])
-            omni_writer(fw.file, linesep)
+            fw.write(seq[i:i+linewidth])
+            fw.write(linesep)
     fw.close()
 
 

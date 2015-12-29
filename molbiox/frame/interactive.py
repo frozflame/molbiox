@@ -34,12 +34,12 @@ def connect(dbname='microbe'):
     return dataset.connect(url)
 
 
-def intersection(container1, container2):
-    return set.intersection(set(container1), set(container2))
+def intersect(container1, container2):
+    return set(container1) & set(container2)
 
 
 def union(container1, container2):
-    return set.union(set(container1), set(container2))
+    return set(container1) | set(container2)
 
 
 def castable(func):
@@ -93,3 +93,18 @@ class FileWrapper(object):
     def close(self):
         if self.path:
             self.file.close()
+
+    def write(self, string):
+        if 'b' not in self.file.mode and isinstance(string, six.binary_type):
+            return self.file.write(string.decode())
+        if 'b' in self.file.mode and isinstance(string, six.text_type):
+            return self.file.write(string.encode())
+        return self.file.write(string)
+
+    def read(self, size):
+        string = self.file.read(size)
+        if 'b' not in self.file.mode and isinstance(string, six.binary_type):
+            return string.decode()
+        if 'b' in self.file.mode and isinstance(string, six.text_type):
+            return string.encode()
+        return string
