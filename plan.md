@@ -1,3 +1,6 @@
++ translate --frame option -F
++ check_overwrite: ask os if the file can be created.
++ check_permmision
 + exit -> sys.exit
 + mbx gen me -k Dir
 + Command: avoid name collision!
