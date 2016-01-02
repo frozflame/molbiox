@@ -87,4 +87,6 @@ temp/*
 # quick and dirty jobs
 run.sh
 
+# remove old scripts
+molbiox/execute/mbx-*
 
