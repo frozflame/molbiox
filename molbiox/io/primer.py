@@ -9,12 +9,11 @@ from jinja2 import Template
 from molbiox.frame import interactive
 from molbiox.frame.locate import locate_template
 
-tpl_path = locate_template('d.primer3.txt')
-tpl = open(tpl_path).read()
-tpl = Template(tpl)
 
-
-def gen_primer3_input(**kwargs):
+def render_primer3_input(**kwargs):
+    tpl_path = locate_template('d.primer3.txt')
+    tpl = open(tpl_path).read()
+    tpl = Template(tpl)
     return tpl.render(**kwargs)
 
 

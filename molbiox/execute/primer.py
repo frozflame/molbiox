@@ -18,7 +18,7 @@ class CmdPrimer3Pre(Command):
         recgens = [fasta.read(fn) for fn in args.filenames]
         records = itertools.chain(*recgens)
         for r in records:
-            text = primer.gen_primer3_input(rec=r)
+            text = primer.render_primer3_input(rec=r)
             if not text.endswith('\n'):
                 text += '\n'
             outfile.write(text)
