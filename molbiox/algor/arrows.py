@@ -2,11 +2,12 @@
 # coding: utf-8
 from __future__ import unicode_literals, print_function
 import numpy as np
+from molbiox.frame import interactive
 
 
 class ArrowCalculator(object):
 
-    def __init__(self, alpha=.7, beta=1., height1=24, height2=32):
+    def __init__(self, alpha=.7, beta=1., height1=16, height2=32):
         cot = lambda x: 1./np.tan(x)
         self.alpha = alpha
         self.beta = beta
@@ -15,7 +16,10 @@ class ArrowCalculator(object):
         self.threshold1 = height2 * (cot(alpha) - cot(beta))
         self.threshold2 = self.threshold1 + height1 * cot(beta)
 
-    def calc(self, length):
+    def __call__(self, arr):
+        return self.calc(arr)
+
+    def prototype(self, length):
         """
         For understanding of the formula
         Not intended for actual use
@@ -27,27 +31,27 @@ class ArrowCalculator(object):
         cot = lambda x: 1./np.tan(x)
 
         if length > self.threshold2:
-            data[0] = 0, 0
-            data[1] = self.height2 * cot(self.alpha), self.height1
-            data[2] = 0, length - self.threshold2
+            data[1] = self.height2 * cot(self.alpha), self.height2
+            data[2] = self.threshold2, self.height1
             data[3] = length, self.height1
 
         elif self.threshold1 < length < self.threshold2:
-            data[0] = 0, 0
-            data[1] = self.height2 * cot(self.alpha), self.height1
+            data[1] = self.height2 * cot(self.alpha), self.height2
             data[2] = length, (length-self.threshold1) * tan(self.beta)
             data[3] = length, (length-self.threshold1) * tan(self.beta)
         else:
-            data[0] = 0, 0
-            data[1] = self.height2 * cot(self.alpha), self.height1
+            data[1] = self.height2 * cot(self.alpha), self.height2
             data[2] = length, 0
             data[3] = length, 0
 
-        data[5:8] = data[1:4][::-1] * np.array([1, -1])
+        data[4:7] = data[1:4][::-1] * np.array([1, -1])
+        data[0] = 0, 0
+        data[7] = 0, 0
         return data
 
     def calculate(self, lengths):
         """
+        Algorithm
         :param lengths: 1d array
         :return:
         """
@@ -56,32 +60,35 @@ class ArrowCalculator(object):
         cot = lambda x: 1./np.tan(x)
 
         # data[:, 0, :] = 0, 0
-        data[:, 1, :] = self.height2 * cot(self.alpha), self.height1
-
-        mask_th2a = lengths < self.threshold2
-        mask_th2b = lengths > self.threshold2
-        mask_th1b = lengths > self.threshold1
-
-        data[:, 2, 0][mask_th2a] = lengths[mask_th2a]
-
-        data[:, 2, 1][mask_th1b] = ((lengths-self.threshold1) * tan(self.beta))[mask_th1b]
-
-        data[:, 2, 1][mask_th2b] = (lengths - self.threshold2)[mask_th2b]
-
+        # position of point 1 is fixed
+        data[:, 1, 0] = self.height2 * cot(self.alpha)
+        data[:, 1, 1] = self.height2
+        data[:, 2, 0] = self.threshold2
         data[:, 3, 0] = lengths
-        data[:, 3, 1][mask_th1b] = ((lengths-self.threshold1) * tan(self.beta))[mask_th1b]
 
-        data[:, 3, 1][mask_th2b] = self.height1
+        # masks
+        mask0 = lengths <= self.threshold1
+        mask1 = (self.threshold1 < lengths) & (lengths < self.threshold2)
+        mask2 = lengths >= self.threshold2
 
-        data[:, 5:8, :] = data[:, 1:4, :][:, ::-1, :] * np.array([1, -1])
+        # y-coordinate for point 2 and 3 are always the same
+        # dt[:, 2, 1][mask0] = 0
+        # dt[:, 3, 1][mask0] = 0
+        data[:, 2, 1][mask1] = ((lengths-self.threshold1) * tan(self.beta))[mask1]
+        data[:, 3, 1][mask1] = ((lengths-self.threshold1) * tan(self.beta))[mask1]
+        data[:, 2, 1][mask2] = self.height1
+        data[:, 3, 1][mask2] = self.height1
+
+        data[:, 4:7, :] = data[:, 1:4, :][:, ::-1, :] * np.array([1, -1])
         return data
 
-    def make(self, arr):
+    def calc(self, arr):
         """
+        You should use this instead of 'calculate'
         :param arr: 1d or 2d array
         """
-        if not isinstance(arr, np.ndarray):
-            arr = np.array(arr)
+        arr = interactive.array(arr)
+
         if arr.ndim > 2:
             raise ValueError("number of dimensions of 'arr' should be 1 or 2")
 
@@ -98,7 +105,7 @@ class ArrowCalculator(object):
 
         # treat last dim as (x_start, x_end, y)
         if arr.shape[-1] == 3:
-            data = self.make(arr[:, :2])
+            data = self.calc(arr[:, :2])
             data[:, :, 1] += arr[:, 2].reshape([-1, 1, 1])
             return data
 
