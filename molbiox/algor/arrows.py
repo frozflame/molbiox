@@ -5,7 +5,7 @@ import numpy as np
 from molbiox.frame import interactive
 
 
-class ArrowCalculator(object):
+class ArrowCalc(object):
 
     def __init__(self, alpha=.7, beta=1., height1=16, height2=32):
         cot = lambda x: 1./np.tan(x)
@@ -15,9 +15,6 @@ class ArrowCalculator(object):
         self.height2 = height2
         self.threshold1 = height2 * (cot(alpha) - cot(beta))
         self.threshold2 = self.threshold1 + height1 * cot(beta)
-
-    def __call__(self, arr):
-        return self.calc(arr)
 
     def prototype(self, length):
         """
@@ -52,26 +49,33 @@ class ArrowCalculator(object):
     def calculate(self, lengths):
         """
         Algorithm
-        :param lengths: 1d array
+        :param lengths: 1d array, all values should be positive
         :return:
         """
         data = np.zeros([len(lengths), 8, 2])
         tan = np.tan
         cot = lambda x: 1./np.tan(x)
 
-        # data[:, 0, :] = 0, 0
-        # position of point 1 is fixed
+        # point 0 is (0, 0)
+        # dt[:, 0, 0] = 0
+        # dt[:, 0, 1] = 0
+
+        # point 1 is fixed
         data[:, 1, 0] = self.height2 * cot(self.alpha)
         data[:, 1, 1] = self.height2
-        data[:, 2, 0] = self.threshold2
-        data[:, 3, 0] = lengths
 
         # masks
         mask0 = lengths <= self.threshold1
         mask1 = (self.threshold1 < lengths) & (lengths < self.threshold2)
         mask2 = lengths >= self.threshold2
 
-        # y-coordinate for point 2 and 3 are always the same
+        data[:, 2, 0][mask0] = lengths[mask0]
+        data[:, 2, 0][mask1] = lengths[mask1]
+        data[:, 2, 0][mask2] = self.threshold2
+
+        data[:, 3, 0] = lengths
+
+        # point 2 and point 3 are of same height
         # dt[:, 2, 1][mask0] = 0
         # dt[:, 3, 1][mask0] = 0
         data[:, 2, 1][mask1] = ((lengths-self.threshold1) * tan(self.beta))[mask1]
@@ -94,20 +98,26 @@ class ArrowCalculator(object):
 
         # simply an array of lengths
         if arr.ndim == 1 or arr.shape[-1] == 1:
-            return self.calculate(arr.reshape([-1]))
+            lengths = arr.reshape([-1])
+            orients = np.sign(lengths)
+            results = self.calculate(np.abs(lengths))
+            results[:, :, 0] *= orients.reshape([-1, 1])
+            return results
 
         # treat last dim as (start, end)
         if arr.shape[-1] == 2:
-            lengths = arr[:, 1] - arr[:, 0]
-            data = self.calculate(lengths)
-            data[:, :, 0:1] += arr[:, 0].reshape([-1, 1, 1])
-            return data
+            lengths = arr[:, 0] - arr[:, 1]
+            orients = np.sign(lengths)
+            results = self.calculate(abs(lengths))
+            results[:, :, 0] *= orients.reshape([-1, 1])
+            results[:, :, 0] += arr[:, 1].reshape([-1, 1])
+            return results
 
         # treat last dim as (x_start, x_end, y)
         if arr.shape[-1] == 3:
-            data = self.calc(arr[:, :2])
-            data[:, :, 1] += arr[:, 2].reshape([-1, 1, 1])
-            return data
+            results = self.calc(arr[:, :2])
+            results[:, :, 1] += arr[:, 2].reshape([-1, 1])
+            return results
 
 
 arrow_anatomy = """

@@ -3,13 +3,22 @@
 <svg xmlns="http://www.w3.org/2000/svg" xmlns:svg="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
 height="100%" id="mbx-arrow-plot-svg" width="100%">
 {% for elem in elements %}
-<polygon points="{{ elem.polygon }}" style="{{ elem.style_polygon or style }}" />
-<text style="{{ elem.style_text }}" transform="{{ elem.transform_text }}" x="{{ elem.position_text[0] }}"
-      y="{{ elem.position_text[1] }}">{{ elem.text }}</text>
+<polygon points="{{ elem.polygon }}" style="{{ elem.polygon_style or polygon_style }}" />
+<text style="{{ elem.text_style or text_style }}"
+      transform="{{ elem.text_transform or text_transform }}"
+      x="{{ elem.text_x }}"
+      y="{{ elem.text_y }}">{{ elem.text }}</text>
 {% endfor %}
 <!--
 Molbiox project by frozflame
 This template is imitating ClusterViz by Wenchao Lin:
 https://github.com/WenchaoLin/ClusterViz
+
+elem.polygon
+elem.style_polygon
+elem.style_text
+elem.transform_text
+elem.position_text
+
 -->
 </svg>
