@@ -108,3 +108,19 @@ class FileWrapper(object):
         if 'b' in self.file.mode and isinstance(string, six.text_type):
             return string.encode()
         return string
+
+
+def array(data):
+    import numpy as np
+    if isinstance(data, np.ndarray):
+        arr = data
+    elif isinstance(data, (list, int, float)):
+        arr = np.array(data)
+    else:
+        arr = np.array(list(data))
+    if arr.ndim == 0:
+        arr.shape = -1
+    return arr
+
+
+
