@@ -1,7 +1,12 @@
 #!/usr/bin/env python3
 # coding: utf-8
 
+import os
+import re
 from setuptools import setup, find_packages
+
+# import molbiox; exit(1)
+# DO NOT import your package from your setup.py
 
 
 def readfile(filename):
@@ -9,9 +14,19 @@ def readfile(filename):
         return f.read()
 
 
+def getversion():
+    root = os.path.dirname(__file__)
+    with open(os.path.join(root, 'molbiox/VERSION')) as version_file:
+        version = version_file.read().strip()
+        regex = re.compile(r'^\d+\.\d+\.\d+$')
+        if not regex.match(version):
+            raise ValueError('VERSION file is corrupted')
+        return version
+
+
 setup(
     name="molbiox",
-    version="0.0.6",
+    version=getversion(),
     description="utilities for bioinformatics",
     keywords='bioinformatics',
     url="https://github.com/frozflame/molbiox",

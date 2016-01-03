@@ -1,3 +1,4 @@
+include molbiox/VERSION
 include molbiox/templates/*
 include requirements.txt
 exclude tests/*
