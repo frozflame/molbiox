@@ -11,7 +11,7 @@ def readfile(filename):
 
 setup(
     name="molbiox",
-    version="0.0.4",
+    version="0.0.6",
     description="utilities for bioinformatics",
     keywords='bioinformatics',
     url="https://github.com/frozflame/molbiox",
