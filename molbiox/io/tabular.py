@@ -68,7 +68,7 @@ def read_lenfile(infile, multi=False):
             'picasa.mac.39.dmg': (181167, 1408149, 48452451),
         }
 
-    :param handle: a file object or a file path
+    :param infile: a file object or a file path
     :param multi: boolean
     :return: a generator, yielding OrderedDict objects
     """
