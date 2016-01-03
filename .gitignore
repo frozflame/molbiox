@@ -80,6 +80,8 @@ alembic.ini
 *.fna
 *.faa
 
+# temp results
+a.*
 
 # just as local reference
 temp/*
