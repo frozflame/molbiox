@@ -2,13 +2,16 @@
 Molbiox Changelog
 =================
 
+
+
+#### Jan 3, 2016
+
++   arrows: usable!
+
+
 #### December 28, 2015
 
 +   command: mbx mkdir 
-
-
-
-
 
 #### December 27, 2015
 
