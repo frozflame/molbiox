@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.0//EN" "http://www.w3.org/TR/2001/REC-SVG-20010904/DTD/svg10.dtd">
 <svg xmlns="http://www.w3.org/2000/svg" xmlns:svg="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
-height="100%" id="mbx-arrow-plot-svg" width="100%">
+height="{{ height or 100 }}" id="mbx-arrow-plot-svg" width="{{ width or 1000 }}">
 {% for elem in elements %}
 <polygon points="{{ elem.polygon }}" style="{{ elem.polygon_style or polygon_style }}" />
 <text style="{{ elem.text_style or text_style }}"
-      transform="{{ elem.text_transform or text_transform }}"
+      transform="rotate({{ elem.text_angle or text_angle or -60 }} {{ elem.text_x }},{{ elem.text_y }} )"
       x="{{ elem.text_x }}"
       y="{{ elem.text_y }}">{{ elem.text }}</text>
 {% endfor %}

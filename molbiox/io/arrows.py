@@ -40,7 +40,7 @@ def get_defaults(**kwargs):
         'fill': 'red',
     }
     text_style = {
-        'font-size': 12,
+        'font-size': 9,
         'font-family': 'Times New Roman',
     }
 
@@ -52,7 +52,7 @@ def get_defaults(**kwargs):
     return {
         'polygon_style': format_style(polygon_style),
         'text_style': format_style(text_style),
-        'text_transform': 'rotate(30 20,40)',
+        # 'text_angle': -60,
     }
 
 
@@ -69,18 +69,32 @@ LWC_TABLE = [
 
 
 @interactive.castable
-def read_lwcfile(infile):
-    for item in tabular.read(infile, LWC_TABLE):
+def read_lwcfile(infile, scale, normalize=True):
+    """
+    Cannot handle very large file
+    :param infile: a string for path, or file object
+    :param normalize: boolean. If true, shift to make leftmost point 0
+    :param scale: a number. All head and tail values will be divided by this num
+    :return:
+    """
+    items = tabular.read(infile, LWC_TABLE, castfunc=list)
+
+    if normalize:
+        minpos = min(min(item['head'], item['tail']) for item in items)
+    else:
+        minpos = 0.
+
+    for item in items:
         element = get_defaults(polygon_style=dict(fill=item['color']))
         # print(element, file=sys.stderr)
         head = min(item['head'], item['tail'])
         tail = max(item['head'], item['tail'])
         if item['strand'] == '-':
-            element['head'] = tail
-            element['tail'] = head
+            element['head'] = (tail - minpos) * 1. / scale
+            element['tail'] = (head - minpos) * 1. / scale
         else:
-            element['head'] = head
-            element['tail'] = tail
+            element['head'] = (head - minpos) * 1. / scale
+            element['tail'] = (tail - minpos) * 1. / scale
         # element['']
         element['text'] = item['name']
         yield element

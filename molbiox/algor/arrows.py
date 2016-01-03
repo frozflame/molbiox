@@ -16,6 +16,9 @@ class ArrowCalc(object):
         self.threshold1 = height2 * (cot(alpha) - cot(beta))
         self.threshold2 = self.threshold1 + height1 * cot(beta)
 
+    def __call__(self, arr):
+        return self.calc(arr)
+
     def prototype(self, length):
         """
         For understanding of the formula
