@@ -5,6 +5,7 @@ from __future__ import unicode_literals, print_function
 
 import importlib
 import os
+from os.path import dirname, abspath
 import re
 import sys
 import six
@@ -109,9 +110,10 @@ class Command(object):
     def check_overwrite(cls, args, filenames=None):
         """
         Check if overwriting a file without `--rude`, print error and exit if so
+        Make sure not overwriting file without `--rude` option on; otherwise exit.
+        Make sure user has the privilege to write to particular paths; otherwise exit.
         :param args: parser.parse_args()
         :param filenames: if not None, check these files instead of `args.out`
-        :return: None
         """
         if getattr(args, 'rude', False):
             return None
@@ -120,12 +122,23 @@ class Command(object):
         if filenames is None:
             filenames = [args.out]
         for fn in filenames:
-            if fn != '-' and os.path.exists(fn):
+            if fn == '-':
+                continue
+            if os.path.exists(fn):
                 msg = 'error: "{}" exists already'.format(fn)
+                sys.exit(msg)
+            if not os.access(dirname(abspath(fn)), os.W_OK):
+                msg = 'error: "{}" cannot be created'.format(fn)
                 sys.exit(msg)
 
     @classmethod
     def check_existence(cls, args, filenames=None):
+        """
+        Make sure files in `args.filenames` or `filenames` exist;
+        otherwise exit with a message.
+        :param args: parser.parse_args()
+        :param filenames: if not None, check these files instead of `args.filenames`
+        """
         if filenames is None and not getattr(args, 'filenames', []):
             return None
         if filenames is None:

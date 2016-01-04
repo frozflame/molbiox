@@ -1,6 +1,4 @@
 + translate --frame option -F
-+ check_overwrite: ask os if the file can be created.
-+ check_permmision
 + exit -> sys.exit
 + mbx gen me -k Dir
 + Command: avoid name collision!
@@ -10,10 +8,7 @@
 + template for commandline tests
 + database file converters (uniprot, NR)
 + etc/info command, guess type
-
 + what if abbr == name? in help text
-
-+ timer!? for test/ tune preformance
 
 ------------
 
