@@ -77,7 +77,7 @@ def test_arrow_calc():
             assert arr_eq(results[:, 6, 1], -ds['config']['height2'])
 
 
-def test_arrow_calc():
+def test_arrow_calc_1():
     path = 'data/lwcsample.tsv'
     elements = arrows.read_lwcfile(path, 16, castfunc=list)
     arrpos = ([elem['head'], elem['tail']] for elem in elements)
