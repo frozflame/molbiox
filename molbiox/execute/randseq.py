@@ -49,8 +49,8 @@ class CommandRandseq(Command):
         if args.sigma:
             p = 1 - args.sigma ** 2. / args.len
             if p < 0:
-                print('sigma should be smaller then sqrt(len)', file=sys.stderr)
-                exit(1)
+                errmsg = 'sigma should be smaller then sqrt(len)'
+                sys.exit(errmsg)
             lengths = (binomial(args.len, p) for _ in six.moves.range(args.num))
         else:
             lengths = (args.len for _ in six.moves.range(args.num))
