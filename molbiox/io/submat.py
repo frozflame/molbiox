@@ -3,13 +3,16 @@
 
 from __future__ import unicode_literals, print_function
 from molbiox.frame import interactive
-from molbiox.frame.regexon import Regexon
+from molbiox.frame.regexon import remove_whitespaces
+from molbiox.frame.locate import locate_submatrix
 
 
 def read(infile):
-
-    fw = interactive.FileWrapper(infile, 'r')
-    regexon = Regexon.alpha()
+    try:
+        fw = interactive.FileWrapper(infile, 'r')
+    except IOError:
+        respath = locate_submatrix(infile.lower())
+        fw = interactive.FileWrapper(respath, 'r')
 
     istring_ = []
     jstring = None
@@ -18,7 +21,7 @@ def read(infile):
     for line in fw.file:
         line = line.strip()
         if line and not line.startswith('#'):
-            jstring = regexon.sub(line)
+            jstring = remove_whitespaces(line)
             jsize = len(jstring) + 1
             break
 
@@ -29,6 +32,12 @@ def read(infile):
         items = line.split()
         if not items:
             continue
+        # print('debug: jstring', jstring)
+        # print('debug: jstring', len(jstring))
+        # print('debug: items', items)
+        # print('debug: items', len(items))
+        # print('debug: jsize', jsize)
+
         if len(items) != jsize:
             raise ValueError('this sub matrix file is broken')
         istring_.append(items[0])
