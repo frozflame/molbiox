@@ -7,7 +7,7 @@ import sys
 import ctypes
 import numpy as np
 from numpy.ctypeslib import ndpointer
-import molbiox.lib
+from molbiox.frame.locate import locate_lib
 
 
 class Aligner(object):
@@ -32,7 +32,7 @@ class Aligner(object):
 
         arrflages = str('C')
 
-        self.lib = ctypes.cdll.LoadLibrary(self.findlib())
+        self.lib = ctypes.cdll.LoadLibrary(locate_lib('align.so'))
         self.build = self.lib.build
         self.build.argtypes = [
             ndpointer(self.score_type, flags=arrflages),
@@ -55,12 +55,6 @@ class Aligner(object):
             ndpointer(self.index_type, flags=arrflages),    # jarr index
             self.short_type,  # global_
         ]
-
-    @staticmethod
-    def findlib():
-        p = os.path
-        dirpath = p.dirname(p.abspath(molbiox.lib.__file__))
-        return p.join(dirpath, 'align.so')
 
     def calculate(self, istring, jstring, scheme=1, backtrack=False):
         """
@@ -142,12 +136,12 @@ class Aligner(object):
         return iarr | jarr
 
     @classmethod
-    def from_submatrix(cls, istring, jstring, submatrix, rho=12, sigma=1):
-        scorebook = np.zeros(2 ** 16, dtype=submatrix.dtype)
+    def from_submatrix(cls, istring, jstring, submatr, rho=12, sigma=1):
+        scorebook = np.zeros(2 ** 16, dtype=submatr.dtype)
         iarr = np.fromstring(istring, 'uint8')
         jarr = np.fromstring(jstring, 'uint8')
         ixarr = cls.build_ixarr(iarr, jarr)
-        scorebook[ixarr] = submatrix
+        scorebook[ixarr] = submatr
         return cls(rho, sigma, scorebook)
 
     def align(self, istring, jstring, scheme=1, backtrack=False):

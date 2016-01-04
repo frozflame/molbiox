@@ -6,6 +6,8 @@ import os
 import re
 
 import molbiox
+import molbiox.kb
+import molbiox.lib
 from molbiox.settings import all_templates
 
 mbx_root = os.path.dirname(molbiox.__file__)
@@ -38,4 +40,25 @@ def locate_tests(relpath=''):
         else:
             break
     raise IOError('cannot locate tests dir')
+
+
+def locate_lib(name):
+    p = os.path
+    dirpath = p.dirname(p.abspath(molbiox.lib.__file__))
+    respath = p.join(dirpath, name)
+    if not p.isfile(respath):
+        errmsg = 'cannot find lib named {}'.format(name)
+        raise IOError(errmsg)
+    return respath
+
+
+def locate_submat(name):
+    # ftp://ftp.ncbi.nih.gov/blast/matrices/
+    p = os.path
+    dirpath = p.dirname(p.abspath(molbiox.kb.__file__))
+    respath = p.join(dirpath, 'matrices', name)
+    if not p.isfile(respath):
+        errmsg = 'cannot find substitution matrix named {}'.format(name)
+        raise IOError(errmsg)
+    return respath
 

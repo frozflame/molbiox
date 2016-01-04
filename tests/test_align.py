@@ -2,26 +2,21 @@
 # coding: utf-8
 from __future__ import unicode_literals, print_function
 
-import time
 import sys
-import numpy as np
 import six
 from molbiox.algor import aligner
 from molbiox.frame import iteration
 from molbiox.frame.locate import locate_tests
 from molbiox.frame.testing import Timer
-from molbiox.io import submatrix, fasta
+from molbiox.io import submat, fasta
 
 score_type = 'int64'
 repeat = 1000
 
 
 def test_align():
-    path_submatrix = locate_tests('data/pam250.txt')
-    istring, jstring, scores = submatrix.read(path_submatrix)
-
-    submarix = np.array(scores).astype(score_type)
-    ali = aligner.Aligner.from_submatrix(istring, jstring, submarix)
+    istring, jstring, submatr = submat.read('pam200')
+    ali = aligner.Aligner.from_submatrix(istring, jstring, submatr)
 
     path = locate_tests('data/rmlA.2x.fa')
     iseq, jseq = fasta.read(path, castfunc=lambda x: [s.seq for s in x])

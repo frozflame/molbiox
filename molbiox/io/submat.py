@@ -2,16 +2,17 @@
 # coding: utf-8
 
 from __future__ import unicode_literals, print_function
+import numpy as np
 from molbiox.frame import interactive
 from molbiox.frame.regexon import remove_whitespaces
-from molbiox.frame.locate import locate_submatrix
+from molbiox.frame.locate import locate_submat
 
 
 def read(infile):
     try:
         fw = interactive.FileWrapper(infile, 'r')
     except IOError:
-        respath = locate_submatrix(infile.lower())
+        respath = locate_submat(infile.lower())
         fw = interactive.FileWrapper(respath, 'r')
 
     istring_ = []
@@ -46,6 +47,7 @@ def read(infile):
     fw.close()
 
     istring = ''.join(istring_)
-    return istring, jstring, scores
+    submatr = np.array(scores, dtype=int)
+    return istring, jstring, submatr
 
 
