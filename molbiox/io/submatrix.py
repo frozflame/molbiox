@@ -9,7 +9,7 @@ from molbiox.frame.regexon import Regexon
 def read(infile):
 
     fw = interactive.FileWrapper(infile, 'r')
-    sub = Regexon.alpha()
+    regexon = Regexon.alpha()
 
     istring_ = []
     jstring = None
@@ -18,7 +18,7 @@ def read(infile):
     for line in fw.file:
         line = line.strip()
         if line and not line.startswith('#'):
-            jstring = sub(line)
+            jstring = regexon.sub(line)
             jsize = len(jstring) + 1
             break
 

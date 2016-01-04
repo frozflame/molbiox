@@ -185,4 +185,4 @@ def gen_match_string(istring, jstring, indelchar='-'):
     # if indel, use indel char
     marr[iarr == ord(indelchar)] = ord(indelchar)
     marr[jarr == ord(indelchar)] = ord(indelchar)
-    return marr.tostring().decode('ascii')
+    return marr.tostring()
