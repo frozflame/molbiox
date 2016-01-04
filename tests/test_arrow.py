@@ -49,7 +49,7 @@ def arr_eq(arr1, arr2, precision=.001):
 
 def test_read_lwcfile():
     path = 'data/lwcsample.tsv'
-    table = arrows.read_lwcfile(path, castfunc=list)
+    table = arrows.read_lwcfile(path, 16, castfunc=list)
     for x in table:
         print(x)
 
@@ -77,19 +77,21 @@ def test_arrow_calc():
             assert arr_eq(results[:, 6, 1], -ds['config']['height2'])
 
 
-def _test_arrow_factory():
+def test_arrow_calc():
     path = 'data/lwcsample.tsv'
-    tab = arrows.read_lwcfile(path, castfunc=list)
-    arrfactory = ArrowCalc()
-    data = arrfactory.calc(arr)
+    elements = arrows.read_lwcfile(path, 16, castfunc=list)
+    arrpos = ([elem['head'], elem['tail']] for elem in elements)
+    calc = ArrowCalc()
+    data = calc(arrpos)
+    return data
 
 
 def test_plot():
     ac = ArrowCalc(**dataset1['config'])
     data = ac.calc([[6, 9, 0], [9, 6, 9]]) * 20
     elements = [dict(polygon=pts) for pts in arrows.format_points(data)]
-    print(data, file=sys.stderr)
-    print(elements, file=sys.stderr)
+    # print(data, file=sys.stderr)
+    # print(elements, file=sys.stderr)
 
     kwargs = arrows.get_defaults()
     kwargs['elements'] = elements
@@ -99,7 +101,7 @@ def test_plot():
 
 def test():
     path = locate_tests('data/lwcsample.tsv')
-    elements = molbiox.io.arrows.read_lwcfile(path, castfunc=list)
+    elements = molbiox.io.arrows.read_lwcfile(path, 16, castfunc=list)
 
     arr = ([elem['head'], elem['tail'], 1000] for elem in elements)
     results = ArrowCalc().calc(arr) / 20
@@ -110,7 +112,7 @@ def test():
         elem['polygon'] = pg
         elem['text_x'] = (elem['head'] + elem['tail']) / 2. / 20
         elem['text_y'] = 920 / 20
-        print(elem, file=sys.stderr)
+        # print(elem, file=sys.stderr)
 
     res = arrows.render_svg(elements=elements)
     print(res)
