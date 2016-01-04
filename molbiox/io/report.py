@@ -3,6 +3,7 @@
 
 from __future__ import unicode_literals, print_function
 import sys
+import math
 
 
 def file_size(number, sep=" "):
@@ -13,4 +14,24 @@ def file_size(number, sep=" "):
         else:
             number /= 1024.
 
+
+def prefix(num):
+    if num >= 1000:
+        for v, p in enumerate('kMGTPEZY'):
+            num /= 1000.
+            if num <= 1000:
+                return num, p, v
+        return num, p, v
+    if num <= .001:
+        for v, p in enumerate('munp'):
+            num *= 1000.
+            if num >= 1:
+                return num, p, v
+        return num, p, v
+    return num, '', 0
+
+
+if __name__ == '__main__':
+    res = prefix(float(sys.argv[1]))
+    print(res)
 
