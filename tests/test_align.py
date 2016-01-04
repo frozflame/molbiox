@@ -16,7 +16,7 @@ repeat = 1000
 
 def test_align():
     istring, jstring, submatr = submat.read('pam200')
-    ali = aligner.Aligner.from_submatrix(istring, jstring, submatr)
+    ali = aligner.Aligner.from_submatr(istring, jstring, submatr)
 
     path = locate_tests('data/rmlA.2x.fa')
     iseq, jseq = fasta.read(path, castfunc=lambda x: [s.seq for s in x])

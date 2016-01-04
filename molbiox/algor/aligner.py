@@ -24,7 +24,7 @@ class Aligner(object):
         """
         :param rho: gap opening penalty
         :param sigma: gap extension penalty
-        :param scorebook: see `from_submatrix` method
+        :param scorebook: see `from_submatr` method
         """
         self.rho = rho
         self.sigma = sigma
@@ -136,7 +136,7 @@ class Aligner(object):
         return iarr | jarr
 
     @classmethod
-    def from_submatrix(cls, istring, jstring, submatr, rho=12, sigma=1):
+    def from_submatr(cls, istring, jstring, submatr, rho=12, sigma=1):
         scorebook = np.zeros(2 ** 16, dtype=submatr.dtype)
         iarr = np.fromstring(istring, 'uint8')
         jarr = np.fromstring(jstring, 'uint8')
