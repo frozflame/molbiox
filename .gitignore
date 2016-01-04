@@ -14,7 +14,6 @@ __pycache__/
 venv/
 env/
 build/
-node_modules/
 develop-eggs/
 node_modules/
 dist/
@@ -84,11 +83,7 @@ alembic.ini
 a.*
 
 # just as local reference
-temp/*
+zombies/*
 
 # quick and dirty jobs
 run.sh
-
-# remove old scripts
-molbiox/execute/mbx-*
-

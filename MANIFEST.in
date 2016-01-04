@@ -1,4 +1,5 @@
 include molbiox/VERSION
+include molbiox/lib/*.c
 include molbiox/templates/*
 include requirements.txt
 exclude tests/*

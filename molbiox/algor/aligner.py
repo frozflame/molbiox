@@ -2,12 +2,12 @@
 # coding: utf-8
 
 from __future__ import unicode_literals, print_function
+import os
 import sys
 import ctypes
 import numpy as np
 from numpy.ctypeslib import ndpointer
-
-libpath = '/Users/Hailong/Cloud/Nutstore/devel/molbiox/molbiox/algor/align/alignlib.so'
+import molbiox.lib
 
 
 class Aligner(object):
@@ -32,7 +32,7 @@ class Aligner(object):
 
         arrflages = str('C')
 
-        self.lib = ctypes.cdll.LoadLibrary(libpath)
+        self.lib = ctypes.cdll.LoadLibrary(self.findlib())
         self.build = self.lib.build
         self.build.argtypes = [
             ndpointer(self.score_type, flags=arrflages),
@@ -55,6 +55,12 @@ class Aligner(object):
             ndpointer(self.index_type, flags=arrflages),    # jarr index
             self.short_type,  # global_
         ]
+
+    @staticmethod
+    def findlib():
+        p = os.path
+        dirpath = p.dirname(p.abspath(molbiox.lib.__file__))
+        return p.join(dirpath, 'align.so')
 
     def calculate(self, istring, jstring, scheme=1, backtrack=False):
         """
@@ -150,3 +156,33 @@ class Aligner(object):
             return matrx[-1, -1, 2], iarr.tostring()[::-1], jarr.tostring()[::-1]
         else:
             return matrx[-1, -1, 2], iarr.tostring()[::-1], jarr.tostring()[::-1]
+
+
+def debug_trace(matrx):
+    symbols = ord('-'), ord('|'), ord('\\'), ord('3')
+    symbols = np.array(symbols, dtype='uint8')
+    idx = matrx[:, :, 3]
+    darr = symbols[idx]
+    for row in darr:
+        line = row.tostring().decode('ascii')
+        print(line, file=sys.stderr)
+
+
+def gen_match_string(istring, jstring, indelchar='-'):
+    if len(istring) != len(jstring):
+        raise ValueError('2 strings must be of same lengths')
+    iarr = np.fromstring(istring, dtype='uint8')
+    jarr = np.fromstring(jstring, dtype='uint8')
+
+    # set all remaining positions to '?'
+    marr = np.empty(len(istring), dtype='uint8')
+    marr[:] = ord('.')
+
+    # if same char, use that char
+    mask = iarr ^ jarr
+    marr[mask == 0] = iarr[mask == 0]
+
+    # if indel, use indel char
+    marr[iarr == ord(indelchar)] = ord(indelchar)
+    marr[jarr == ord(indelchar)] = ord(indelchar)
+    return marr.tostring().decode('ascii')

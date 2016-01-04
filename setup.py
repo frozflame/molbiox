@@ -3,8 +3,7 @@
 
 import os
 import re
-from setuptools import setup, find_packages
-
+from setuptools import setup, find_packages, Extension
 # import molbiox; exit(1)
 # DO NOT import your package from your setup.py
 
@@ -23,25 +22,27 @@ def getversion():
             raise ValueError('VERSION file is corrupted')
         return version
 
+alignlib = Extension('molbiox.lib.align', sources=['molbiox/lib/align.c'])
 
-setup(
-    name="molbiox",
-    version=getversion(),
-    description="utilities for bioinformatics",
-    keywords='bioinformatics',
-    url="https://github.com/frozflame/molbiox",
-    author='frozflame',
-    author_email='lendoli@163.com',
-    license="GNU General Public License (GPL)",
-    packages=find_packages(),
-    zip_safe=False,
-    # namespace_packages=["molbiox"],
-    install_requires=readfile("requirements.txt"),
-    # scripts=['bin/mbx'],
-    entry_points={
+config = {
+    'name': "molbiox",
+    'version': getversion(),
+    'description': "utilities for bioinformatics",
+    'keywords': 'bioinformatics',
+    'url': "https://github.com/frozflame/molbiox",
+    'author': 'frozflame',
+    'author_email': 'lendoli@163.com',
+    'license': "GNU General Public License (GPL)",
+    'packages': find_packages(),
+    'zip_safe': False,
+    'ext_modules': [alignlib],
+    # namespace_packages: ["molbiox"],
+    'install_requires': readfile("requirements.txt"),
+    # scripts: ['bin/mbx'],
+    'entry_points': {
         'console_scripts': ['mbx=molbiox.frame.command:Executor.run'],
     },
-    classifiers=[
+    'classifiers': [
         'Topic :: Scientific/Engineering',
         'Topic :: Scientific/Engineering :: Bio-Informatics',
         'Programming Language :: Python :: 2',
@@ -49,6 +50,7 @@ setup(
     ],
 
     # ensure copy static file to runtime directory
-    include_package_data=True,
-)
+    'include_package_data': True,
+}
 
+setup(**config)

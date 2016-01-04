@@ -96,7 +96,7 @@ indexType backtrack(scoreType* matr, indexType isize,  indexType jsize,
     j = jstart;
     x = 0;
 
-    scoreType scores[3];
+//    scoreType scores[3];
 
     while ( (i&&j) || (scheme == GLOBAL && (i||j)) ){
 
