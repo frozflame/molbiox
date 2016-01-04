@@ -43,14 +43,14 @@ def _test_fasta_read(path):
 
 def test_fasta_read():
     # anonym
-    path = locate_tests('data/test_fasta/test.anonym.fa_')
+    path = locate_tests('data/test_fasta/test.anonym.fa')
     assert path.startswith('/')
     _test_fasta_read(path)
 
     # empty lines
-    path = locate_tests('data/test_fasta/test.empty-lines.fa_')
+    path = locate_tests('data/test_fasta/test.empty-lines.fa')
     _test_fasta_read(path)
 
     # normal lines
-    path = locate_tests('data/test_fasta/test.normal.fa_')
+    path = locate_tests('data/test_fasta/test.normal.fa')
     _test_fasta_read(path)

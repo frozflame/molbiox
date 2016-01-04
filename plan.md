@@ -1,5 +1,4 @@
 + translate --frame option -F
-+ exit -> sys.exit
 + mbx gen me -k Dir
 + Command: avoid name collision!
 + sql create for table formats
@@ -25,5 +24,3 @@ blastn
 ```
 
 
-    istring = 'LMAKSKILKNTLVLYFRQVLIVLITLYSMRVVLNELGVDDFGIYSVVAGFVTLMMLAFLPGSMASAQQRFFTS'
-    jstring = 'LMAKSKILKNTLVLYFRQVLIVLITLYSMRVVLNELGVDDFGIYSVVAGFVTLLAFLPGSMASATQRFFS'

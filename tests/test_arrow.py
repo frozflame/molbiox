@@ -48,7 +48,7 @@ def arr_eq(arr1, arr2, precision=.001):
 
 
 def test_read_lwcfile():
-    path = 'data/sample_lwcfile.txt'
+    path = 'data/lwcsample.tsv'
     table = arrows.read_lwcfile(path, castfunc=list)
     for x in table:
         print(x)
@@ -78,7 +78,7 @@ def test_arrow_calc():
 
 
 def _test_arrow_factory():
-    path = 'data/sample_lwcfile.txt'
+    path = 'data/lwcsample.tsv'
     tab = arrows.read_lwcfile(path, castfunc=list)
     arrfactory = ArrowCalc()
     data = arrfactory.calc(arr)
