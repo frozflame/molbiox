@@ -7,6 +7,18 @@ import six
 from string import whitespace
 
 
+def remove_whitespaces(string):
+    """
+    Efficiently remove all whitespaces from string
+    :param string: bytes or unicode
+    :return:
+    """
+    if isinstance(string, six.text_type):
+        return six.text_type().join(string.split())
+    if isinstance(string, six.binary_type):
+        return string.translate(None, six.b(whitespace))
+
+
 class Regexon(object):
     """
     Commonly used regular expressions with syntax sugar
@@ -82,7 +94,7 @@ class Regexon(object):
     def perl(cls, expr):
         if expr.startswith('m'):
             reg = re.compile(r'^m(.)(?P<reg>.*)\1(?P<modif>[a-zA-Z]*)$')
-        if expr.startswith('x'):
+        elif expr.startswith('x'):
             reg = re.compile(r'^x(.)(?P<reg>.*)\1(?P<modif>[a-zA-Z]*)$')
         else:
             reg = re.compile(r'^s(.)(?P<reg>.*)\1(?P<repl>.*)\1(?P<modif>[a-zA-Z]*)$')
@@ -115,36 +127,4 @@ class Regexon(object):
             flags |= supported_modifiers[m]
         return flags
 
-    @classmethod
-    def whitespaces_remover(cls):
-        return cls.new(r'\s+', '')
 
-    @classmethod
-    def alpha(cls):
-        return cls.new(r'[^a-zA-Z]', '')
-
-    @classmethod
-    def alphanum(cls):
-        return cls.new(r'[^a-zA-Z0-9]', '')
-
-    @classmethod
-    def tab_delimited(cls):
-        """Replace all whitepaces with tab"""
-        return cls.new(r'\s+', '\t')
-
-    @classmethod
-    def space_delimited(cls):
-        """Replace all whitepaces with tab"""
-        return cls.new(r'\s+', ' ')
-
-
-def remove_whitespaces(string):
-    """
-    Efficiently remove all whitespaces from string
-    :param string: bytes or unicode
-    :return:
-    """
-    if isinstance(string, six.text_type):
-        return six.text_type().join(string.split())
-    if isinstance(string, six.binary_type):
-        return string.translate(None, six.b(whitespace))

@@ -7,7 +7,7 @@ from molbiox.frame.signature import Sig
 from molbiox.frame.regexon import Regexon
 from molbiox.kb.translate import get_transl_table
 
-sub = Regexon.alpha()
+sub = Regexon.new(r'[^a-zA-Z]', '')
 
 test_data = {
     'dna': """
