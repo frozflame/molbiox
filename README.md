@@ -21,3 +21,22 @@ Install from GitHub
     source venv/bin/activate
     pip install https://github.com/frozflame/molbiox/archive/master.zip
    
+
+Generate random sequences
+
+    $ mbx rs
+    $ mbx rs -h
+    $ mbx rs -l 900 -o randseq.fa
+
+Generate reverse complement of `randseq.fa`
+
+    $ mbx rc randseq.fa -o randseq.rc.fa
+
+Translate DNA to protein
+
+    $ mbx tl randseq.fa -o randseq.faa
+
+
+
+
+
