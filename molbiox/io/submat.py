@@ -49,5 +49,3 @@ def read(infile):
     istring = ''.join(istring_)
     submatr = np.array(scores, dtype=int)
     return istring, jstring, submatr
-
-

@@ -42,15 +42,15 @@ ambig_prot = {}
 
 # config for complementary DNA
 complDNA = {
-    'src':      'MNHKDGABCXYTUWRS-.mnhkdgabcxytuwrs',
-    'dest':     'KNDMHCTVGXRAAWYS-.kndmhctvgxraawys', 'outlier':  '-',
+    'src':  'MNHKDGABCXYTUWRS-.mnhkdgabcxytuwrs',
+    'dest': 'KNDMHCTVGXRAAWYS-.kndmhctvgxraawys', 'outlier':  '-',
 } + Sig('md5:72b8d46e58ae7cfd1268a50d66adcda5', cheat=CHEAT)
 
 
 # config for complementary RNA
 complRNA = {
-    'src':      'MNHKDGABCXYTUWRS-.mnhkdgabcxytuwrs',
-    'dest':     'KNDMHCUVGXRAAWYS-.kndmhcuvgxraawys', 'outlier':  '-',
+    'src':  'MNHKDGABCXYTUWRS-.mnhkdgabcxytuwrs',
+    'dest': 'KNDMHCUVGXRAAWYS-.kndmhcuvgxraawys', 'outlier':  '-',
 } + Sig('md5:ebbe993330ececd7736b1d4f5e211e51', cheat=CHEAT)
 
 test_data_dna = {
