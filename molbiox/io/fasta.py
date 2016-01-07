@@ -193,9 +193,7 @@ def write(outfile, records, concise=False, linesep=os.linesep, linewidth=60):
     :param linewidth: default 60
     :return: a generator
     """
-    # TODO: open mode `w` or `wb`?
-    # TODO: use binary project wide
-    fw = compat.FileWrapper(outfile, 'wb')
+    fw = compat.FileWrapper(outfile, 'w')
 
     # accept a single record
     if isinstance(records, dict):

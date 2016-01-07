@@ -3,7 +3,7 @@
 
 from __future__ import unicode_literals, print_function
 
-from molbiox.frame.containers import IDict
+from molbiox.frame.containers import SDict
 
 
 def filter_linker_reads(reads, ):
@@ -20,7 +20,7 @@ def build_readrecord(samfile, rfilter=None):
     else:
         reads = samfile
     for read in reads:
-        record = IDict()
+        record = SDict()
         record['alen'] = read.reference_length
         record['qlen'] = read.query_length
         record['rlen'] = samfile.lengths[read.reference_id]

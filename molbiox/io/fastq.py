@@ -3,6 +3,7 @@
 
 import os
 
+from molbiox.frame.containers import SDict
 from molbiox.frame import compat, interactive
 
 
@@ -42,7 +43,7 @@ def read(infile):
             break
         if not cmt.startswith('@') or plus != '+':
             raise ValueError('fastq file <{}> is corrupted'.format(fw.path))
-        yield dict(cmt=cmt[1:], seq=seq, qual=qual)
+        yield SDict(cmt=cmt[1:], seq=seq, qual=qual)
 
     fw.close()
 

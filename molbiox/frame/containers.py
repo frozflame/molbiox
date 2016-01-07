@@ -4,10 +4,10 @@ from __future__ import unicode_literals, print_function
 import itertools
 
 
-class IDict(dict):
+class SDict(dict):
 
     def __init__(self, *args, **kwargs):
-        super(IDict, self).__init__(*args, **kwargs)
+        super(SDict, self).__init__(*args, **kwargs)
         self.__dict__['attributes'] = set()
         self.__dict__['invisibles'] = set()
 
@@ -40,7 +40,7 @@ class IDict(dict):
             self.__dict__[key] = value
 
 
-class SRecord(IDict):
+class SRecord(SDict):
     """
     Friendly with interactive Python shell
     better displayed if it contains long string
