@@ -44,7 +44,11 @@ dataset3 = {
 
 
 def arr_eq(arr1, arr2, precision=.001):
-    return np.abs(arr1 - arr2).reshape(-1).max() < precision
+    res = np.abs(arr1 - arr2).reshape(-1).max() < precision
+    if not res:
+        print(arr1, file=sys.stderr)
+        print(arr2, file=sys.stderr)
+    return res
 
 
 def test_read_lwcfile():
@@ -65,6 +69,8 @@ def test_arrow_calc():
         # assert 1 == 2
 
         for l in np.arange(10, step=.01):
+            if l == 0:
+                continue
             resultp = ac.prototype(l)
             results = ac.calc([l])
             assert arr_eq(results[0], resultp, .001)

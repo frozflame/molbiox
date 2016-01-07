@@ -11,7 +11,7 @@ from molbiox.frame.testing import Timer
 from molbiox.io import submat, fasta
 
 score_type = 'int64'
-repeat = 1000
+repeat = 100
 
 
 def test_align():
