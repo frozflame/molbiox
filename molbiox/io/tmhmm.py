@@ -17,7 +17,7 @@ def read(infile):
     """
 
     record = None
-    fw = compat.FileWrapper(infile)
+    fw = compat.FileWrapper(infile, 'r')
 
     for line in fw.file:
         line = line.rstrip()

@@ -3,6 +3,7 @@
 from __future__ import unicode_literals, print_function
 import re
 import string
+import sys
 import six
 from molbiox.io import fasta
 from molbiox.frame.locate import locate_tests
@@ -54,3 +55,8 @@ def test_fasta_read():
     # normal lines
     path = locate_tests('data/test_fasta/test.normal.fa')
     _test_fasta_read(path)
+
+
+def test_fasta_write():
+    fasta.write(sys.stdout, dict(cmt='rseq', seq='atta'))
+    fasta.write('-', dict(cmt='rseq', seq='atta'))
