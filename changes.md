@@ -1,34 +1,29 @@
 
-Molbiox Changelog
+Version history
 =================
 
 
+#### version 0.0.12
++   `compat.FileWrapper` supports with-statement now
 
-#### Jan 3, 2016
+#### version 0.0.11
++   restruct: `compat`, `interactive`
++   remove: `tolerant`
 
-+   arrows: usable!
+#### version 0.0.10
++   new: parsers for uniprot fasta header
 
+#### version 0.0.9
++   improve: clean and classify test data and templates
 
-#### December 28, 2015
+#### version 0.0.8
++   improve: align.c distributable
 
-+   command: mbx mkdir 
+#### version 0.0.7
++   improve: VERSION file as single src for version info
 
-#### December 27, 2015
+#### version 0.0.6
++   improve: `fasta.read` speed up
++   new: algor.arrows
 
-+   render_output -> render
-+   Regexon
-+   concatenate
-+   translate: --skip for not lenghts not 3 multiples
-
-
-#### December 26, 2015
-
-+   cmd select add --order option
-+   cmd base-class add verbose option
-+   algor arrow -- not tested yet
-+   cmd very brief abbr: l, c, ...
-
-#### December 25, 2015
-
-+   algor align pass test
 
