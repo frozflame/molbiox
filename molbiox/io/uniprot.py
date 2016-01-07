@@ -2,54 +2,92 @@
 # coding: utf-8
 
 from __future__ import unicode_literals, print_function
-import sys
 import re
+
+
+"""
+http://www.uniprot.org/help/fasta-headers
+"""
+
 
 # extract sp|xxxxx|xxx_xxx part
 reg_uniprotkb_header = re.compile(r"""
-    ^
-    (?P<db>\w{2})           # db; sp or tr
-    \|(?P<uid>\w+)          # uid for UniqueIdentifier or IsoformName, eg. P27748
-    \|(?P<entry>\w+)        # entry for EntryName; eg. ACOX_RALEH
-    (?=(?:\s+\w+=|$))       # XX= or EOL
+    (?P<db>\w+)
+    \|(?P<UniqueIdentifier>\w+)
+    \|(?P<EntryName>\w+)
+    \s+
+    (?P<ProteinName>[^=]+)
+    (?=(?:\s+\w+=))
     """, re.VERBOSE)
 
-# extract XX=<value> part
-reg_uniprotkb_header_kv = re.compile("""
+reg_uniref_header = re.compile(r"""
+    (?P<UniqueIdentifier>\w+)\s+
+    (?P<ClusterName>[^=]+)
+    (?=(?:\s+\w+=))
+    """, re.VERBOSE)
 
+reg_uniparc_header = re.compile(r"""
+    (?P<UniqueIdentifier>\w+)
+    (?=(?:\s+\w+=))
+    """, re.VERBOSE)
+
+reg_archived_uniprotkb_header = re.compile(r"""
+    (?P<db>\w+)
+    \|(?P<UniqueIdentifier>\w+)\s+
+    archived\sfrom\sRelease\s
+    (?P<ReleaseNumber>\S+)\s+
+    (?P<ReleaseDate>\S+)
+    (?=(?:\s+\w+=))
+    """, re.VERBOSE)
+
+
+# extract XX=<value> part
+reg_uniprot_header_kv = re.compile("""
     (\w+)=                  # key: XX=
     ([^=]+?)                # value
-    (?=(?:\s+\w+=|$))       # next XX= or EOL
+    (?=(?:\s+\w+=))       # next XX= or EOL
     """, re.VERBOSE)
 
 # map acronyms to human readable names
-dic_uniprotkb_header_keys = {
-        'OS':   'organism',
-        'GN':   'gene',
-        'PE':   'existence',
-        'SV':   'version',
+dic_uniprot_header_keys = {
+        'OS':       'OrganismName',
+        'GN':       'GeneName',
+        'PE':       'ProteinExistence',
+        'SV':       'SequenceVersion',
+        'n':        'Members',
+        'Tax':      'Taxon',
+        'RepID':    'RepresentativeMember',
+        'status':   'Status',
 }
 
 
-def parse_uniprotkb_header(cmt):
+def _parse_header(cmt, regex):
     """
     The format is specified at http://www.uniprot.org/help/fasta-headers
     :param cmt: cmt field of a fasta record, i.e. header
     :return: a dict
     """
     rdic = dict()
-    for k, v in reg_uniprotkb_header_kv.findall(cmt):
-        k = dic_uniprotkb_header_keys.get(k, k)
+    for k, v in reg_uniprot_header_kv.findall(cmt + ' D='):
+        k = dic_uniprot_header_keys.get(k, k)
         rdic[k] = v
-    mat = reg_uniprotkb_header.match(cmt)
+    mat = regex.match(cmt)
     if mat:
         rdic.update(mat.groupdict())
     return rdic
 
 
-def test():
-    s = 'sp|Q197F7|003L_IIV3 Uncharacterized protein 003L OS='\
-        'Invertebrate iridescent virus 3 GN=IIV3-003L PE=4 SV=1'
-    rdic = parse_uniprotkb_header(s)
-    print(repr(s))
-    print(rdic)
+def parse_uniprotkb_header(cmt):
+    return _parse_header(cmt, reg_uniprotkb_header)
+
+
+def parse_uniref_header(cmt):
+    return _parse_header(cmt, reg_uniref_header)
+
+
+def parse_uniparc_header(cmt):
+    return _parse_header(cmt, reg_uniparc_header)
+
+
+def parse_archived_uniprotkb_header(cmt):
+    return _parse_header(cmt, reg_archived_uniprotkb_header)
