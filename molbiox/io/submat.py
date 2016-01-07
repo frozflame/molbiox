@@ -16,7 +16,7 @@ def read(infile):
         fw = compat.FileWrapper(respath, 'r')
 
     with fw:
-        fw_lines = (l.strip() for l in fw)
+        fw_lines = (l.strip() for l in fw.file)
         ichars = []
         jstring = None
         jsize = 0
