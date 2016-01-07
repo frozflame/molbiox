@@ -138,40 +138,37 @@ def read(infile, concise=True, limit=10**9):
         for rec in reciter1:
             print(rec.cmt, rec.seq)
     """
-    fw = compat.FileWrapper(infile, 'r')
+    with compat.FileWrapper(infile, 'r') as fw:
+        # fw_lines = (l.strip() for l in fw.file)  # the slow version
+        fw_lines = iterate_chunks(fw)
+        fw_lines = itertools.chain(fw_lines, ['>epilogue'])
 
-    beg = '>'
+        if limit < 1:
+            limit = 10**9
 
-    # fw_lines = (l.strip() for l in fw.file)  # the slow version
-    fw_lines = iterate_chunks(fw)
-    fw_lines = itertools.chain(fw_lines, ['>epilogue'])
+        offset = 0
+        buffer = Buffer(limit)
+        cstate = CommentState()
 
-    if limit < 1:
-        limit = 10**9
-
-    offset = 0
-    buffer = Buffer(limit)
-    cstate = CommentState()
-
-    for line in fw_lines:
-        # print('debug fasta.read: outter for loop')
-        if line.startswith(beg):
-            seq = buffer.get()
-            cmt = cstate.update(line[1:], concise)
-            # yield previous rec; discard if no seq
-            if seq:
-                yield SRecord(cmt=cmt, seq=seq, offset=offset)
-            offset = 0
-
-        else:
-            remainder = buffer.put(line)
-            while remainder:
-                # print('debug fasta.read: inner while loop')
+        for line in fw_lines:
+            # print('debug fasta.read: outter for loop')
+            if line.startswith('>'):
                 seq = buffer.get()
-                cmt = cstate.get()
-                yield SRecord(cmt=cmt, seq=seq, offset=offset)
-                offset += limit
-                remainder = buffer.put(remainder)
+                cmt = cstate.update(line[1:], concise)
+                # yield previous rec; discard if no seq
+                if seq:
+                    yield SRecord(cmt=cmt, seq=seq, offset=offset)
+                offset = 0
+
+            else:
+                remainder = buffer.put(line)
+                while remainder:
+                    # print('debug fasta.read: inner while loop')
+                    seq = buffer.get()
+                    cmt = cstate.get()
+                    yield SRecord(cmt=cmt, seq=seq, offset=offset)
+                    offset += limit
+                    remainder = buffer.put(remainder)
 
 
 def readone(infile, concise=True, limit=10 ** 9):
@@ -179,7 +176,7 @@ def readone(infile, concise=True, limit=10 ** 9):
 
 
 def readseq(infile, concise=True, limit=10**9):
-    return read(infile, concise, limit, castfunc=0)['seq']
+    return read(infile, concise, limit, castfunc=0).seq
 
 
 def write(outfile, records, concise=False, linesep=os.linesep, linewidth=60):
@@ -193,39 +190,37 @@ def write(outfile, records, concise=False, linesep=os.linesep, linewidth=60):
     :param linewidth: default 60
     :return: a generator
     """
-    fw = compat.FileWrapper(outfile, 'w')
+    with compat.FileWrapper(outfile, 'w') as fw:
+        # accept a single record
+        if isinstance(records, dict):
+            records = [records]
 
-    # accept a single record
-    if isinstance(records, dict):
-        records = [records]
+        cstate = CommentState()
+        offset_expected = 0
 
-    cstate = CommentState()
-    offset_expected = 0
+        # first rec: cmt != cstate.get() always true even cmt == 'anonym.xx'
+        cstate.cmt = 1
 
-    # first rec: cmt != cstate.get() always true even cmt == 'anonym.xx'
-    cstate.cmt = 1
+        for rec in records:
+            cmt = rec.get('cmt')  # if empty, cstate will provide one
+            seq = rec.get('seq')  # if empty, skip
+            offset = rec.get('offset')
+            if not seq:
+                continue
+            # after set offset to 0, always treat rec as offseted
+            if cmt != cstate.get():
+                offset_expected = 0
+                cstate.update(cmt, concise)
+            if offset is not None and offset != offset_expected:
+                raise ValueError('bad offset, your data might be corrupted')
+            if offset_expected == 0:
+                cmtline = '>{}{}'.format(cstate.get(), linesep)
+                fw.write(cmtline)
 
-    for rec in records:
-        cmt = rec.get('cmt')  # if empty, cstate will provide one
-        seq = rec.get('seq')  # if empty, skip
-        offset = rec.get('offset')
-        if not seq:
-            continue
-        # after set offset to 0, always treat rec as offseted
-        if cmt != cstate.get():
-            offset_expected = 0
-            cstate.update(cmt, concise)
-        if offset is not None and offset != offset_expected:
-            raise ValueError('bad offset, your data might be corrupted')
-        if offset_expected == 0:
-            cmtline = '>{}{}'.format(cstate.get(), linesep)
-            fw.write(cmtline)
-
-        offset_expected += len(seq)
-        for i in six.moves.range(0, len(seq), linewidth):
-            fw.write(seq[i:i+linewidth])
-            fw.write(linesep)
-    fw.close()
+            offset_expected += len(seq)
+            for i in six.moves.range(0, len(seq), linewidth):
+                fw.write(seq[i:i+linewidth])
+                fw.write(linesep)
 
 
 def pack(cmt, chunks):

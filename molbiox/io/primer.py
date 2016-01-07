@@ -2,7 +2,7 @@
 # coding: utf-8
 
 from __future__ import unicode_literals, print_function
-
+import itertools
 from collections import OrderedDict
 from jinja2 import Template
 
@@ -24,31 +24,19 @@ def read_boulder(infile):
     :param infile:
     :return: a generator of dict objects
     """
-    fw = compat.FileWrapper(infile, 'r')
+    with compat.FileWrapper(infile, 'r') as fw:
+        fw_lines = (l.strip() for l in fw if '=' in l)
+        fw_lines = itertools.chain(fw_lines, ['='])
 
-    record = dict()
-
-    for l in fw.file:
-        l = l.strip()
-
-        # record terminated by '='
-        if l == '=' and record:
-            yield record
-            record = dict()
-            continue
-
-        # skip lines without '='
-        if '=' not in l:
-            continue
-
-        key, val = l.split('=', maxsplit=1)
-        key = key.strip()
-        val = val.strip()
-        record[key.lower()] = val
-
-    # yield last record
-    if record:
-        yield record
+        record = dict()
+        for l in fw_lines:
+            # record terminated by '='
+            if l == '=' and record:
+                yield record
+                record = dict()
+            else:
+                key, val = l.split('=', maxsplit=1)
+                record[key.strip().lower()] = val.strip()
 
 
 @interactive.castable

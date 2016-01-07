@@ -31,38 +31,36 @@ def read(infile):
     :return: a generator
     """
 
-    fw = compat.FileWrapper(infile, 'r')
+    with compat.FileWrapper(infile, 'r') as fw:
+        while True:
+            cmt = fw.file.readline().strip()
+            seq = fw.file.readline().strip()
+            plus = fw.file.readline().strip()
+            qual = fw.file.readline().strip()
 
-    while True:
-        cmt = fw.file.readline().strip()
-        seq = fw.file.readline().strip()
-        plus = fw.file.readline().strip()
-        qual = fw.file.readline().strip()
-
-        if not cmt:
-            break
-        if not cmt.startswith('@') or plus != '+':
-            raise ValueError('fastq file <{}> is corrupted'.format(fw.path))
-        yield SDict(cmt=cmt[1:], seq=seq, qual=qual)
-
-    fw.close()
+            if not cmt:
+                break
+            if not cmt.startswith('@') or plus != '+':
+                raise ValueError('fastq file <{}> is corrupted'.format(fw.path))
+            yield SDict(cmt=cmt[1:], seq=seq, qual=qual)
 
 
-def read1(infile):
+def readone(infile):
     return read(infile, castfunc=0)
+
+
+def readseq(infile):
+    return read(infile, castfunc=0).seq
 
 
 def write(outfile, seqdicts, linesep=os.linesep):
     # `handle` is either a file object or a string
 
-    # TODO: binary?
-    fw = compat.FileWrapper(outfile, 'w')
-
-    template = '@{cmt}{eol}{seq}{eol}+{qual}{eol}'
-    for seqdict in seqdicts:
-        block = template.format(eol=linesep, **seqdict)
-        fw.file.write(block)
-    fw.close()
+    with compat.FileWrapper(outfile, 'w') as fw:
+        template = '@{cmt}{eol}{seq}{eol}+{qual}{eol}'
+        for seqdict in seqdicts:
+            block = template.format(eol=linesep, **seqdict)
+            fw.file.write(block)
 
 # TODO
 # <instrument>:<run number>:<flowcell ID>:<lane>:<tile>

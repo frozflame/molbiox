@@ -2,6 +2,8 @@
 # coding: utf-8
 
 from __future__ import unicode_literals, print_function
+import itertools
+from collections import OrderedDict
 from molbiox.frame import compat, interactive
 
 
@@ -14,30 +16,28 @@ def read(infile, fieldlist=None, sep=None):
     :param sep: separator use in `string.split(sep)`
     :return: a generator, yielding OrderedDict objects
     """
-    fw = compat.FileWrapper(infile, 'r')
 
     # if fieldlist is NOT given, generate list-like dicts
     if not fieldlist:
         fieldlist = ((i, None) for i in itertools.count())
 
-    for line in fw.file:
-        line = line.strip()
-        if not line or line.startswith('#'):
-            continue
+    with compat.FileWrapper(infile, 'r') as fw:
+        for line in fw.file:
+            line = line.strip()
+            if not line or line.startswith('#'):
+                continue
 
-        values = line.split(sep, maxsplit=len(fieldlist)-1)
+            values = line.split(sep, maxsplit=len(fieldlist)-1)
 
-        if len(values) < len(fieldlist):
-            raise ValueError('too few columns in data file')
+            if len(values) < len(fieldlist):
+                raise ValueError('too few columns in data file')
 
-        pairs = []
-        for (key, cast), val in zip(fieldlist, values):
-            if cast is not None:
-                val = cast(val)
-            pairs.append((key, val))
-
-        yield OrderedDict(pairs)
-    fw.close()
+            pairs = []
+            for (key, cast), val in zip(fieldlist, values):
+                if cast is not None:
+                    val = cast(val)
+                pairs.append((key, val))
+            yield OrderedDict(pairs)
 
 
 @interactive.castable
@@ -67,28 +67,27 @@ def read_lenfile(infile, multi=False):
 
     :param infile: a file object or a file path
     :param multi: boolean
-    :return: a generator, yielding OrderedDict objects
+    :return: an OrderedDict
     """
 
-    fw = compat.FileWrapper(infile, 'r')
-    resdict = dict()
-    for line in fw.file:
-        line = line.strip()
+    with compat.FileWrapper(infile, 'r') as fw:
+        resdict = OrderedDict()
+        for line in fw.file:
+            line = line.strip()
 
-        # skip empty line or comment
-        if not line or line.startswith('#'):
-            continue
+            # skip empty line or comment
+            if not line or line.startswith('#'):
+                continue
 
-        itemlist = line.split()
-        key = itemlist[-1]
+            itemlist = line.split()
+            key = itemlist[-1]
 
-        if multi:
-            val = tuple(int(x) for x in itemlist[:-1])
-        else:
-            val = int(itemlist[0])
-        resdict[key] = val
-    fw.close()
-    return resdict
+            if multi:
+                val = tuple(int(x) for x in itemlist[:-1])
+            else:
+                val = int(itemlist[0])
+            resdict[key] = val
+        return resdict
 
 
 class LGrouper(object):

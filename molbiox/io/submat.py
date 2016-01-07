@@ -15,37 +15,32 @@ def read(infile):
         respath = locate_submat(infile.lower())
         fw = compat.FileWrapper(respath, 'r')
 
-    istring_ = []
-    jstring = None
-    scores = []
+    with fw:
+        fw_lines = (l.strip() for l in fw)
+        ichars = []
+        jstring = None
+        jsize = 0
+        scores = []
 
-    for line in fw.file:
-        line = line.strip()
-        if line and not line.startswith('#'):
-            jstring = remove_whitespaces(line)
-            jsize = len(jstring) + 1
-            break
+        for line in fw_lines:
+            if line and not line.startswith('#'):
+                jstring = remove_whitespaces(line)
+                jsize = len(jstring) + 1
+                break
 
-    if jstring is None:
-        raise ValueError('this sub matrix file is broken')
-
-    for line in fw.file:
-        items = line.split()
-        if not items:
-            continue
-        # print('debug: jstring', jstring)
-        # print('debug: jstring', len(jstring))
-        # print('debug: items', items)
-        # print('debug: items', len(items))
-        # print('debug: jsize', jsize)
-
-        if len(items) != jsize:
+        if jstring is None:
             raise ValueError('this sub matrix file is broken')
-        istring_.append(items[0])
-        scores.append([int(s) for s in items[1:]])
 
-    fw.close()
+        for line in fw.file:
+            items = line.split()
+            if not items:
+                continue
 
-    istring = ''.join(istring_)
+            if len(items) != jsize:
+                raise ValueError('this sub matrix file is broken')
+            ichars.append(items[0])
+            scores.append([int(s) for s in items[1:]])
+
+    istring = ''.join(ichars)
     submatr = np.array(scores, dtype=int)
     return istring, jstring, submatr
