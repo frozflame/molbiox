@@ -93,11 +93,11 @@ class Regexon(object):
     @classmethod
     def perl(cls, expr):
         if expr.startswith('m'):
-            reg = re.compile(r'^m(.)(?P<reg>.*)\1(?P<modif>[a-zA-Z]*)$')
+            reg = re.compile(r'^m(.)(?P<reg>.*)\1(?P<modif>[a-zA-Z]*)$', re.S)
         elif expr.startswith('x'):
-            reg = re.compile(r'^x(.)(?P<reg>.*)\1(?P<modif>[a-zA-Z]*)$')
+            reg = re.compile(r'^x(.)(?P<reg>.*)\1(?P<modif>[a-zA-Z]*)$', re.S)
         else:
-            reg = re.compile(r'^s(.)(?P<reg>.*)\1(?P<repl>.*)\1(?P<modif>[a-zA-Z]*)$')
+            reg = re.compile(r'^s(.)(?P<reg>.*)\1(?P<repl>.*)\1(?P<modif>[a-zA-Z]*)$', re.S)
 
         mat = reg.match(expr)
         if not mat:
@@ -126,5 +126,4 @@ class Regexon(object):
         for m in modifiers.lower():
             flags |= supported_modifiers[m]
         return flags
-
 
