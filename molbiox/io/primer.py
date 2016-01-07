@@ -3,10 +3,10 @@
 
 from __future__ import unicode_literals, print_function
 
-import collections
 from collections import OrderedDict
 from jinja2 import Template
-from molbiox.frame import interactive
+
+from molbiox.frame import compat, interactive
 from molbiox.frame.locate import locate_template
 
 
@@ -24,7 +24,7 @@ def read_boulder(infile):
     :param infile:
     :return: a generator of dict objects
     """
-    fw = interactive.FileWrapper(infile, 'r')
+    fw = compat.FileWrapper(infile, 'r')
 
     record = dict()
 

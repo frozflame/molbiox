@@ -1,36 +1,68 @@
 #!/usr/bin/env python3
 # coding: utf-8
 
-from __future__ import unicode_literals
+from __future__ import unicode_literals, print_function
 import sys
 import six
 
-"""
-Compatibility issues
-"""
 
-# be Python 3 compatible
-if sys.version.startswith('3'):
-    zrange = range
-    binstr = bytes
-    unistr = str
-else:
-    zrange = xrange     # use six.moves.range instead
-    binstr = str        # six.binary_type
-    unistr = unicode    # six.text_type
+class FileWrapper(object):
+    def __init__(self, file_, mode):
+        if isinstance(file_, six.string_types):
+            if file_ == '-' and 'r' in mode:
+                self.file = sys.stdin
+                self.path = ''
+            elif file_ == '-' and ('w' in mode) or ('a' in mode):
+                self.file = sys.stdout
+                self.path = ''
+            else:
+                self.file = open(file_, mode)
+                self.path = file_
+
+        else:
+            self.file = file_
+            self.path = ''
+
+    def close(self):
+        if self.path:
+            self.file.close()
+
+    def write(self, string):
+        if 'b' not in self.file.mode and isinstance(string, six.binary_type):
+            return self.file.write(string.decode())
+        if 'b' in self.file.mode and isinstance(string, six.text_type):
+            return self.file.write(string.encode())
+        return self.file.write(string)
+
+    def read(self, size):
+        string = self.file.read(size)
+        if 'b' not in self.file.mode and isinstance(string, six.binary_type):
+            return string.decode()
+        if 'b' in self.file.mode and isinstance(string, six.text_type):
+            return string.encode()
+        return string
 
 
-# maketrans
-if sys.version.startswith('3'):
-    maketrans = str.maketrans
-else:
-    import string
-    maketrans = string.maketrans
+def make_array(data):
+    import numpy as np
+    if isinstance(data, np.ndarray):
+        arr = data
+    elif isinstance(data, (list, int, float)):
+        arr = np.array(data)
+    else:
+        arr = np.array(list(data))
+    if arr.ndim == 0:
+        arr.shape = -1
+    return arr
 
 
-def omni_writer(outfile, string, encoding='ascii'):
-    if 'b' not in outfile.mode and isinstance(string, six.binary_type):
-        return outfile.write(string.decode(encoding))
-    if 'b' in outfile.mode and isinstance(string, six.text_type):
-        return outfile.write(string.encode(encoding))
-    return outfile.write(string)
+def safe_bracket(container, key, default=None, cast=None):
+    try:
+        val = container[key]
+    except LookupError:
+        return default
+
+    if cast:
+        return cast(val)
+    else:
+        return val

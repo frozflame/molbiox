@@ -2,9 +2,8 @@
 # encoding: utf-8
 
 import os
-import sys
 
-from molbiox.frame import interactive
+from molbiox.frame import compat, interactive
 
 
 @interactive.castable
@@ -31,7 +30,7 @@ def read(infile):
     :return: a generator
     """
 
-    fw = interactive.FileWrapper(infile, 'r')
+    fw = compat.FileWrapper(infile, 'r')
 
     while True:
         cmt = fw.file.readline().strip()
@@ -56,7 +55,7 @@ def write(outfile, seqdicts, linesep=os.linesep):
     # `handle` is either a file object or a string
 
     # TODO: binary?
-    fw = interactive.FileWrapper(outfile, 'w')
+    fw = compat.FileWrapper(outfile, 'w')
 
     template = '@{cmt}{eol}{seq}{eol}+{qual}{eol}'
     for seqdict in seqdicts:

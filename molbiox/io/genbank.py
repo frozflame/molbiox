@@ -7,10 +7,9 @@ import os
 import re
 import textwrap
 
-import molbiox.frame.interactive
-from molbiox import tolerant
-from molbiox.frame.compat import zrange
+from molbiox.frame import interactive
 from molbiox.frame.locate import locate_template
+from zombies.educational.compat_ import zrange
 
 
 class MetaParser(object):
@@ -88,7 +87,7 @@ class SeqzParser(object):
     def __init__(self):
         self.seqfragments = []
 
-@molbiox.frame.interactive.castable
+@interactive.castable
 def read(handle):
     # `handle` is either a file object or a string
     if hasattr(handle, 'read'):
@@ -142,7 +141,7 @@ def read(handle):
         infile.close()
 
 
-@molbiox.frame.interactive.castable
+@interactive.castable
 def read_sequences(handle):
     """
     Read a GenBank file and get sequences as seqdicts

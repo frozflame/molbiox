@@ -3,10 +3,9 @@
 
 from __future__ import unicode_literals
 import collections
-from molbiox.frame import interactive
-from molbiox.io import tabular
 
-__author__ = 'Hailong'
+from molbiox.io import tabular
+from molbiox.frame import interactive
 
 
 # blast6m / blast7m

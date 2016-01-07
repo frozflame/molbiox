@@ -7,8 +7,9 @@ import re
 import six
 import itertools
 from collections import deque
-from molbiox.frame import interactive
-from molbiox.frame.common import SRecord
+
+from molbiox.frame import compat, interactive
+from molbiox.frame.containers import SRecord
 from molbiox.frame.regexon import remove_whitespaces
 
 
@@ -137,7 +138,7 @@ def read(infile, concise=True, limit=10**9):
         for rec in reciter1:
             print(rec.cmt, rec.seq)
     """
-    fw = interactive.FileWrapper(infile, 'r')
+    fw = compat.FileWrapper(infile, 'r')
 
     beg = '>'
 
@@ -194,7 +195,7 @@ def write(outfile, records, concise=False, linesep=os.linesep, linewidth=60):
     """
     # TODO: open mode `w` or `wb`?
     # TODO: use binary project wide
-    fw = interactive.FileWrapper(outfile, 'wb')
+    fw = compat.FileWrapper(outfile, 'wb')
 
     # accept a single record
     if isinstance(records, dict):

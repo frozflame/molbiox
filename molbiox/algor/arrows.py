@@ -1,14 +1,18 @@
 #!/usr/bin/env python3
 # coding: utf-8
+
 from __future__ import unicode_literals, print_function
 import numpy as np
-from molbiox.frame import interactive
+from molbiox.frame import compat
+
+
+tan = np.tan
+cot = lambda x: 1./np.tan(x)
 
 
 class ArrowCalc(object):
 
     def __init__(self, alpha=.7, beta=1., height1=16, height2=32):
-        cot = lambda x: 1./np.tan(x)
         self.alpha = alpha
         self.beta = beta
         self.height1 = height1
@@ -27,10 +31,7 @@ class ArrowCalc(object):
         :return:
         """
         data = np.empty([8, 2])
-        tan = np.tan
-        cot = lambda x: 1./np.tan(x)
-
-        if length > self.threshold2:
+        if length >= self.threshold2:
             data[1] = self.height2 * cot(self.alpha), self.height2
             data[2] = self.threshold2, self.height1
             data[3] = length, self.height1
@@ -56,8 +57,6 @@ class ArrowCalc(object):
         :return:
         """
         data = np.zeros([len(lengths), 8, 2])
-        tan = np.tan
-        cot = lambda x: 1./np.tan(x)
 
         # point 0 is (0, 0)
         # dt[:, 0, 0] = 0
@@ -94,7 +93,7 @@ class ArrowCalc(object):
         You should use this instead of 'calculate'
         :param arr: 1d or 2d array
         """
-        arr = interactive.array(arr)
+        arr = compat.make_array(arr)
 
         if arr.ndim > 2:
             raise ValueError("number of dimensions of 'arr' should be 1 or 2")
@@ -110,7 +109,7 @@ class ArrowCalc(object):
         # treat last dim as (start, end)
         if arr.shape[-1] == 2:
             lengths = arr[:, 0] - arr[:, 1]
-            orients = np.sign(lengths)
+            orients = np.sign(lengths)  # length can NOT be 0
             results = self.calculate(abs(lengths))
             results[:, :, 0] *= orients.reshape([-1, 1])
             results[:, :, 0] += arr[:, 1].reshape([-1, 1])

@@ -2,10 +2,9 @@
 # coding: utf-8
 
 from __future__ import unicode_literals, print_function
-import sys
-import six
 import numpy as np
 from jinja2 import Template
+
 from molbiox.io import tabular
 from molbiox.frame import interactive
 from molbiox.frame.locate import locate_template

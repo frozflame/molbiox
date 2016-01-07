@@ -2,10 +2,7 @@
 # coding: utf-8
 
 from __future__ import unicode_literals, print_function
-
-import itertools
-from collections import OrderedDict
-from molbiox.frame import interactive
+from molbiox.frame import compat, interactive
 
 
 @interactive.castable
@@ -17,7 +14,7 @@ def read(infile, fieldlist=None, sep=None):
     :param sep: separator use in `string.split(sep)`
     :return: a generator, yielding OrderedDict objects
     """
-    fw = interactive.FileWrapper(infile, 'r')
+    fw = compat.FileWrapper(infile, 'r')
 
     # if fieldlist is NOT given, generate list-like dicts
     if not fieldlist:
@@ -73,7 +70,7 @@ def read_lenfile(infile, multi=False):
     :return: a generator, yielding OrderedDict objects
     """
 
-    fw = interactive.FileWrapper(infile, 'r')
+    fw = compat.FileWrapper(infile, 'r')
     resdict = dict()
     for line in fw.file:
         line = line.strip()

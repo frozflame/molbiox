@@ -3,17 +3,17 @@
 
 from __future__ import unicode_literals, print_function
 import numpy as np
-from molbiox.frame import interactive
+from molbiox.frame import compat
 from molbiox.frame.regexon import remove_whitespaces
 from molbiox.frame.locate import locate_submat
 
 
 def read(infile):
     try:
-        fw = interactive.FileWrapper(infile, 'r')
+        fw = compat.FileWrapper(infile, 'r')
     except IOError:
         respath = locate_submat(infile.lower())
-        fw = interactive.FileWrapper(respath, 'r')
+        fw = compat.FileWrapper(respath, 'r')
 
     istring_ = []
     jstring = None

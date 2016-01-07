@@ -64,6 +64,6 @@ class SRecord(IDict):
 
     def divide(self, limit):
         for offset in itertools.count(0, limit):
-            seq = self.seq[offset : offset+limit]
+            seq = self.seq[offset: offset+limit]
             yield SRecord(cmt=self.cmt, seq=seq, offset=offset)
 
