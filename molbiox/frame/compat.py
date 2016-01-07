@@ -18,7 +18,6 @@ class FileWrapper(object):
             else:
                 self.file = open(file_, mode)
                 self.path = file_
-
         else:
             self.file = file_
             self.path = ''
@@ -28,19 +27,27 @@ class FileWrapper(object):
             self.file.close()
 
     def write(self, string):
-        if 'b' not in self.file.mode and isinstance(string, six.binary_type):
+        mode = getattr(self.file, 'mode', '')
+        if 'b' not in mode and isinstance(string, six.binary_type):
             return self.file.write(string.decode())
-        if 'b' in self.file.mode and isinstance(string, six.text_type):
+        if 'b' in mode and isinstance(string, six.text_type):
             return self.file.write(string.encode())
         return self.file.write(string)
 
     def read(self, size):
+        mode = getattr(self.file, 'mode', '')
         string = self.file.read(size)
-        if 'b' not in self.file.mode and isinstance(string, six.binary_type):
+        if 'b' not in mode and isinstance(string, six.binary_type):
             return string.decode()
-        if 'b' in self.file.mode and isinstance(string, six.text_type):
+        if 'b' in mode and isinstance(string, six.text_type):
             return string.encode()
         return string
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, typ, value, traceback):
+        self.close()
 
 
 def make_array(data):
