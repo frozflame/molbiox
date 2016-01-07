@@ -4,9 +4,10 @@ Version history
 
 
 #### version 0.0.12
-+   `compat.FileWrapper` supports with-statement now
++   in progress ...
 
 #### version 0.0.11
++   `compat.FileWrapper` supports with-statement now
 +   restruct: `compat`, `interactive`
 +   remove: `tolerant`
 
