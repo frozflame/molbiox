@@ -10,6 +10,7 @@ Version history
 +   `compat.FileWrapper` supports with-statement now
 +   restruct: `compat`, `interactive`
 +   remove: `tolerant`
++   versioning: changes.md arranged by version
 
 #### version 0.0.10
 +   new: parsers for uniprot fasta header
