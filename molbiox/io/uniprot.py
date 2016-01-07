@@ -6,7 +6,9 @@ import re
 
 
 """
+Based on format description at
 http://www.uniprot.org/help/fasta-headers
+Last modified March 26, 2015
 """
 
 
