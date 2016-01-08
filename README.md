@@ -36,7 +36,11 @@ Translate DNA to protein
 
     $ mbx tl randseq.fa -o randseq.faa
 
+Read a fasta file (output like `fastalength`)
 
+    >>> from molbiox.io import fasta
+    >>> for rec in fasta.read('sample.fa'):
+    ...     print(len(rec.seq), rec.cmt)
 
 
 
