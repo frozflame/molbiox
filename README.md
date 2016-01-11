@@ -3,7 +3,7 @@ molbiox
 
 Utilities for bioinformatics
 
-Experimental stage. Very unstable yet.
+Experimental stage. Interfaces are unstable yet.
 Versions before 1.0.0 will be experimental and not ready for use.
 
 Install from PyPI
@@ -20,7 +20,10 @@ Install from GitHub
     virtualenv venv   
     source venv/bin/activate
     pip install https://github.com/frozflame/molbiox/archive/master.zip
-   
+
+General form of commandline interfaces
+
+    $ mbx SUBCOMMAND INPUT1 INPUT2 ... -o OUTPUT OTHER_OPTIONS
 
 Generate random sequences
 
