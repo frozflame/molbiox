@@ -28,7 +28,7 @@ def read(infile, fieldlist=None, sep=None):
             if not line or line.startswith('#'):
                 continue
 
-            values = line.split(sep, maxsplit=len(fieldlist)-1)
+            values = line.split(sep, len(fieldlist)-1)
 
             if len(values) < len(fieldlist):
                 raise ValueError('too few columns in data file')
