@@ -36,7 +36,7 @@ class CodonTable(object):
 
         # mask out unwanted bits
         arr &= 3
-        arr <<= [0, 2, 4]
+        arr <<= np.array([0, 2, 4], dtype='uint8')
 
         # 50x faster than arr.sum(axis=1)
         packarr = arr[:, 0] | arr[:, 1] | arr[:, 2]
