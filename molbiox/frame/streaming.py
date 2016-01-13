@@ -5,15 +5,15 @@ from __future__ import unicode_literals, print_function
 import itertools
 import sys
 import six
-from molbiox.frame.containers import SQueue
+from molbiox.frame import containers, compat
 
 
-class FQueue(SQueue):
+class FQueue(containers.SQueue):
     def put(self, string):
         if len(string) > self.free:
             raise ValueError('string is too large to fit in this FQueue')
         for line in string.splitlines(True):
-            SQueue.put(self, line)
+            containers.SQueue.put(self, line)
 
     def read(self, size=-1, peek=False):
         size = self.check_size(size)
@@ -44,7 +44,7 @@ class FQueue(SQueue):
 
 class FileWrapper(object):
     def __init__(self, file_, mode):
-        mode = six.u(mode)
+        mode = compat.u(mode)
         self.mode = mode
 
         if 'b' in mode:

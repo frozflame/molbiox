@@ -2,6 +2,7 @@
 # coding: utf-8
 
 from __future__ import unicode_literals, print_function
+import six
 
 
 def make_array(data):
@@ -27,3 +28,41 @@ def safe_bracket(container, key, default=None, cast=None):
         return cast(val)
     else:
         return val
+
+
+def u(string):
+    """
+    Convert a string to text_type
+    unicode in Python 2; str in Python 3
+
+    :param string: a string containing only ascii characters
+    :return: a unicode object
+    """
+    if isinstance(string, six.text_type):
+        return string
+    elif isinstance(string, six.binary_type):
+        return string.decode('ascii')
+    else:
+        tt = six.text_type
+        bt = six.binary_type
+        errmsg = 'string must be of type {} or {}'.format(tt, bt)
+        raise TypeError(errmsg)
+
+
+def b(string):
+    """
+    Convert a string to text_type
+    unicode in Python 2; str in Python 3
+
+    :param string: a string containing only ascii characters
+    :return: a unicode object
+    """
+    if isinstance(string, six.binary_type):
+        return string
+    elif isinstance(string, six.text_type):
+        return string.encode('ascii')
+    else:
+        tt = six.text_type
+        bt = six.binary_type
+        errmsg = 'string must be of type {} or {}'.format(tt, bt)
+        raise TypeError(errmsg)

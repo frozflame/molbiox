@@ -41,7 +41,7 @@ def _test_fasta_read(path):
     print(len(recs))
     assert len(recs) == 4 * 3
     for rec in recs:
-        assert re.match(r'^(anonym|randseq)\.\d$', six.u(rec.cmt))
+        assert re.match(r'^(anonym|randseq)\.\d$', rec.cmt)
         assert len(rec.seq) in (50, 20)
 
 
