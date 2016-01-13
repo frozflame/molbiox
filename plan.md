@@ -5,7 +5,7 @@
 
 + use mbx translation in run-glimmer script
 + template for commandline tests
-+ database file converters (uniprot, NR)
++ database file converters (NR)
 + etc/info command, guess type
 + what if abbr == name? in help text
 
@@ -22,5 +22,3 @@ $ mbx gu --blastdb dbase.fa sample.fa
 blastn
 
 ```
-
-

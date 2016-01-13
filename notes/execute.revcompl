@@ -1,0 +1,10 @@
+execute: revcomp
+----------------
+
+For a list of options, please use
+
+    $ mbx revcomp -h
+
+This note will not overlap with that.
+
+
