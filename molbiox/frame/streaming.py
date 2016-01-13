@@ -2,7 +2,6 @@
 # coding: utf-8
 
 from __future__ import unicode_literals, print_function
-import collections
 import itertools
 import sys
 import six
