@@ -35,3 +35,26 @@ def castable(func):
             result = castfunc(result)
         return result
     return _decorated_func
+
+
+def numb_convert(string):
+    string = string.strip()
+    try:
+        return int(string)
+    except ValueError:
+        try:
+            return float(string)
+        except ValueError:
+            raise
+
+
+def get_clspath(cls):
+    if not isinstance(cls, type):
+        raise TypeError('cls must be a new-style class')
+    if cls.__module__ == '__main__':
+        prefix = ''
+    else:
+        prefix = cls.__module__ + '.'
+    return prefix + cls.__name__
+
+
