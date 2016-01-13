@@ -10,7 +10,7 @@ from molbiox.frame.signature import Sig
 test_data_dna = {
     '+': 'TTGATGGCTAAGAGTAAAATCTTAAAAAACACACTGGTTCTATATTTTCGTCAAGTTTTG',
     '-': 'CAAAACTTGACGAAAATATAGAACCAGTGTGTTTTTTAAGATTTTACTCTTAGCCATCAA',
-} + Sig('md5:861bd90def6834a7a80feb84a196ca16', cheat=0)
+} + Sig('md5:d07980025382378c0bc3b98f60ea63b1', cheat=0)
 
 # easy access in interactive shell
 t = test_data_dna

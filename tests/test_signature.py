@@ -22,7 +22,7 @@ test_data = {
         'GGG': 'G', 'TAA': '*', 'TAG': '*', 'TGA': '*',
     },
     'stop': {'TAA', 'TAG', 'TGA'},
-} + Sig('md5:wrong') + Sig('md5:26749dd754b6399310afa234ce12176d')
+} + Sig('md5:wrong') + Sig('md5:d4f8e79ae29129fb82b93221bf704f7e')
 # only the last one will be used
 
 

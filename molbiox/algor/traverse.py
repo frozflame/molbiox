@@ -52,10 +52,18 @@ class Traverser(object):
             for typ in obj.__class__.mro():
                 if typ in self.handlers:
                     self.handlers[typ](self, obj)
+                    break
 
-    @Reg.register_handler(int, float, str, bytes)
+    @Reg.register_handler(int, float)
     def handle_primatives(self, obj):
         s = '<{}:{}>'.format(obj.__class__.__name__, obj)
+        self.consumer(s)
+
+    @Reg.register_handler(*six.string_types)
+    def handle_primatives(self, obj):
+        if isinstance(obj, six.binary_type) and sys.version_info.major == 2:
+            obj = obj.decode()
+        s = '<str:{}>'.format(obj)
         self.consumer(s)
 
     @Reg.register_handler(set)
