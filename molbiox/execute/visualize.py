@@ -10,7 +10,7 @@ from molbiox.io import arrows
 
 
 class CommandArrowplot(Command):
-    abbr = 'arrow'
+    abbr = 'aw'
     name = 'arrow-plot'
     desc = 'plot genes with arrows; experimental'
 

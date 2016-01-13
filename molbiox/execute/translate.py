@@ -10,7 +10,7 @@ from molbiox.kb import translate
 
 
 class CommandTranslate(Command):
-    abbr = 'tl'
+    abbr = 'ts'
     name = 'translate'
     desc = 'translate DNA sequences into protein sequences'
 
