@@ -6,7 +6,7 @@ import itertools
 from collections import OrderedDict
 from jinja2 import Template
 
-from molbiox.frame import compat, interactive
+from molbiox.frame import streaming, interactive
 from molbiox.frame.locate import locate_template
 
 
@@ -24,7 +24,7 @@ def read_boulder(infile):
     :param infile:
     :return: a generator of dict objects
     """
-    with compat.FileWrapper(infile, 'r') as fw:
+    with streaming.FileWrapper(infile, 'r') as fw:
         fw_lines = (l.strip() for l in fw if '=' in l)
         fw_lines = itertools.chain(fw_lines, ['='])
 

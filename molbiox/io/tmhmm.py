@@ -3,7 +3,7 @@
 
 from __future__ import unicode_literals, print_function
 import re
-from molbiox.frame import compat, interactive
+from molbiox.frame import streaming, interactive
 from molbiox.frame.containers import SRecord
 
 
@@ -17,7 +17,7 @@ def read(infile):
     """
 
     record = None
-    fw = compat.FileWrapper(infile, 'r')
+    fw = streaming.FileWrapper(infile, 'r')
 
     for line in fw.file:
         line = line.rstrip()

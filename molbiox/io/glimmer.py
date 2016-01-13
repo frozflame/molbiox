@@ -1,10 +1,8 @@
 #!/usr/bin/env python3
 # encoding: utf-8
 
-import os
 from collections import OrderedDict
-
-from molbiox.frame import compat, interactive
+from molbiox.frame import streaming, interactive
 
 GLIMMER3_FIELDS = [
     ('orf',     None),
@@ -25,7 +23,7 @@ def read_g3_predict(infile):
     """
 
     contig = 'A.CONTIG'
-    with compat.FileWrapper(infile, 'r') as fw:
+    with streaming.FileWrapper(infile, 'r') as fw:
 
         for line in fw.file:
             line = line.strip()
@@ -59,7 +57,7 @@ def write_g3_mcoordz(outfile, predicts, sep='\t'):
     :param sep:
     :return: None
     """
-    with compat.FileWrapper(outfile, 'w') as fw:
+    with streaming.FileWrapper(outfile, 'w') as fw:
         for predict in predicts:
             line = sep.join(str(x) for x in predict.values())
             # todo: newline as parameter

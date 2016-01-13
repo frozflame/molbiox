@@ -5,20 +5,23 @@ import re
 import string
 import sys
 import six
+
+import molbiox.frame.containers
 from molbiox.io import fasta
 from molbiox.frame.locate import locate_tests
 
 
 def test_buffer():
     s = string.digits
-    assert fasta.Buffer(0).put(s) == s
-    assert fasta.Buffer(0).put('') == ''
-    assert fasta.Buffer(1).put('') == ''
-    assert fasta.Buffer(1).put(s) == s[1:]
+    assert molbiox.frame.containers.SQueue(0).put(s) == s
+    assert molbiox.frame.containers.SQueue(0).put('') == ''
+
+    assert molbiox.frame.containers.SQueue(1).put('') == ''
+    assert molbiox.frame.containers.SQueue(1).put(s) == s[1:]
 
     # normal use case
     for i in six.moves.range(len(s) + 2):
-        buffer = fasta.Buffer(i)
+        buffer = molbiox.frame.containers.SQueue(i)
         remainder = buffer.put(s)
         assert len(remainder) == max(0, len(s)-i)
 

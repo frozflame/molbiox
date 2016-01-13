@@ -4,7 +4,7 @@
 import os
 
 from molbiox.frame.containers import SDict
-from molbiox.frame import compat, interactive
+from molbiox.frame import streaming, interactive
 
 
 @interactive.castable
@@ -31,7 +31,7 @@ def read(infile):
     :return: a generator
     """
 
-    with compat.FileWrapper(infile, 'r') as fw:
+    with streaming.FileWrapper(infile, 'r') as fw:
         while True:
             cmt = fw.file.readline().strip()
             seq = fw.file.readline().strip()
@@ -56,7 +56,7 @@ def readseq(infile):
 def write(outfile, seqdicts, linesep=os.linesep):
     # `handle` is either a file object or a string
 
-    with compat.FileWrapper(outfile, 'w') as fw:
+    with streaming.FileWrapper(outfile, 'w') as fw:
         template = '@{cmt}{eol}{seq}{eol}+{qual}{eol}'
         for seqdict in seqdicts:
             block = template.format(eol=linesep, **seqdict)

@@ -3,8 +3,9 @@
 
 from __future__ import unicode_literals, print_function
 import itertools
-from collections import OrderedDict
-from molbiox.frame import compat, interactive
+import csv
+from collections import OrderedDict, defaultdict
+from molbiox.frame import streaming, containers, interactive
 
 
 @interactive.castable
@@ -21,7 +22,7 @@ def read(infile, fieldlist=None, sep=None):
     if not fieldlist:
         fieldlist = ((i, None) for i in itertools.count())
 
-    with compat.FileWrapper(infile, 'r') as fw:
+    with streaming.FileWrapper(infile, 'r') as fw:
         for line in fw.file:
             line = line.strip()
             if not line or line.startswith('#'):
@@ -70,7 +71,7 @@ def read_lenfile(infile, multi=False):
     :return: an OrderedDict
     """
 
-    with compat.FileWrapper(infile, 'r') as fw:
+    with streaming.FileWrapper(infile, 'r') as fw:
         resdict = OrderedDict()
         for line in fw.file:
             line = line.strip()
@@ -90,7 +91,88 @@ def read_lenfile(infile, multi=False):
         return resdict
 
 
-class LGrouper(object):
+class Aggregator(object):
+    def __init__(self, records, idx_key=0, idx_val=0):
+        self.records = records
+        self.idx_key = idx_key
+        self.idx_val = idx_val
+
+    @staticmethod
+    def _lookup(record, index=None, default=None):
+        """
+        One-based lookup
+        :param record: an object having a __getitem__ interface
+        :param index: an integer, 0-based index
+        :param default:
+        :return:
+        """
+        if index is None:
+            return default
+        try:
+            return record[index]
+        except LookupError:
+            return default
+
+    @property
+    def kv_pairs(self):
+        for rec in self.records:
+            key = self._lookup(rec, self.idx_key)
+            val = self._lookup(rec, self.idx_val)
+            yield key, val
+
+    def _ag_sum(self):
+        groups = containers.DefaultOrderedDict(lambda: defaultdict(float))
+        for key, val in self.kv_pairs:
+            groups[key]['sum'] += float(val)
+            groups[key]['count'] += 1
+        return groups
+
+    def ag_sum(self):
+        groups = self._ag_sum()
+        for key in groups:
+            groups[key] = groups[key]['sum']
+        return groups
+
+    def ag_ave(self):
+        """
+        :return:
+        """
+        groups = self._ag_sum()
+        for key in groups:
+            groups[key] = groups[key]['sum'] / groups[key]['count']
+        return groups
+
+    def ag_list(self):
+        groups = containers.DefaultOrderedDict(list)
+        for key, val in self.kv_pairs:
+            groups[key].append(val)
+        return groups
+
+    def ag_set(self):
+        groups = containers.DefaultOrderedDict(set)
+        for key, val in self.kv_pairs:
+            groups[key].add(val)
+        return groups
+
+    def ag_count(self):
+        init_agval = containers.DefaultOrderedDict(float)
+        groups = containers.DefaultOrderedDict(lambda: init_agval)
+        for key, val in self.kv_pairs:
+            groups[key][val] += 1
+        return groups
+
+    def ag_pass(self):
+        return containers.DefaultOrderedDict(None, self.kv_pairs)
+
+    def ag_line(self):
+        groups = containers.DefaultOrderedDict()
+        for rec in self.records:
+            key = self._lookup(rec, self.idx_key)
+            val = '\t'.join
+            yield key, val
+
+
+class LineGrouper(object):
     def __init__(self, groupby):
         self.lines = []
         self.groupby = groupby

@@ -3,17 +3,18 @@
 
 from __future__ import unicode_literals, print_function
 import numpy as np
-from molbiox.frame import compat
+
+from molbiox.frame import streaming
 from molbiox.frame.regexon import remove_whitespaces
 from molbiox.frame.locate import locate_submat
 
 
 def read(infile):
     try:
-        fw = compat.FileWrapper(infile, 'r')
+        fw = streaming.FileWrapper(infile, 'r')
     except IOError:
         respath = locate_submat(infile.lower())
-        fw = compat.FileWrapper(respath, 'r')
+        fw = streaming.FileWrapper(respath, 'r')
 
     with fw:
         fw_lines = (l.strip() for l in fw.file)

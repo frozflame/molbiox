@@ -2,47 +2,16 @@
 # encoding: utf-8
 
 from __future__ import unicode_literals, print_function
+
+import itertools
 import os
 import re
+
 import six
-import itertools
-from collections import deque
 
-from molbiox.frame import compat, interactive
-from molbiox.frame.containers import SRecord
+from molbiox.frame import streaming, interactive
+from molbiox.frame.containers import SRecord, SQueue
 from molbiox.frame.regexon import remove_whitespaces
-
-
-class Buffer(object):
-    def __init__(self, size):
-        self._check(size)
-        self.free = size
-        self.size = size
-        self.queue = deque()
-
-    def get(self):
-        string = ''.join(self.queue)
-        self.queue.clear()
-        self.free = self.size
-        return string
-
-    def put(self, string):
-        if len(string) > self.free:
-            retval = string[self.free:]
-            self.queue.append(string[:self.free])
-            self.free = 0
-            return retval
-        else:
-            self.queue.append(string)
-            self.free -= len(string)
-            return ''
-
-    @staticmethod
-    def _check(size):
-        if not isinstance(size, six.integer_types):
-            raise TypeError("size must be an integer")
-        if size < 0:
-            raise ValueError("size must be a non-negative integer")
 
 
 class CommentState(object):
@@ -138,7 +107,7 @@ def read(infile, concise=True, limit=10**9):
         for rec in reciter1:
             print(rec.cmt, rec.seq)
     """
-    with compat.FileWrapper(infile, 'r') as fw:
+    with streaming.FileWrapper(infile, 'r') as fw:
         # fw_lines = (l.strip() for l in fw.file)  # the slow version
         fw_lines = iterate_chunks(fw)
         fw_lines = itertools.chain(fw_lines, ['>epilogue'])
@@ -147,13 +116,13 @@ def read(infile, concise=True, limit=10**9):
             limit = 10**9
 
         offset = 0
-        buffer = Buffer(limit)
+        squeue = SQueue(limit)
         cstate = CommentState()
 
         for line in fw_lines:
             # print('debug fasta.read: outter for loop')
             if line.startswith('>'):
-                seq = buffer.get()
+                seq = squeue.get()
                 cmt = cstate.update(line[1:], concise)
                 # yield previous rec; discard if no seq
                 if seq:
@@ -161,14 +130,14 @@ def read(infile, concise=True, limit=10**9):
                 offset = 0
 
             else:
-                remainder = buffer.put(line)
+                remainder = squeue.put(line)
                 while remainder:
                     # print('debug fasta.read: inner while loop')
-                    seq = buffer.get()
+                    seq = squeue.get()
                     cmt = cstate.get()
                     yield SRecord(cmt=cmt, seq=seq, offset=offset)
                     offset += limit
-                    remainder = buffer.put(remainder)
+                    remainder = squeue.put(remainder)
 
 
 def readone(infile, concise=True, limit=10 ** 9):
@@ -190,7 +159,7 @@ def write(outfile, records, concise=False, linesep=os.linesep, linewidth=60):
     :param linewidth: default 60
     :return: a generator
     """
-    with compat.FileWrapper(outfile, 'w') as fw:
+    with streaming.FileWrapper(outfile, 'w') as fw:
         # accept a single record
         if isinstance(records, dict):
             records = [records]
