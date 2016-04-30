@@ -9,6 +9,7 @@ from molbiox.frame.regexon import Regexon
 
 
 class CommandCat(Command):
+
     abbr = 'cat'
     name = 'concatenate'
     desc = 'concatenate fasta files'

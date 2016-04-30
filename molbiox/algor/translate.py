@@ -26,8 +26,8 @@ class CodonTable(object):
         """
         A   0100 0001
         C   0100 0011
-        G   0100 0111   ->  0100 0010
-        T   0101 0100   ->  0100 0000
+        G   0100 0111
+        T   0101 0100
         :param string: containing only upper-case letters and len(string) % 3 == 0
         :return:
         """

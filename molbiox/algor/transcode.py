@@ -12,6 +12,7 @@ from molbiox.kb import translate
 class CharsMapper(object):
     def __init__(self, config):
         self.refarr = self._build_mapping_array(**config)
+        self.reverse = False
 
     @staticmethod
     def _build_mapping_array(src, dest, outlier='-'):
@@ -27,15 +28,23 @@ class CharsMapper(object):
         return arr
 
     @classmethod
-    def create_mapper_compl_dna(cls):
+    def new_mapper_compl_dna(cls):
         return cls(molbiox.kb.transcode.complDNA)
 
     @classmethod
-    def create_mapper_compl_rna(cls):
+    def new_mapper_revcompl_dna(cls):
+        cmapper = cls(molbiox.kb.transcode.complDNA)
+        cmapper.reverse = True
+        return cmapper
+
+    @classmethod
+    def new_mapper_compl_rna(cls):
         return cls(molbiox.kb.transcode.complRNA)
 
     def transcode(self, string):
         iarr = np.fromstring(string, dtype='uint8')
         arr = self.refarr[iarr]
-        return arr.tostring()   # returning bytes
-
+        if self.reverse:
+            return arr.tostring()[::-1]
+        else:
+            return arr.tostring()   # returning bytes

@@ -10,7 +10,7 @@ tan = np.tan
 cot = lambda x: 1./np.tan(x)
 
 
-class ArrowCalc(object):
+class ArrowGen(object):
 
     def __init__(self, alpha=.7, beta=1., height1=16, height2=32):
         self.alpha = alpha

@@ -7,7 +7,7 @@ import sys
 import ctypes
 import numpy as np
 from numpy.ctypeslib import ndpointer
-from molbiox.frame.locate import locate_lib
+from molbiox.frame.environ import locate_lib
 
 
 class Aligner(object):

@@ -5,8 +5,11 @@ from __future__ import unicode_literals, print_function
 import os
 import sys
 import stat
+import re
 from molbiox.frame.command import Command
-from molbiox.frame.locate import locate_template
+from molbiox.frame.environ import locate_template
+from molbiox.frame import environ
+from molbiox.settings import all_templates
 
 
 class CommandGen(Command):
@@ -27,24 +30,26 @@ class CommandGen(Command):
         subparser.add_argument(
             'out', nargs='?',
             help='path to the output file, otherwise stdout')
+        return subparser
 
     @classmethod
     def run(cls, args):
-        tpl_path = locate_template(args.template, new=False)
-        tpl = open(tpl_path).read()
-
-        # TODO: render from a template
-        output = tpl
+        args.template = all_templates.get(args.template, args.template)
+        default_filename = re.sub(r'^s\.', 'run-', args.template)
 
         if args.out == '-':
-            sys.stdout.write(tpl)
+            cls.render(args, sys.stdout)
         else:
-            filename = args.out or locate_template(args.template, new=True)
-            cls.check_overwrite(args, filename)
-
+            filename = args.out or default_filename
+            cls.check_overwrite(args, [filename])
             with open(filename, 'w') as outfile:
-                outfile.write(output)
-
+                cls.render(args, outfile)
             # chmod +x
             st = os.stat(filename)
             os.chmod(filename, st.st_mode | stat.S_IEXEC)
+
+    @classmethod
+    def render(cls, args, outfile):
+        template = environ.get_template(args.template)
+        outfile.write(template.render())
+

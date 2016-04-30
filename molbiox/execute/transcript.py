@@ -7,16 +7,16 @@ from molbiox.algor.transcode import CharsMapper
 from molbiox.io import fasta
 
 
-class CommandTranslate(Command):
+class CommandRevcompl(Command):
     abbr = 'rc'
     name = 'revcompl'
     desc = 'generate reverse complements for given sequences'
 
     @classmethod
     def render(cls, args, outfile):
-        compl = CharsMapper.create_mapper_compl_dna()
+        cmapper = CharsMapper.new_mapper_revcompl_dna()
         for fn in args.filenames:
             for rec in fasta.read(fn):
                 rec.cmt += '.RC'
-                rec.seq = compl.transcode(rec.seq)[::-1]
+                rec.seq = cmapper.transcode(rec.seq)
                 fasta.write(outfile, rec)
