@@ -2,14 +2,15 @@
 # coding: utf-8
 
 from __future__ import unicode_literals, print_function
+
 import sys
 from math import sqrt
+
 import numpy as np
 
-import molbiox
-from molbiox.io import arrows
 from molbiox.algor.arrowgen import ArrowGen
 from molbiox.frame.environ import locate_tests
+from molbiox.visual import vizorf
 
 pi = np.pi
 
@@ -107,20 +108,9 @@ def test_plot():
 
 def test():
     path = locate_tests('data/lwcsample.tsv')
-    elements = molbiox.io.arrows.read_lwctab(path, 16, castfunc=list)
 
-    arr = ([elem['head'], elem['tail'], 1000] for elem in elements)
-    results = ArrowGen().calc(arr) / 20
 
-    polygons = arrows.format_points(results)
-
-    for elem, pg in zip(elements, polygons):
-        elem['polygon'] = pg
-        elem['text_x'] = (elem['head'] + elem['tail']) / 2. / 20
-        elem['text_y'] = 920 / 20
-        # print(elem, file=sys.stderr)
-
-    res = arrows.render_svg(elements=elements)
+    res = vizorf(path, )
     print(res)
 
 
