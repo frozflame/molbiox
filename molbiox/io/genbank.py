@@ -6,10 +6,8 @@ from __future__ import unicode_literals
 import os
 import re
 import textwrap
-
+import six
 from molbiox.frame import interactive
-from molbiox.frame.locate import locate_template
-from zombies.educational.compat_ import zrange
 
 
 class MetaParser(object):
@@ -86,6 +84,7 @@ class SeqzParser(object):
 
     def __init__(self):
         self.seqfragments = []
+
 
 @interactive.castable
 def read(handle):
@@ -222,7 +221,7 @@ def write(handle, gbdicts, linesep=os.linesep):
 
         outfile.write(b"ORIGIN" + linesep)
 
-        for i in zrange(0, len(sequence), 60):
+        for i in six.moves.range(0, len(sequence), 60):
             l = '{0:>9}'.format(i + 1) + s.join(textwrap.wrap(sequence[i:i+60], 10))
             outfile.write(l + linesep)
 
@@ -238,10 +237,3 @@ def test_read_seq(name):
 
 def test_read(name):
     return list(read(name))
-
-
-def test_j2(gbdict):
-    import jinja2
-    tmpl = jinja2.Template(open(locate_template('d.genbank.tpl')).read())
-    res = tmpl.render(gbdict=gbdict, wrap=textwrap.wrap)
-    return res

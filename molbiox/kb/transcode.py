@@ -2,7 +2,6 @@
 # coding: utf-8
 
 from __future__ import unicode_literals, print_function
-import sys
 from molbiox.frame.signature import Sig
 
 CHEAT = False
@@ -45,7 +44,6 @@ complDNA = {
     'src':  'MNHKDGABCXYTUWRS-.mnhkdgabcxytuwrs',
     'dest': 'KNDMHCTVGXRAAWYS-.kndmhctvgxraawys', 'outlier':  '-',
 } + Sig('md5:72b8d46e58ae7cfd1268a50d66adcda5', cheat=CHEAT)
-
 
 # config for complementary RNA
 complRNA = {

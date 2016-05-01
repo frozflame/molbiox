@@ -2,16 +2,18 @@
 # coding: utf-8
 
 from __future__ import unicode_literals, print_function
+
 import numpy as np
+from numpy import tan
+
 from molbiox.frame import compat
 
 
-tan = np.tan
-cot = lambda x: 1./np.tan(x)
+def cot(x):
+    return 1./tan(x)
 
 
 class ArrowGen(object):
-
     def __init__(self, alpha=.7, beta=1., height1=16, height2=32):
         self.alpha = alpha
         self.beta = beta

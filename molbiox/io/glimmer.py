@@ -23,9 +23,8 @@ def read_g3_predict(infile):
     """
 
     contig = 'A.CONTIG'
-    with streaming.FileWrapper(infile, 'r') as fw:
-
-        for line in fw.file:
+    with streaming.FileAdapter(infile, 'r') as fila:
+        for line in fila:
             line = line.strip()
 
             if line.startswith('>'):
@@ -57,7 +56,7 @@ def write_g3_mcoordz(outfile, predicts, sep='\t'):
     :param sep:
     :return: None
     """
-    with streaming.FileWrapper(outfile, 'w') as fw:
+    with streaming.FileAdapter(outfile, 'w') as fw:
         for predict in predicts:
             line = sep.join(str(x) for x in predict.values())
             # todo: newline as parameter
