@@ -5,6 +5,7 @@ from __future__ import division, unicode_literals, print_function
 
 from molbiox.algor.arrowgen import ArrowGen
 from molbiox.frame import interactive, streaming
+from molbiox.frame.environ import from_default
 from molbiox.io import tabular
 from molbiox.visual import svg_maker
 
@@ -53,20 +54,32 @@ class TextMaker(object):
         return svg_maker.make_text(c, x=x, y=y, rx=x, ry=y, angle=a, style=s)
 
 
-def render_vizorf(filename, scale, normalize, a, b, h1, h2, style):
+def new_ag_params(ag_params):
+    default = {
+        'alpha': .7,
+        'beta': 1.,
+        'height1': 16,
+        'height2': 32,
+    }
+    return from_default(default, ag_params)
+
+
+def render_vizorf(filename, scale, normalize, style, ag_params=None):
     records = tabular.read_tab_vizorf(filename, castfunc=list)
     records = rescale_tab_vizorf(records, scale, normalize)
 
-    # print('debug: elements', elements, file=sys.stderr)
-    arrowgen = ArrowGen(a, b, h1, h2)
-    ypos = h2 * 4
+    ag_params = new_ag_params(ag_params)
+    ypos = ag_params['h2'] * 4
     arrpos = ([r.head, r.tail, ypos] for r in records)
+
+    arrowgen = ArrowGen(**ag_params)
     arrpgs = arrowgen(arrpos)
 
-    tm = TextMaker(h2, angle=-30, style=style)
+    tm = TextMaker(ag_params['h2'], angle=-30, style=style)
     texts = [tm(r) for r in records]
     polygons = [svg_maker.make_polygon(a) for a in arrpgs]
 
     elements = streaming.alternate(texts, polygons)
     width = max(r.tail for r in records)
-    return svg_maker.render_svg(elements=elements, height=h2*5, width=width)
+    height = ag_params['h2'] * 5
+    return svg_maker.render_svg(elements=elements, height=height, width=width)

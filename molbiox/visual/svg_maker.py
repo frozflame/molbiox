@@ -7,22 +7,26 @@ import six
 from lxml.etree import tostring
 from lxml.builder import E
 
-from molbiox.frame.environ import get_template
+from molbiox.frame.environ import get_template, from_default
 
 
-default_polygon_style = {
-    'stroke-width': 1,
-    'fill-opacity': 0.7,
-    'stroke': 'black',
-    'stroke-opacity': 0.8,
-    'fill': 'red',
-}
+def new_polygon_style(style):
+    default = {
+        'stroke-width': 1,
+        'fill-opacity': 0.7,
+        'stroke': 'black',
+        'stroke-opacity': 0.8,
+        'fill': 'red',
+    }
+    return from_default(default, style)
 
 
-default_text_style = {
-    'font-size': 12,
-    'font-family': 'Times New Roman',
-}
+def new_text_style(style):
+    default = {
+        'font-size': 12,
+        'font-family': 'Times New Roman',
+    }
+    return from_default(default, style)
 
 
 def format_style(style):
@@ -40,9 +44,7 @@ def format_points(points):
 
 
 def make_polygon(points, style=None, render=True):
-    user_style = style or dict()
-    style = dict(default_polygon_style)
-    style.update(user_style)
+    style = new_polygon_style(style)
     style = format_style(style)
     if not isinstance(points, six.string_types):
         points = format_points(points)
@@ -54,9 +56,7 @@ def make_polygon(points, style=None, render=True):
 
 
 def make_text(content, x, y, rx, ry, angle=0, style=None, render=True):
-    user_style = style or dict()
-    style = dict(default_polygon_style)
-    style.update(user_style)
+    style = new_text_style(style)
     attributes = {
         'x': '{}'.format(x),
         'y': '{}'.format(y),
