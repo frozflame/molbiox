@@ -8,8 +8,8 @@ import numpy as np
 
 import molbiox
 from molbiox.io import arrows
-from molbiox.algor.arrows import ArrowCalc
-from molbiox.frame.locate import locate_tests
+from molbiox.algor.arrowgen import ArrowGen
+from molbiox.frame.environ import locate_tests
 
 pi = np.pi
 
@@ -53,14 +53,14 @@ def arr_eq(arr1, arr2, precision=.001):
 
 def test_read_lwcfile():
     path = 'data/lwcsample.tsv'
-    table = arrows.read_lwcfile(path, 16, castfunc=list)
+    table = arrows.read_lwctab(path, 16, castfunc=list)
     for x in table:
         print(x)
 
 
 def test_arrow_calc():
     for ds in [dataset1, dataset2, dataset3]:
-        ac = ArrowCalc(**ds['config'])
+        ac = ArrowGen(**ds['config'])
         # result = calc.prototype(400).astype(np.int)
         results = ac.calc(ds['lengths'])
         assert arr_eq(results, ds['results'], .001)
@@ -85,15 +85,15 @@ def test_arrow_calc():
 
 def test_arrow_calc_1():
     path = 'data/lwcsample.tsv'
-    elements = arrows.read_lwcfile(path, 16, castfunc=list)
+    elements = arrows.read_lwctab(path, 16, castfunc=list)
     arrpos = ([elem['head'], elem['tail']] for elem in elements)
-    calc = ArrowCalc()
+    calc = ArrowGen()
     data = calc(arrpos)
     return data
 
 
 def test_plot():
-    ac = ArrowCalc(**dataset1['config'])
+    ac = ArrowGen(**dataset1['config'])
     data = ac.calc([[6, 9, 0], [9, 6, 9]]) * 20
     elements = [dict(polygon=pts) for pts in arrows.format_points(data)]
     # print(data, file=sys.stderr)
@@ -107,10 +107,10 @@ def test_plot():
 
 def test():
     path = locate_tests('data/lwcsample.tsv')
-    elements = molbiox.io.arrows.read_lwcfile(path, 16, castfunc=list)
+    elements = molbiox.io.arrows.read_lwctab(path, 16, castfunc=list)
 
     arr = ([elem['head'], elem['tail'], 1000] for elem in elements)
-    results = ArrowCalc().calc(arr) / 20
+    results = ArrowGen().calc(arr) / 20
 
     polygons = arrows.format_points(results)
 

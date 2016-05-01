@@ -17,33 +17,30 @@ def read(infile):
     """
 
     record = None
-    fw = streaming.FileWrapper(infile, 'r')
+    with streaming.FileAdapter(infile, 'r') as fila:
+        for line in fila:
+            line = line.rstrip()
 
-    for line in fw.file:
-        line = line.rstrip()
+            # a new protein (new record)
+            if line.startswith('>'):
+                if record:
+                    yield build_tmhmm_record(record)
+                record = build_tmhmm_record()
+                continue
 
-        # a new protein (new record)
-        if line.startswith('>'):
-            if record:
-                yield build_tmhmm_record(record)
-            record = build_tmhmm_record()
-            continue
+            if not line or not record:
+                continue
 
-        if not line or not record:
-            continue
+            if line.startswith('?0'):
+                record['tm.seq'] += line.split()[1]
+                continue
 
-        if line.startswith('?0'):
-            record['tm.seq'] += line.split()[1]
-            continue
-
-        if line.startswith(' ' * 3):
-            record['seq'] += line.strip()
+            if line.startswith(' ' * 3):
+                record['seq'] += line.strip()
 
     # last record (no '>' to mark end)
     if record:
         yield build_tmhmm_record(record)
-
-    fw.close()
 
 
 def build_tmhmm_record(record=None):

@@ -6,18 +6,18 @@ import numpy as np
 
 from molbiox.frame import streaming
 from molbiox.frame.regexon import remove_whitespaces
-from molbiox.frame.locate import locate_submat
+from molbiox.frame.environ import locate_submat
 
 
 def read(infile):
     try:
-        fw = streaming.FileWrapper(infile, 'r')
+        fila = streaming.FileAdapter(infile, 'r')
     except IOError:
         respath = locate_submat(infile.lower())
-        fw = streaming.FileWrapper(respath, 'r')
+        fila = streaming.FileAdapter(respath, 'r')
 
-    with fw:
-        fw_lines = (l.strip() for l in fw.file)
+    with fila:
+        fw_lines = (l.strip() for l in fila.file)
         ichars = []
         jstring = None
         jsize = 0
@@ -32,7 +32,7 @@ def read(infile):
         if jstring is None:
             raise ValueError('this sub matrix file is broken')
 
-        for line in fw.file:
+        for line in fila.file:
             items = line.split()
             if not items:
                 continue

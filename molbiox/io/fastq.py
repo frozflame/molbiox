@@ -31,17 +31,17 @@ def read(infile):
     :return: a generator
     """
 
-    with streaming.FileWrapper(infile, 'r') as fw:
+    with streaming.FileAdapter(infile, 'r') as fila:
         while True:
-            cmt = fw.file.readline().strip()
-            seq = fw.file.readline().strip()
-            plus = fw.file.readline().strip()
-            qual = fw.file.readline().strip()
+            cmt = fila.readline().strip()
+            seq = fila.readline().strip()
+            plus = fila.readline().strip()
+            qual = fila.readline().strip()
 
             if not cmt:
                 break
             if not cmt.startswith('@') or plus != '+':
-                raise ValueError('fastq file <{}> is corrupted'.format(fw.path))
+                raise ValueError('fastq file <{}> is corrupted'.format(fila.path))
             yield SDict(cmt=cmt[1:], seq=seq, qual=qual)
 
 
@@ -56,11 +56,11 @@ def readseq(infile):
 def write(outfile, seqdicts, linesep=os.linesep):
     # `handle` is either a file object or a string
 
-    with streaming.FileWrapper(outfile, 'w') as fw:
+    with streaming.FileAdapter(outfile, 'w') as fila:
         template = '@{cmt}{eol}{seq}{eol}+{qual}{eol}'
         for seqdict in seqdicts:
             block = template.format(eol=linesep, **seqdict)
-            fw.file.write(block)
+            fila.write(block)
 
 # TODO
 # <instrument>:<run number>:<flowcell ID>:<lane>:<tile>

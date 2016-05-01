@@ -7,7 +7,7 @@ from collections import OrderedDict
 from jinja2 import Template
 
 from molbiox.frame import streaming, interactive
-from molbiox.frame.locate import locate_template
+from molbiox.frame.environ import locate_template
 
 
 def render_primer3_input(**kwargs):
@@ -24,12 +24,12 @@ def read_boulder(infile):
     :param infile:
     :return: a generator of dict objects
     """
-    with streaming.FileWrapper(infile, 'r') as fw:
-        fw_lines = (l.strip() for l in fw if '=' in l)
-        fw_lines = itertools.chain(fw_lines, ['='])
+    with streaming.FileAdapter(infile, 'r') as fila:
+        fila_lines = (l.strip() for l in fila if '=' in l)
+        fila_lines = itertools.chain(fila_lines, ['='])
 
         record = dict()
-        for l in fw_lines:
+        for l in fila_lines:
             # record terminated by '='
             if l == '=' and record:
                 yield record
@@ -79,7 +79,7 @@ def format_table(records):
             continue
         items = []
         for k in adjustments:
-            x = adjustments[k](r.get(k, ''), widths[k])
+            x = adjustments[k](r.get(k, '_'), widths.get(k, 0))
             items.append(x)
         yield ' '.join(items)
 

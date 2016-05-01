@@ -8,7 +8,7 @@ import six
 
 import molbiox.frame.containers
 from molbiox.io import fasta
-from molbiox.frame.locate import locate_tests
+from molbiox.frame.environ import locate_tests
 
 
 def test_buffer():

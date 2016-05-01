@@ -41,18 +41,15 @@ class FQueue(containers.SQueue):
         return lines
 
 
-class FileWrapper(object):
-    def __init__(self, file_, mode, peek=False):
+class FileAdapter(object):
+    def __init__(self, file_, mode):
         mode = compat.u(mode)
         self.mode = mode
-        self._peek = peek
 
         if 'b' in mode:
             self.stype = six.binary_type
-            # self.
         else:
             self.stype = six.text_type
-        self.fqueue = FQueue(size=-1, stype=self.stype)
 
         if isinstance(file_, six.string_types):
             if file_ == '-' and 'r' in mode:
@@ -90,6 +87,47 @@ class FileWrapper(object):
         else:
             return cls(file_, mode)
 
+    def close(self):
+        if self.path:
+            self.file.close()
+
+    def convert(self, string):
+        """
+        Convert string to correct type (str or bytes)
+        :param string: a str or bytes object
+        """
+        if self.stype == six.text_type and isinstance(string, six.binary_type):
+            return string.decode()
+        if self.stype == six.binary_type and isinstance(string, six.text_type):
+            return string.encode()
+        return string
+
+    def write(self, string):
+        string = self.convert(string)
+        return self.file.write(string)
+
+    def read(self, size=-1):
+        """
+        :param size: a non-negative integer or -1
+        :return:
+        """
+        return self.convert(self.file.read(size))
+
+    def readline(self, size=-1):
+        return self.convert(self.file.readline(size))
+
+    def readlines(self, size=-1):
+        lines = self.file.readlines(size)
+        lines = [self.convert(l) for l in lines]
+        return lines
+
+
+class FilePeeker(FileAdapter):
+    def __init__(self, file_, mode):
+        super(self.__class__, self).__init__(file_, mode)
+        self.fqueue = FQueue(size=-1, stype=self.stype)
+        self._peek = False
+
     @property
     def peek(self):
         return self._peek
@@ -114,25 +152,6 @@ class FileWrapper(object):
     def close(self):
         if self.path and not self.peek:
             self.file.close()
-
-    def convert(self, string):
-        """
-        Convert string to correct type (str or bytes)
-        :param string: a str or bytes object
-        """
-        if self.stype == six.text_type and isinstance(string, six.binary_type):
-            return string.decode()
-        if self.stype == six.binary_type and isinstance(string, six.text_type):
-            return string.encode()
-        return string
-
-    def _fq_store(self, string):
-        if self.peek:
-            self.fqueue.put(string)
-
-    def write(self, string):
-        string = self.convert(string)
-        return self.file.write(string)
 
     def read(self, size=-1):
         """
@@ -198,11 +217,28 @@ class FileWrapper(object):
         return lines
 
 
-def chunkwise(chunksize, *args):
-    # args are strings
+def chunkwize_parallel(chunksize, *args):
+    # args are strings or lists
+    chunksize = int(chunksize)
     for i in itertools.count(0):
         r = [s[i*chunksize:(i+1)*chunksize] for s in args]
         if any(r):
             yield r
         else:
             raise StopIteration
+
+
+def chunkwize(chunksize, items):
+    """
+    :param chunksize: an integer
+    :param items: an iterable
+    :return: a generator
+    """
+    chunksize = int(chunksize)
+    chunk = []
+    for i in items:
+        if len(chunk) >= chunksize:
+            yield chunk
+            chunk = []
+        chunk.append(i)
+    yield chunk

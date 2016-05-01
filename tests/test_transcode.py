@@ -20,7 +20,7 @@ def test_revcompl_dna():
     # validate test data
     test_data_dna.inspect()
 
-    mapper = CharsMapper.create_mapper_compl_dna()
+    mapper = CharsMapper.new_mapper_compl_dna()
     revcompl = mapper.transcode(test_data_dna['+']).decode('ascii')[::-1]
     assert revcompl == test_data_dna['-']
 

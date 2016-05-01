@@ -107,10 +107,9 @@ def read(infile, concise=False, limit=10**9):
         for rec in reciter1:
             print(rec.cmt, rec.seq)
     """
-    with streaming.FileWrapper(infile, 'r') as fw:
-        # fw_lines = (l.strip() for l in fw.file)  # the slow version
-        fw_lines = iterate_chunks(fw)
-        fw_lines = itertools.chain(fw_lines, ['>epilogue'])
+    with streaming.FileAdapter(infile, 'r') as fila:
+        fila_lines = iterate_chunks(fila)
+        fila_lines = itertools.chain(fila_lines, ['>epilogue'])
 
         if limit < 1:
             limit = 10**9
@@ -119,7 +118,7 @@ def read(infile, concise=False, limit=10**9):
         squeue = SQueue(limit)
         cstate = CommentState()
 
-        for line in fw_lines:
+        for line in fila_lines:
             # print('debug fasta.read: outter for loop')
             if line.startswith('>'):
                 seq = squeue.get()
@@ -160,7 +159,7 @@ def write(outfile, records, concise=False, linesep=os.linesep, linewidth=60):
     :param linewidth: default 60
     :return: a generator
     """
-    with streaming.FileWrapper(outfile, 'w') as fw:
+    with streaming.FileAdapter(outfile, 'w') as fila:
         # accept a single record
         if isinstance(records, dict):
             records = [records]
@@ -185,12 +184,12 @@ def write(outfile, records, concise=False, linesep=os.linesep, linewidth=60):
                 raise ValueError('bad offset, your data might be corrupted')
             if offset_expected == 0:
                 cmtline = '>{}{}'.format(cstate.get(), linesep)
-                fw.write(cmtline)
+                fila.write(cmtline)
 
             offset_expected += len(seq)
             for i in six.moves.range(0, len(seq), linewidth):
-                fw.write(seq[i:i+linewidth])
-                fw.write(linesep)
+                fila.write(seq[i:i+linewidth])
+                fila.write(linesep)
 
 
 def pack(cmt, chunks):

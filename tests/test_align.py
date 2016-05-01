@@ -7,7 +7,7 @@ import six
 
 import molbiox.frame.streaming
 from molbiox.algor import aligner
-from molbiox.frame.locate import locate_tests
+from molbiox.frame.environ import locate_tests
 from molbiox.frame.testing import Timer
 from molbiox.io import submat, fasta
 
@@ -28,7 +28,7 @@ def test_align():
 
     mstring = aligner.gen_match_string(istring, jstring)
 
-    for items in molbiox.frame.streaming.chunkwise(60, istring, mstring, jstring):
+    for items in molbiox.frame.streaming.chunkwize_parallel(60, istring, mstring, jstring):
         bunch = six.b('\n').join(items).decode('ascii')
         print(bunch, end='\n\n', file=sys.stderr)
 
