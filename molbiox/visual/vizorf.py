@@ -64,24 +64,26 @@ def new_ag_params(ag_params):
     return from_default(default, ag_params)
 
 
-def render_vizorf(filename, scale, normalize, style, ag_params=None):
-    records = tabular.read_tab_vizorf(filename, castfunc=list)
+def render_vizorf(filename, scale, normalize=True, ag_params=None, style=None):
+    records = tabular.read_tab_vizorf(filename)
     records = rescale_tab_vizorf(records, scale, normalize)
+    records = list(records)
 
     ag_params = new_ag_params(ag_params)
-    ypos = ag_params['h2'] * 4
+    h2 = ag_params['height2']
+    ypos = h2 * 4
     arrpos = ([r.head, r.tail, ypos] for r in records)
 
     arrowgen = ArrowGen(**ag_params)
     arrpgs = arrowgen(arrpos)
 
-    tm = TextMaker(ag_params['h2'], angle=-30, style=style)
+    tm = TextMaker(h2, angle=-30, style=style)
     texts = [tm(r) for r in records]
     polygons = [svg_maker.make_polygon(a) for a in arrpgs]
 
     elements = streaming.alternate(texts, polygons)
     width = max(r.tail for r in records)
-    height = ag_params['h2'] * 5
+    height = h2 * 5
     return svg_maker.render_svg(elements=elements, height=height, width=width)
 
 

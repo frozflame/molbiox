@@ -3,15 +3,13 @@
 
 from __future__ import unicode_literals, print_function
 
-from molbiox.algor.arrowgen import ArrowGen
 from molbiox.frame.command import Command
-from molbiox.io import tabular
-from molbiox.visual import arrow
+from molbiox.visual.vizorf import render_vizorf
 
 
-class CmdORFVisualize(Command):
-    abbr = 'ov'
-    name = 'orf-visualize'
+class CmdVizORF(Command):
+    abbr = 'vo'
+    name = 'visualize-orf'
     desc = 'plot ORFs with arrows; experimental'
 
     @classmethod
@@ -36,19 +34,13 @@ class CmdORFVisualize(Command):
 
     @classmethod
     def render(cls, args, outfile):
-        calc = ArrowGen(args.alpha, args.beta, args.h1, args.h2)
+        ag_params = {
+            'alpha': args.alpha,
+            'beta': args.beta,
+            'height1': args.h1,
+            'height2': args.h2,
+        }
         for filename in args.filenames:
-            elements = tabular.read_lwctab(filename, args.scale, castfunc=list)
-            # print('debug: elements', elements, file=sys.stderr)
-            ypos = args.h2 * 4
-            maxpos = max(max(elem['head'], elem['tail']) for elem in elements)
-            arrpos = ([elem['head'], elem['tail'], ypos] for elem in elements)
-            results = calc(arrpos)
-            polygons = arrow.format_points(results)
-
-            for elem, pg in zip(elements, polygons):
-                elem['polygon'] = pg
-                elem['text_x'] = (elem['head'] + elem['tail']) / 2.
-                elem['text_y'] = args.h2 * 3
-            res = arrow.render_svg(elements=elements, height=args.h2*5, width=maxpos)
+            res = render_vizorf(
+                filename, scale=args.scale, normalize=True, ag_params=ag_params)
             outfile.write(res)

@@ -78,7 +78,7 @@ def get_template(filename):
     return jinja2_env.get_template(filename)
 
 
-def from_default(default, custom, restrict):
+def from_default(default, custom, restrict=False):
     """
     :param default: a dict object
     :param custom: a dict object
@@ -89,6 +89,7 @@ def from_default(default, custom, restrict):
     only keys in `default`
     """
     result = dict(default)
+    custom = custom or dict()
     if restrict:
         c = {k: v for k, v in custom.items() if k in default}
         result.update(c)

@@ -80,6 +80,9 @@ class FileAdapter(object):
             raise StopIteration()
         return line
 
+    def next(self):
+        return self.__next__()
+
     @classmethod
     def new(cls, file_, mode):
         if isinstance(file_, cls):
