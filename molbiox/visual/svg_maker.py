@@ -6,6 +6,8 @@ from __future__ import unicode_literals, print_function
 import six
 from lxml.builder import E
 
+from molbiox.frame.environ import get_template
+
 
 default_polygon_style = {
     'stroke-width': 1,
@@ -17,7 +19,7 @@ default_polygon_style = {
 
 
 default_text_style = {
-    'font-size': 9,
+    'font-size': 12,
     'font-family': 'Times New Roman',
 }
 
@@ -58,3 +60,7 @@ def make_text(content, x, y, rx, ry, angle=0, style=None):
     }
     return E.text(content, **attributes)
 
+
+def render_svg(**kwargs):
+    tpl = get_template('d.svg_maker.xml')
+    return tpl.render(**kwargs)
