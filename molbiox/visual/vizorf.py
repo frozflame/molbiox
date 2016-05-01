@@ -83,3 +83,21 @@ def render_vizorf(filename, scale, normalize, style, ag_params=None):
     width = max(r.tail for r in records)
     height = ag_params['h2'] * 5
     return svg_maker.render_svg(elements=elements, height=height, width=width)
+
+
+def _d_format_points(data):
+    """
+    deprecated for reference only
+    :param data: n*k*2
+    :return:
+    """
+    if not isinstance(data, np.ndarray):
+        arr = np.array(data)
+    else:
+        arr = data
+    if arr.ndim != 3 or arr.shape[-1] != 2:
+        raise ValueError("'arr' should be of shape (n, k, 2)")
+    for elem in arr:
+        string = ' '.join('{},{}'.format(*pair) for pair in elem)
+        yield string
+
