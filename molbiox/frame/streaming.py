@@ -6,7 +6,7 @@ import itertools
 import os
 import sys
 import six
-from molbiox.frame import containers, compat
+from molbiox.frame import containers, compat, interactive
 
 
 class FQueue(containers.SQueue):
@@ -242,3 +242,13 @@ def chunkwize(chunksize, items):
             chunk = []
         chunk.append(i)
     yield chunk
+
+
+@interactive.castable
+def alternate(*iters):
+    dummy = object()
+    zip_longest = six.moves.zip_longest
+    alt = itertools.chain(*zip_longest(*iters, fillvalue=dummy))
+    for item in alt:
+        if item is not dummy:
+            yield item
