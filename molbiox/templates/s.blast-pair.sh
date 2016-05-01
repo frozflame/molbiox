@@ -7,27 +7,17 @@ fi
 QRFILE=$1; DBFILE=$2; OUTPREFIX=$3
 if [ a.${OUTPREFIX} = a. ]; then OUTPREFIX=${QRFILE}; fi
 
-# protein or nucleotides
-QRT=`mbx-seq-info -a type ${QRFILE}`
-DBT=`mbx-seq-info -a type ${DBFILE}`
-
 # determine type of blast to use
-if   [ ${QRT}.${DBT} == 'prot.prot' ]; then BLASTEXE='blastp';
-elif [ ${QRT}.${DBT} == 'nucl.nucl' ]; then BLASTEXE='blastn';
-elif [ ${QRT}.${DBT} == 'nucl.prot' ]; then BLASTEXE='blastx';
-elif [ ${QRT}.${DBT} == 'prot.nucl' ]; then BLASTEXE='tblastn'; fi
+BLASTEXE=`mbx seq-type ${QRFILE} --blastdb ${DBFILE}`
+FMTDBEXE="makeblastdb"
 
 # make sure 2 commands exist; otherwise exit
-FMTDBEXE="makeblastdb"
 ${BLASTEXE} -h > /dev/null; if [ $? -ne 0 ]; then exit; fi
 ${FMTDBEXE} -h > /dev/null; if [ $? -ne 0 ]; then exit; fi
 
 # number of threads
-NTHR=`mbx-env cpu-count`
+NTHR=`mbx etc nproc`
 # NTHR="6"
-
-# format specifiers
-FMTS_MINI=`mbx-etc blast-mini`
 
 # e-value
 EVALUE="1e-5"
@@ -36,11 +26,11 @@ OPT=''
 # OPT='-max_target_seqs'
 
 # -outfmt 11
-FMT11=${OUTPREFIX}.fmt11.${BLASTEXE}
+FILENAME_FMT11=${OUTPREFIX}.fmt11.${BLASTEXE}
 
 echo -n "${FMTDBEXE} ${DBFILE} ... "
 
-    ${FMTDBEXE} -dbtype ${DBT} -in ${DBFILE} > /dev/null
+    ${FMTDBEXE} -dbtype `mbx seq-type ${DBFILE}` -in ${DBFILE} > /dev/null
 
 echo Done!
 
@@ -48,13 +38,13 @@ echo Done!
 echo -n "${BLASTEXE} ${QRFILE} ${DBFILE} ... "
 
     ${BLASTEXE}  -query ${QRFILE}  -db ${DBFILE}  -outfmt 11 \
-                 -out ${FMT11}  -num_threads ${NTHR}  -evalue ${EVALUE}
+                 -out ${FILENAME_FMT11}  -num_threads ${NTHR}  -evalue ${EVALUE}
 
-    FMTR="blast_formatter ${OPT} -archive ${FMT11}"
+    FMTR="blast_formatter ${OPT} -archive ${FILENAME_FMT11}"
 
     # TODO: include tabfmt to MBX
-      ${FMTR} -outfmt "6 ${FMTS_MINI}" ${OPT} | tabfmt > ${OUTPREFIX}.fmt6m.${BLASTEXE}
-    # ${FMTR} -outfmt "7 ${FMTS_MINI}" ${OPT} > ${OUTPREFIX}.fmt7m.${BLASTEXE}
+      ${FMTR} -outfmt "$(mbx etc blast6m)" ${OPT} > ${OUTPREFIX}.fmt6m.${BLASTEXE}
+    # ${FMTR} -outfmt "$(mbx etc blast7m)" ${OPT} > ${OUTPREFIX}.fmt7m.${BLASTEXE}
 
     # ${FMTR} -outfmt 0 ${OPT} > ${QUERY}.fmt0.${BLASTEXE}
     # ${FMTR} -outfmt 6 ${OPT} > ${QUERY}.fmt6.${BLASTEXE}
@@ -64,10 +54,10 @@ echo -n "${BLASTEXE} ${QRFILE} ${DBFILE} ... "
     rm -f ${DBFILE}.{nhr,nin,nsq,phr,pin,psq}
 
     # remove fmt11
-    rm -f ${FMT11}
+    rm -f ${FILENAME_FMT11}
     
     # remove empty results
-    find . -name "${QUERY}.*.${BLASTEXE}" -type f -size 0 -delete
+    find . -name "${OUTPREFIX}.*.${BLASTEXE}" -type f -size 0 -delete
 
 echo Done!
 

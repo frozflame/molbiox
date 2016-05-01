@@ -18,13 +18,11 @@ DBT=prot; DB="ncbi/nr"
 # DBT=prot; DB="uniprot1/oprm.named.fasta"
 # DBT=prot; DB="vibrio/flanking.vibrio.fasta"
 
-# number of threads
-NTHR=`mbx-env cpu-count`
-# NTHR="6"
 
-# format specifiers
-FMTS_MINI=`mbx-etc blast-mini`
-FMTS_FULL=`mbx-etc blast-full`
+
+# number of threads
+NTHR=$(mbx etc nproc)
+# NTHR="6"
 
 # e-value
 EVALUE="1e-5"
@@ -54,10 +52,12 @@ for QUERY in $@; do
 
     FMTR="blast_formatter ${OPT} -archive ${FMT11}"
 
-      ${FMTR} -outfmt "6 ${FMTS_MINI}" > ${QUERY}.fmt6m.${BLASTEXE}
-    # ${FMTR} -outfmt "7 ${FMTS_MINI}" > ${QUERY}.fmt7m.${BLASTEXE}
-    # ${FMTR} -outfmt "6 ${FMTS_FULL}" > ${QUERY}.fmt6a.${BLASTEXE}
-    # ${FMTR} -outfmt "7 ${FMTS_FULL}" > ${QUERY}.fmt7a.${BLASTEXE}
+      ${FMTR} -outfmt "$(mbx etc blast6m )" > ${QUERY}.fmt6m.${BLASTEXE}
+    # ${FMTR} -outfmt "$(mbx etc blast7m )" > ${QUERY}.fmt7m.${BLASTEXE}
+    # ${FMTR} -outfmt "$(mbx etc blast10m)" > ${QUERY}.fmt10m.${BLASTEXE}
+    # ${FMTR} -outfmt "$(mbx etc blast6a )" > ${QUERY}.fmt6a.${BLASTEXE}
+    # ${FMTR} -outfmt "$(mbx etc blast7a )" > ${QUERY}.fmt7a.${BLASTEXE}
+    # ${FMTR} -outfmt "$(mbx etc blast10a)" > ${QUERY}.fmt10a.${BLASTEXE}
 
     # ${FMTR} -outfmt 0 > ${QUERY}.fmt0.${BLASTEXE}
 
