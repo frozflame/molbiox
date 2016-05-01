@@ -4,16 +4,13 @@
 from __future__ import unicode_literals, print_function
 import itertools
 from collections import OrderedDict
-from jinja2 import Template
 
 from molbiox.frame import streaming, interactive
-from molbiox.frame.environ import locate_template
+from molbiox.frame.environ import get_template
 
 
 def render_primer3_input(**kwargs):
-    tpl_path = locate_template('d.primer3.txt')
-    tpl = open(tpl_path).read()
-    tpl = Template(tpl)
+    tpl = get_template('d.primer3.txt')
     return tpl.render(**kwargs)
 
 

@@ -33,7 +33,7 @@ class CmdQuery(Command):
 
     @classmethod
     def _blasttab(cls, name):
-        from molbiox.kb.tabels import blast
+        from molbiox.kb import blast
         fieldlist = getattr(blast, name, None)
         return blast.make_ncbi_spec(fieldlist)
 

@@ -14,11 +14,19 @@ class CmdPrimer3Pre(Command):
     name = 'primer3-prepare'
 
     @classmethod
+    def register(cls, subparser):
+        super(cls, cls).register(subparser)
+        subparser.add_argument(
+            '--pick-internal', action='store_true',
+            help='pick internal oligo')
+        return subparser
+
+    @classmethod
     def render(cls, args, outfile):
         recgens = [fasta.read(fn) for fn in args.filenames]
         records = itertools.chain(*recgens)
         for r in records:
-            text = primer.render_primer3_input(rec=r)
+            text = primer.render_primer3_input(rec=r, pick_internal=args.pick_internal)
             if not text.endswith('\n'):
                 text += '\n'
             outfile.write(text)
