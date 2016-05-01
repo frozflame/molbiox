@@ -21,7 +21,7 @@ DBT=prot; DB="ncbi/nr"
 
 
 # number of threads
-NTHR=$(mbx etc nproc)
+NTHR=$(mbx q nproc)
 # NTHR="6"
 
 # e-value
@@ -52,12 +52,12 @@ for QUERY in $@; do
 
     FMTR="blast_formatter ${OPT} -archive ${FMT11}"
 
-      ${FMTR} -outfmt "$(mbx etc blast6m )" > ${QUERY}.fmt6m.${BLASTEXE}
-    # ${FMTR} -outfmt "$(mbx etc blast7m )" > ${QUERY}.fmt7m.${BLASTEXE}
-    # ${FMTR} -outfmt "$(mbx etc blast10m)" > ${QUERY}.fmt10m.${BLASTEXE}
-    # ${FMTR} -outfmt "$(mbx etc blast6a )" > ${QUERY}.fmt6a.${BLASTEXE}
-    # ${FMTR} -outfmt "$(mbx etc blast7a )" > ${QUERY}.fmt7a.${BLASTEXE}
-    # ${FMTR} -outfmt "$(mbx etc blast10a)" > ${QUERY}.fmt10a.${BLASTEXE}
+      ${FMTR} -outfmt "$(mbx q blast6m )" > ${QUERY}.fmt6m.${BLASTEXE}
+    # ${FMTR} -outfmt "$(mbx q blast7m )" > ${QUERY}.fmt7m.${BLASTEXE}
+    # ${FMTR} -outfmt "$(mbx q blast10m)" > ${QUERY}.fmt10m.${BLASTEXE}
+    # ${FMTR} -outfmt "$(mbx q blast6a )" > ${QUERY}.fmt6a.${BLASTEXE}
+    # ${FMTR} -outfmt "$(mbx q blast7a )" > ${QUERY}.fmt7a.${BLASTEXE}
+    # ${FMTR} -outfmt "$(mbx q blast10a)" > ${QUERY}.fmt10a.${BLASTEXE}
 
     # ${FMTR} -outfmt 0 > ${QUERY}.fmt0.${BLASTEXE}
 

@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 # NTHREADS="6"
-NTHREADS=`mbx-env cpu-count`
+NTHREADS=$(mbx q nproc)
 
 DBDIR="$HOME/Public/dbxbio"
 # DBDIR="/mnt/fx6300/hailong/Public/dbxbio"
@@ -21,5 +21,4 @@ for QUERY in $@; do
             --tblout ${QUERY}.hmmscan.tbl \
             ${DBDIR}/${DATABASE} \
             ${QUERY}
-
 done

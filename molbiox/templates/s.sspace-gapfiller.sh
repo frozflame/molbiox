@@ -7,7 +7,7 @@ QR2=$3
 EXEC="perl /opt/gapfiller/GapFiller.pl"
 
 # number of threads
-NTHR=`mbx-env cpu-count`
+NTHR=`mbx q nproc`
 # NTHR="6"
 
 

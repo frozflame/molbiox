@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 
 # format specifiers
-FMTS_MINI=`mbx-etc blast-mini`
-FMTS_FULL=`mbx-etc blast-full`
+FMTS_MINI=`mbx q blast-mini`
+FMTS_FULL=`mbx q blast-full`
 
 OPT=''
 # OPT='-max_target_seqs 1'

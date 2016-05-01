@@ -16,7 +16,7 @@ ${BLASTEXE} -h > /dev/null; if [ $? -ne 0 ]; then exit; fi
 ${FMTDBEXE} -h > /dev/null; if [ $? -ne 0 ]; then exit; fi
 
 # number of threads
-NTHR=`mbx etc nproc`
+NTHR=`mbx q nproc`
 # NTHR="6"
 
 # e-value
@@ -43,8 +43,8 @@ echo -n "${BLASTEXE} ${QRFILE} ${DBFILE} ... "
     FMTR="blast_formatter ${OPT} -archive ${FILENAME_FMT11}"
 
     # TODO: include tabfmt to MBX
-      ${FMTR} -outfmt "$(mbx etc blast6m)" ${OPT} > ${OUTPREFIX}.fmt6m.${BLASTEXE}
-    # ${FMTR} -outfmt "$(mbx etc blast7m)" ${OPT} > ${OUTPREFIX}.fmt7m.${BLASTEXE}
+      ${FMTR} -outfmt "$(mbx q blast6m)" ${OPT} > ${OUTPREFIX}.fmt6m.${BLASTEXE}
+    # ${FMTR} -outfmt "$(mbx q blast7m)" ${OPT} > ${OUTPREFIX}.fmt7m.${BLASTEXE}
 
     # ${FMTR} -outfmt 0 ${OPT} > ${QUERY}.fmt0.${BLASTEXE}
     # ${FMTR} -outfmt 6 ${OPT} > ${QUERY}.fmt6.${BLASTEXE}

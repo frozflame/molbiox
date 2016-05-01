@@ -32,8 +32,7 @@ assert_exist ${MERGE}
 # use pigz if available otherwise gzip
 if which pigz > /dev/null; then GZIP=pigz; else GZIP=gzip; fi
 
-
-NTHR=`mbx-env cpu-count`
+NTHR=`mbx q nproc`
 # NTHR="6"
 
 rm -rf ${DIR}

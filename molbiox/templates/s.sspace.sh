@@ -7,7 +7,7 @@ QR2=$3
 EXEC="perl /opt/sspace/SSPACE_Standard_v3.0.pl"
 
 # number of threads
-NTHR=`mbx-env cpu-count`
+NTHR=`mbx q nproc`
 # NTHR="6"
 
 # base name (default standard_output)

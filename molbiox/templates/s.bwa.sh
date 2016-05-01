@@ -5,7 +5,7 @@ QR1=$2
 QR2=$3
 
 # NTHREADS="6"
-NTHREADS=`mbx-env cpu-count`
+NTHREADS=`mbx q nproc`
 TMPDIR="${REF%.*}.bwa.dir"
 
 MISMATCH=0.04

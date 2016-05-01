@@ -2,7 +2,7 @@
 
 
 # NTHREADS=6
-NTHREADS=`mbx-env cpu-count`
+NTHREADS=`mbx q nproc`
 
 PREFIX=$1
 FILENAME_REF=$2
