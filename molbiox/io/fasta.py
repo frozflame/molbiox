@@ -66,7 +66,7 @@ def iterate_chunks(fw):
 
 
 @interactive.castable
-def read(infile, concise=True, limit=10**9):
+def read(infile, concise=False, limit=10**9):
     """
     Reading a FASTA file should NOT be complicated!
 
@@ -140,11 +140,12 @@ def read(infile, concise=True, limit=10**9):
                     remainder = squeue.put(remainder)
 
 
-def readone(infile, concise=True, limit=10 ** 9):
+def read1(infile, concise=True, limit=10 ** 9):
     return read(infile, concise, limit, castfunc=0)
 
 
 def readseq(infile, concise=True, limit=10**9):
+    # deprecated
     return read(infile, concise, limit, castfunc=0).seq
 
 

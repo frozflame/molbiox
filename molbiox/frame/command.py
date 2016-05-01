@@ -113,14 +113,19 @@ class Command(object):
         Make sure not overwriting file without `--rude` option on; otherwise exit.
         Make sure user has the privilege to write to particular paths; otherwise exit.
         :param args: parser.parse_args()
-        :param filenames: if not None, check these files instead of `args.out`
+        :param filenames: an iterable of of filenames or None
+        if not None, check these files instead of `args.out`
         """
         if getattr(args, 'rude', False):
             return None
         if filenames is None and not getattr(args, 'out', None):
             return None
+
         if filenames is None:
             filenames = [args.out]
+        elif isinstance(filenames, six.string_types):
+            filenames = [filenames]
+
         for fn in filenames:
             if fn == '-':
                 continue

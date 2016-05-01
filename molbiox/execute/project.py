@@ -41,7 +41,7 @@ class CommandDir(Command):
 
     @classmethod
     def run(cls, args):
-        cls.check_overwrite(args, args.name)
+        cls.check_overwrite(args, [args.name])
         os.mkdir(args.name)
         for dir_ in directories:
             dir_ = os.path.join(args.name, dir_)

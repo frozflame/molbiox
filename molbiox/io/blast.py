@@ -7,6 +7,10 @@ import collections
 from molbiox.io import tabular
 from molbiox.frame import interactive
 
+"""
+This module is deprecated.
+Use `molbiox.io.tabular.read_blasttab` instead
+"""
 
 # blast6m / blast7m
 fieldlist_mini = [
