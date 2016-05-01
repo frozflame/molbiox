@@ -14,7 +14,6 @@ from molbiox.algor.interval import Interval
 
 
 class SDict(dict):
-
     def __init__(self, *args, **kwargs):
         super(SDict, self).__init__(*args, **kwargs)
         self.__dict__['attributes'] = set()
@@ -23,7 +22,7 @@ class SDict(dict):
     def __repr__(self):
         def fmt(s, length=32):
             # always use str.format to support non-string type s
-            if len(s) <= length:
+            if len(repr(s)) <= length:
                 return '{}'.format(repr(s))
             else:
                 return '{}~{}'.format(repr(s[:length]), len(s))
@@ -34,13 +33,11 @@ class SDict(dict):
     # TODO: provide a __str__ method
 
     def __getattr__(self, key):
-        try:
+        if key in self.attributes:
+            return self.get(key, None)
+        else:
+            # just to raise proper error
             return self.__getattribute__(key)
-        except AttributeError:
-            if key in self.attributes:
-                return self.get(key, None)
-            else:
-                raise
 
     def __setattr__(self, key, value):
         if key in self.attributes:
@@ -61,7 +58,7 @@ class SRecord(SDict):
     where 5000 is the offset value
     """
     def __init__(self, *args, **kwargs):
-        super(SRecord, self).__init__(*args, **kwargs)
+        SDict.__init__(self, *args, **kwargs)
         self.attributes.update({'cmt', 'seq', 'offset'})
         self.invisibles.add('offset')
 
@@ -75,6 +72,21 @@ class SRecord(SDict):
         for offset in itertools.count(0, limit):
             seq = self.seq[offset: offset+limit]
             yield SRecord(cmt=self.cmt, seq=seq, offset=offset)
+
+
+class TabRecord(collections.OrderedDict):
+    def __getattr__(self, key):
+        try:
+            return self[key]
+        except LookupError:
+            # just to raise proper error
+            return self.__getattribute__(key)
+
+    def __setattr__(self, key, value):
+        if key in self:
+            self[key] = value
+        else:
+            self.__dict__[key] = value
 
 
 class DefaultOrderedDict(collections.OrderedDict):
