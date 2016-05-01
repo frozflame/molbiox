@@ -4,6 +4,7 @@
 from __future__ import unicode_literals, print_function
 
 import six
+from lxml.etree import tostring
 from lxml.builder import E
 
 from molbiox.frame.environ import get_template
@@ -38,17 +39,21 @@ def format_points(points):
     return ' '.join('{},{}'.format(*pair) for pair in points)
 
 
-def make_polygon(points, style=None):
+def make_polygon(points, style=None, render=True):
     user_style = style or dict()
     style = dict(default_polygon_style)
     style.update(user_style)
     style = format_style(style)
     if not isinstance(points, six.string_types):
         points = format_points(points)
-    return E.polygon(points=points, style=style)
+    elem = E.polygon(points=points, style=style)
+    if render:
+        return tostring(elem)
+    else:
+        return elem
 
 
-def make_text(content, x, y, rx, ry, angle=0, style=None):
+def make_text(content, x, y, rx, ry, angle=0, style=None, render=True):
     user_style = style or dict()
     style = dict(default_polygon_style)
     style.update(user_style)
@@ -58,7 +63,11 @@ def make_text(content, x, y, rx, ry, angle=0, style=None):
         'transform': 'rotate({} {},{})'.format(angle, rx, ry),
         'style': format_style(style),
     }
-    return E.text(content, **attributes)
+    elem = E.text(content, **attributes)
+    if render:
+        return tostring(elem)
+    else:
+        return elem
 
 
 def render_svg(**kwargs):
