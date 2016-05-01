@@ -2,12 +2,16 @@
 # coding: utf-8
 
 from __future__ import unicode_literals, print_function
+import collections
 import numpy as np
 from jinja2 import Template
 
-from molbiox.io import tabular
-from molbiox.frame import interactive
-from molbiox.frame.locate import locate_template
+from molbiox.io import tabular, svgsim
+from molbiox.frame import containers, interactive
+from molbiox.frame.environ import locate_template
+"""
+This module is deprecated
+"""
 
 
 def format_points(data):
@@ -32,10 +36,10 @@ def format_style(dic):
 
 def get_defaults(**kwargs):
     polygon_style = {
-        'stroke-width': 0,
-        'fill-opacity': 1,
+        'stroke-width': 1,
+        'fill-opacity': 0.7,
         'stroke': 'black',
-        'stroke-opacity': 0,
+        'stroke-opacity': 0.8,
         'fill': 'red',
     }
     text_style = {
@@ -55,6 +59,13 @@ def get_defaults(**kwargs):
     }
 
 
+def parse_strand(s):
+    try:
+        return int(s)
+    except ValueError:
+        return {'+': 1, '-': -1}[s]
+
+
 LWC_TABLE = [
     ('name',    None),
     ('shape',   None),
@@ -66,9 +77,31 @@ LWC_TABLE = [
     # https://github.com/frozflame/ClusterViz/blob/master/sample_input.dat
 ]
 
+fieldlist_awp = [
+    ('uid',     None),      # unique id
+    ('gid',     None),      # group id
+    ('strand',  parse_strand),      # + or -
+    ('head',    int),       # endpoint position
+    ('tail',    int),
+    ('label',   None),      # mostly, name of the gene
+    ('shape',   None),      # arrow, box, ...
+    ('color',   None),
+    ('batch',   None),
+]
+
 
 @interactive.castable
-def read_lwcfile(infile, scale, normalize=True):
+def read(infile):
+    for rec in tabular.read(infile, fieldlist_awp):
+        head = rec['head']
+        tail = rec['tail']
+        rec['head'] = min(head, tail)
+        rec['tail'] = max(head, tail)
+        yield rec
+
+
+@interactive.castable
+def read_lwctab(infile, scale, normalize=True):
     """
     Cannot handle very large file
     :param infile: a string for path, or file object
