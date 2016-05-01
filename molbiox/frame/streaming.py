@@ -3,49 +3,49 @@
 
 from __future__ import unicode_literals, print_function
 import itertools
+import os
 import sys
 import six
 from molbiox.frame import containers, compat
 
 
 class FQueue(containers.SQueue):
-    def put(self, string):
+    def put(self, string, split=True):
         if len(string) > self.free:
             raise ValueError('string is too large to fit in this FQueue')
-        for line in string.splitlines(True):
-            containers.SQueue.put(self, line)
-
-    def read(self, size=-1, peek=False):
-        size = self.check_size(size)
-        if peek:
-            qstring = self.peek(size)
+        if split:
+            for line in string.splitlines(True):
+                containers.SQueue.put(self, line)
         else:
-            qstring = self.get(size)
-        return qstring
+            containers.SQueue.put(self, string)
 
-    def readline(self, size=-1, peek=False):
+    def read(self, size=-1):
+        size = self.check_size(size)
+        return self.get(size)
+
+    def readline(self, size=-1):
         size = self.check_size(size)
         if self:
-            line = self.queue[0]
-            size = min(len(line), size)
-            return self.read(size, peek)
+            size = min(len(self.queue[0]), size)
+            return self.read(size)
         else:
             return self.glue
 
-    def readlines(self, size=-1, peek=False):
+    def readlines(self, size=-1):
         lines = []
         size = self.check_size(size)
         while self and size > 0:
-            line = self.readline(size=-1, peek=peek)
+            line = self.readline(size=-1)
             size -= len(line)
             lines.append(line)
         return lines
 
 
 class FileWrapper(object):
-    def __init__(self, file_, mode):
+    def __init__(self, file_, mode, peek=False):
         mode = compat.u(mode)
         self.mode = mode
+        self._peek = peek
 
         if 'b' in mode:
             self.stype = six.binary_type
@@ -74,11 +74,45 @@ class FileWrapper(object):
     def __exit__(self, typ, value, traceback):
         self.close()
 
+    def __iter__(self):
+        return self
+
     def __next__(self):
-        return self.readline(size=-1, peek=False)
+        line = self.readline(size=-1)
+        if line == '':
+            raise StopIteration()
+        return line
+
+    @classmethod
+    def new(cls, file_, mode):
+        if isinstance(file_, cls):
+            return file_
+        else:
+            return cls(file_, mode)
+
+    @property
+    def peek(self):
+        return self._peek
+
+    @peek.setter
+    def peek(self, value):
+        value = bool(value)
+        if value == self.peek:
+            return
+
+        if value and self.fqueue:
+            raise ValueError('previously peeked frontier not reached')
+
+        if not value and self.fqueue:
+            string = self.fqueue.queue[-1]
+            if not string.endswith(os.linesep):
+                self.fqueue.queue.pop()
+                string += self.file.readline()
+                self.fqueue.queue.append(string)
+        self._peek = value
 
     def close(self):
-        if self.path:
+        if self.path and not self.peek:
             self.file.close()
 
     def convert(self, string):
@@ -92,39 +126,63 @@ class FileWrapper(object):
             return string.encode()
         return string
 
-    def _fq_store(self, string, peek):
-        if peek:
-            if not (string.endswith('\n') or string.endswith('\r')):
-                string += self.file.readline()
+    def _fq_store(self, string):
+        if self.peek:
             self.fqueue.put(string)
 
     def write(self, string):
         string = self.convert(string)
         return self.file.write(string)
 
-    def read(self, size=-1, peek=False):
+    def read(self, size=-1):
         """
-        Only read from actual file when self.squeue is exhausted.
+        When self.peek == False,
+            only read from actual file when self.fqueue is exhausted.
+        When self.peek == True,
+            always read from actural file and put content into self.fqueue.
         :param size: a non-negative integer or -1
-        :param peek: boolean. If true, do not consume data
         :return:
         """
-        qstring = self.fqueue.read(size, peek)
-        if size != -1:
-            size -= len(qstring)
+        # read from fqueue
+        if not self.peek:
+            qstring = self.fqueue.read(size)
+            if size != -1:
+                size -= len(qstring)
+        else:
+            qstring = self.stype()
+
+        # read actual file if size not reached
         fstring = self.convert(self.file.read(size))
-        self._fq_store(fstring, peek)
+
+        # store peeked string to fqueue
+        if self.peek and fstring:
+            self.fqueue.put(fstring)
         return qstring + fstring
 
-    def readline(self, size=-1, peek=False):
-        string = self.fqueue.readline(size, peek)
+    def readline(self, size=-1):
+        # read from fqueue
+        if not self.peek:
+            string = self.fqueue.readline(size)
+        else:
+            string = self.stype()
+
+        # read from actual file if string is empty
         if not string:
             string = self.convert(self.file.readline(size))
-            self._fq_store(string, peek)
+
+        # store peeked string to fqueue
+        if self.peek and string:
+            self.fqueue.put(string)
         return string
 
-    def readlines(self, size=-1, peek=False):
-        lines = self.fqueue.readlines(size, peek)
+    def readlines(self, size=-1):
+        # read from fqueue
+        if not self.peek:
+            lines = self.fqueue.readlines(size)
+        else:
+            lines = []
+
+        # read from actual file if size not reached
         if size == -1:
             lines.extend(self.file.readlines(-1))
         else:
@@ -133,6 +191,10 @@ class FileWrapper(object):
                 xlines = self.file.readlines(size - length)
                 xlines = [self.convert(l) for l in xlines]
                 lines.extend(xlines)
+        # store to fqueue
+        if self.peek and lines:
+            for line in lines:
+                self.fqueue.put(line, split=False)
         return lines
 
 
