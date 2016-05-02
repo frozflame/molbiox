@@ -10,7 +10,7 @@ import numpy as np
 
 from molbiox.algor.arrowgen import ArrowGen
 from molbiox.frame.environ import locate_tests
-from molbiox.visual import vizorf
+from molbiox.visual.vizorf import render_vizorf
 
 pi = np.pi
 
@@ -108,9 +108,7 @@ def test_plot():
 
 def test():
     path = locate_tests('data/lwcsample.tsv')
-
-
-    res = vizorf(path, )
+    res = render_vizorf(path, scale=16)
     print(res)
 
 
