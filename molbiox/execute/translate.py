@@ -24,6 +24,9 @@ class CommandTranslate(Command):
         subparser.add_argument(
             '-s', '--skip', action='store_true',
             help='skip invalid sequneces whose lenths are not multiples of 3')
+        subparser.add_argument(
+            '-x', '--remove-stop-codon', action='store_true',
+            help='remove stop codon (represented as *)')
 
         return subparser
 
@@ -42,5 +45,8 @@ class CommandTranslate(Command):
                         continue
                     l = len(rec.seq)
                     rec.seq = rec.seq[:int(l - l % 3)]
-                rec.seq = tab.translate(rec.seq)
+                aa_seq = tab.translate(rec.seq)
+                if args.hide_stop_codon:
+                    aa_seq = translate.remove_stop_condon_translation(aa_seq)
+                rec.seq = aa_seq
                 fasta.write(outfile, rec)

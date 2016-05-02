@@ -31,5 +31,13 @@ def get_transl_table(tabid=1):
     else:
         raise NotImplementedError
 
+
+def remove_stop_condon_translation(seq):
+    sct = '*' if isinstance(seq, type('')) else b'*'
+    if seq.endswith(sct):
+        return seq[:-1]
+    return seq
+
+
 test = get_transl_table()
 
