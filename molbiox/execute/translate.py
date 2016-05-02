@@ -46,7 +46,7 @@ class CommandTranslate(Command):
                     l = len(rec.seq)
                     rec.seq = rec.seq[:int(l - l % 3)]
                 aa_seq = tab.translate(rec.seq)
-                if args.hide_stop_codon:
+                if args.remove_stop_codon:
                     aa_seq = translate.remove_stop_condon_translation(aa_seq)
                 rec.seq = aa_seq
                 fasta.write(outfile, rec)
