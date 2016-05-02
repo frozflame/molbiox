@@ -13,7 +13,7 @@ from molbiox.io import fasta
 
 # TODO: this command has a drawback: store everything inside memory
 
-class CommandSel(Command):
+class CmdSelect(Command):
     abbr = 'sl'
     name = 'select'
     desc = 'select sequences based on a list file'

@@ -2,35 +2,49 @@
 # coding: utf-8
 
 from __future__ import unicode_literals, print_function
+
+import collections
 import itertools
-import csv
-from collections import OrderedDict, defaultdict
-from molbiox.frame import streaming, containers, interactive
+
+import six
+
+from molbiox.frame import containers, streaming, interactive
+# from molbiox.visual.arrow import get_defaults
 
 
 @interactive.castable
-def read(infile, fieldlist=None, sep=None):
+def read(infile, fieldlist=None, sep=None, comment=None):
     """
     Read a tabular text file
     :param infile: a file object or a file path
     :param fieldlist: [(fieldname, fieldtype), ...] see `io/blast` for examples
     :param sep: separator use in `string.split(sep)`
-    :return: a generator, yielding OrderedDict objects
+    :return: a generator, yielding TabRecord objects
     """
+    class DefaultFieldlist(object):
+        def __iter__(self):
+            return ((i, None) for i in itertools.count())
 
     # if fieldlist is NOT given, generate list-like dicts
-    if not fieldlist:
-        fieldlist = ((i, None) for i in itertools.count())
+    if fieldlist is None:
+        fieldlist = DefaultFieldlist()
+        numfields = 0
+        # attributes = set()
+    else:
+        numfields = len(fieldlist)
+        # attributes = {x for x, _ in fieldlist}
 
-    with streaming.FileWrapper(infile, 'r') as fw:
-        for line in fw.file:
+    with streaming.FileAdapter.new(infile, 'r') as fila:
+        for line in fila:
             line = line.strip()
-            if not line or line.startswith('#'):
+            if not line:
+                continue
+            if comment and comment.search(line):
                 continue
 
-            values = line.split(sep, len(fieldlist)-1)
+            values = line.split(sep, numfields - 1)
 
-            if len(values) < len(fieldlist):
+            if numfields and len(values) < numfields:
                 raise ValueError('too few columns in data file')
 
             pairs = []
@@ -38,11 +52,13 @@ def read(infile, fieldlist=None, sep=None):
                 if cast is not None:
                     val = cast(val)
                 pairs.append((key, val))
-            yield OrderedDict(pairs)
+            tabrec = containers.TabRecord(pairs)
+            # tabrec.attributes = attributes
+            yield tabrec
 
 
 @interactive.castable
-def read_lenfile(infile, multi=False):
+def read_lentab(infile, multi=False):
     """
     Parse file format like `wc` or `fastalength` output
 
@@ -71,8 +87,8 @@ def read_lenfile(infile, multi=False):
     :return: an OrderedDict
     """
 
-    with streaming.FileWrapper(infile, 'r') as fw:
-        resdict = OrderedDict()
+    with streaming.FileAdapter(infile, 'r') as fw:
+        resdict = collections.OrderedDict()
         for line in fw.file:
             line = line.strip()
 
@@ -91,103 +107,64 @@ def read_lenfile(infile, multi=False):
         return resdict
 
 
-class Aggregator(object):
-    def __init__(self, records, idx_key=0, idx_val=0):
-        self.records = records
-        self.idx_key = idx_key
-        self.idx_val = idx_val
-
-    @staticmethod
-    def _lookup(record, index=None, default=None):
-        """
-        One-based lookup
-        :param record: an object having a __getitem__ interface
-        :param index: an integer, 0-based index
-        :param default:
-        :return:
-        """
-        if index is None:
-            return default
-        try:
-            return record[index]
-        except LookupError:
-            return default
-
-    @property
-    def kv_pairs(self):
-        for rec in self.records:
-            key = self._lookup(rec, self.idx_key)
-            val = self._lookup(rec, self.idx_val)
-            yield key, val
-
-    def _ag_sum(self):
-        groups = containers.DefaultOrderedDict(lambda: defaultdict(float))
-        for key, val in self.kv_pairs:
-            groups[key]['sum'] += float(val)
-            groups[key]['count'] += 1
-        return groups
-
-    def ag_sum(self):
-        groups = self._ag_sum()
-        for key in groups:
-            groups[key] = groups[key]['sum']
-        return groups
-
-    def ag_ave(self):
-        """
-        :return:
-        """
-        groups = self._ag_sum()
-        for key in groups:
-            groups[key] = groups[key]['sum'] / groups[key]['count']
-        return groups
-
-    def ag_list(self):
-        groups = containers.DefaultOrderedDict(list)
-        for key, val in self.kv_pairs:
-            groups[key].append(val)
-        return groups
-
-    def ag_set(self):
-        groups = containers.DefaultOrderedDict(set)
-        for key, val in self.kv_pairs:
-            groups[key].add(val)
-        return groups
-
-    def ag_count(self):
-        init_agval = containers.DefaultOrderedDict(float)
-        groups = containers.DefaultOrderedDict(lambda: init_agval)
-        for key, val in self.kv_pairs:
-            groups[key][val] += 1
-        return groups
-
-    def ag_pass(self):
-        return containers.DefaultOrderedDict(None, self.kv_pairs)
-
-    def ag_line(self):
-        groups = containers.DefaultOrderedDict()
-        for rec in self.records:
-            key = self._lookup(rec, self.idx_key)
-            val = '\t'.join
-            yield key, val
+@interactive.castable
+def read_blasttab(infile, fmt='6m'):
+    from molbiox.kb.tabels import blast
+    if not fmt.startswith('fmt'):
+        fmt = 'fmt' + fmt
+    try:
+        fieldlist = getattr(blast, fmt)
+    except AttributeError:
+        errmsg = 'invalid blast tabular format: fmt={}'.format(repr(fmt))
+        raise ValueError(errmsg)
+    return read(infile, fieldlist)
 
 
-class LineGrouper(object):
-    def __init__(self, groupby):
-        self.lines = []
-        self.groupby = groupby
-        self.lastkey = None
+@interactive.castable
+def read_tab_vizorf(infile, fmt='lwc'):
+    from molbiox.kb import vizorf
+    try:
+        fieldlist = getattr(vizorf, fmt)
+    except AttributeError:
+        errmsg = 'invalid awtab format: fmt={}'.format(repr(fmt))
+        raise ValueError(errmsg)
 
-    def feed(self, line):
-        key = self.groupby(line)
-        if key != self.lastkey:
-            self.lastkey = key
-            self.lines.append('')
-        self.lines.append(line)
-
-    def harvest(self):
-        lines = self.lines
-        self.lines = []
-        return lines
+    for rec in read(infile, fieldlist):
+        head = rec.head
+        tail = rec.tail
+        rec.head = min(head, tail)
+        rec.tail = max(head, tail)
+        yield rec
 
 
+def tab_format(infile, sep=None, align='<'):
+    """
+    Format tabular text file into a human readable form
+    :param infile: a path, file object or FileWrapper object
+    :param sep:
+    :param align: '<' or '>'
+    :return:
+    """
+    # def _get_align_symbol(item):
+    #     try:
+    #         float(item)
+    #         return ">"
+    #     except:
+    #         return "<"
+    max_widths = collections.defaultdict(int)
+    with streaming.FilePeeker(infile, 'r') as fila:
+        # peek for max width for each column
+        fila.peek = True
+        records = read(fila, sep=sep)
+        for tabrec, _ in six.moves.zip(records, six.moves.range(10)):
+            for k in tabrec:
+                max_widths[k] = max(max_widths[k], len(tabrec[k]))
+            # print(tabrec)
+            # print(max_widths)
+
+        fila.peek = False
+        for tabrec in read(fila, sep=sep):
+            cells = []
+            for k in tabrec:
+                cells.append("{0:{1}{2}}".format(tabrec[k], align, max_widths[k]))
+            yield ' '.join(cells)
