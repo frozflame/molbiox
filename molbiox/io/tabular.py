@@ -7,32 +7,66 @@ import collections
 import itertools
 
 import six
+import dataset
 
 from molbiox.frame import containers, streaming, interactive
-# from molbiox.visual.arrow import get_defaults
+
+
+class DummyStructure(object):
+    def __init__(self, prefix=None, castfuncs=None):
+        """
+        :param prefix: prefix for column names
+        :param castfuncs: a list of functions
+
+        If `prefix` is provided,
+        columns are named as "{prefix}0", "{prefix}1" ... (strings)
+        If `prefix` is not provided,
+        columns are named as 0, 1, ... (integers)
+
+        Try to convert with each function in `castfuncs` until success;
+        otherwise keep the original value
+        """
+        self.prefix = prefix
+        self.castfuncs = castfuncs
+
+    def __len__(self):
+        return 0
+
+    def c(self, i):
+        return '{}{}'.format(self.prefix, i)
+
+    def cast(self, item):
+        for castfunc in self.castfuncs:
+            try:
+                return castfunc(item)
+            except:
+                pass
+        return item
+
+    def __iter__(self):
+        cast = self.cast if self.castfuncs else None
+        if self.prefix is None:
+            return ((i, cast) for i in itertools.count())
+        else:
+            return ((self.c(i), cast) for i in itertools.count())
 
 
 @interactive.castable
-def read(infile, fieldlist=None, sep=None, comment=None):
+def read(infile, structure=None, sep=None, comment=None):
     """
     Read a tabular text file
     :param infile: a file object or a file path
-    :param fieldlist: [(fieldname, fieldtype), ...] see `io/blast` for examples
+    :param structure: [(fieldname, fieldtype), ...] see `io/blast` for examples
     :param sep: separator use in `string.split(sep)`
+    :param comment: regex for comments
     :return: a generator, yielding TabRecord objects
     """
-    class DefaultFieldlist(object):
-        def __iter__(self):
-            return ((i, None) for i in itertools.count())
 
-    # if fieldlist is NOT given, generate list-like dicts
-    if fieldlist is None:
-        fieldlist = DefaultFieldlist()
-        numfields = 0
-        # attributes = set()
-    else:
-        numfields = len(fieldlist)
-        # attributes = {x for x, _ in fieldlist}
+    # if structure is NOT given, generate list-like dicts
+    if structure is None:
+        structure = DummyStructure()
+    numfields = len(structure)
+    # attributes = {x for x, _ in structure}
 
     with streaming.FileAdapter.new(infile, 'r') as fila:
         for line in fila:
@@ -48,7 +82,7 @@ def read(infile, fieldlist=None, sep=None, comment=None):
                 raise ValueError('too few columns in data file')
 
             pairs = []
-            for (key, cast), val in zip(fieldlist, values):
+            for (key, cast), val in zip(structure, values):
                 if cast is not None:
                     val = cast(val)
                 pairs.append((key, val))
@@ -109,7 +143,7 @@ def read_lentab(infile, multi=False):
 
 @interactive.castable
 def read_blasttab(infile, fmt='6m'):
-    from molbiox.kb.tabels import blast
+    from molbiox.kb import blast
     if not fmt.startswith('fmt'):
         fmt = 'fmt' + fmt
     try:
@@ -121,12 +155,12 @@ def read_blasttab(infile, fmt='6m'):
 
 
 @interactive.castable
-def read_tab_vizorf(infile, fmt='lwc'):
+def read_vizorftab(infile, fmt='lwc'):
     from molbiox.kb import vizorf
     try:
         fieldlist = getattr(vizorf, fmt)
     except AttributeError:
-        errmsg = 'invalid awtab format: fmt={}'.format(repr(fmt))
+        errmsg = 'invalid vizorf-tab format: fmt={}'.format(repr(fmt))
         raise ValueError(errmsg)
 
     for rec in read(infile, fieldlist):
@@ -145,12 +179,6 @@ def tab_format(infile, sep=None, align='<'):
     :param align: '<' or '>'
     :return:
     """
-    # def _get_align_symbol(item):
-    #     try:
-    #         float(item)
-    #         return ">"
-    #     except:
-    #         return "<"
     max_widths = collections.defaultdict(int)
     with streaming.FilePeeker(infile, 'r') as fila:
         # peek for max width for each column
@@ -168,3 +196,9 @@ def tab_format(infile, sep=None, align='<'):
             for k in tabrec:
                 cells.append("{0:{1}{2}}".format(tabrec[k], align, max_widths[k]))
             yield ' '.join(cells)
+
+
+def persist(url, tblname, records):
+    db = dataset.connect(url)
+    tbl = db[tblname]
+    tbl.insert_many(records)

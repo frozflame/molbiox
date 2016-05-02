@@ -7,7 +7,7 @@ from molbiox.algor.transcode import CharsMapper
 from molbiox.io import fasta
 
 
-class CommandRevcompl(Command):
+class CmdRevcompl(Command):
     abbr = 'rc'
     name = 'revcompl'
     desc = 'generate reverse complements for given sequences'

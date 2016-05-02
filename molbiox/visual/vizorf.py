@@ -30,7 +30,7 @@ def rescale_tab_vizorf(records, scale, normalize=True):
         # print(element, file=sys.stderr)
         head = rec.head
         tail = rec.tail
-        if rec.strand == '-':
+        if rec.strand < 0:
             rec.head = (tail - minpos) * 1. / scale
             rec.tail = (head - minpos) * 1. / scale
         else:
@@ -65,7 +65,7 @@ def new_ag_params(ag_params):
 
 
 def render_vizorf(filename, scale, normalize=True, ag_params=None, style=None):
-    records = tabular.read_tab_vizorf(filename)
+    records = tabular.read_vizorftab(filename)
     records = rescale_tab_vizorf(records, scale, normalize)
     records = list(records)
 

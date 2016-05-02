@@ -9,14 +9,14 @@ from molbiox.io import fasta
 from molbiox.kb import translate
 
 
-class CommandTranslate(Command):
+class CmdTranslate(Command):
     abbr = 'ts'
     name = 'translate'
     desc = 'translate DNA sequences into protein sequences'
 
     @classmethod
     def register(cls, subparser):
-        subparser = super(CommandTranslate, cls).register(subparser)
+        subparser = super(cls, cls).register(subparser)
 
         subparser.add_argument(
             '-t', '--table', type=int, default=1, metavar='integer',
@@ -27,7 +27,6 @@ class CommandTranslate(Command):
         subparser.add_argument(
             '-x', '--remove-stop-codon', action='store_true',
             help='remove stop codon (represented as *)')
-
         return subparser
 
     @classmethod

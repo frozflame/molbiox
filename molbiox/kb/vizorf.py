@@ -29,7 +29,7 @@ lwc = [
     ('shape',   None),
     ('head',    int),
     ('tail',    int),
-    ('strand',  None),
+    ('strand',  parse_strand),
     ('color',   None),
     # sample:
     # https://github.com/frozflame/ClusterViz/blob/master/sample_input.dat

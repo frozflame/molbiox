@@ -6,14 +6,14 @@ import sys
 from molbiox.frame.command import Command
 
 
-class CommandSetOp(Command):
+class CmdSetOperator(Command):
     # not a command
     __trackable__ = False
 
     @classmethod
     def register(cls, subparser):
         # a dummy register for expansiion
-        subparser = super(CommandSetOp, cls).register(subparser)
+        subparser = super(CmdSetOperator, cls).register(subparser)
         return subparser
 
     @staticmethod
@@ -71,21 +71,21 @@ class CommandSetOp(Command):
             cls.render(args, sys.stdout)
 
 
-class CommandSetMinus(CommandSetOp):
+class CmdSetMinus(CmdSetOperator):
     abbr = 'set-'
     name = 'set-minus'
     desc = 'calculate set operation set1 - set2 - ...'
     __operatoR__ = '-'
 
 
-class CommandSetUnion(CommandSetOp):
+class CmdSetUnion(CmdSetOperator):
     abbr = 'setu'
     name = 'set-union'
     desc = 'calculate set operation set1 U set2 U ...'
     __operatoR__ = 'u'
 
 
-class CommandSetIntersect(CommandSetOp):
+class CmdSetIntersect(CmdSetOperator):
     abbr = 'setn'
     name = 'set-intersect'
     desc = 'calculate set operation set1 n set2 n ...'
