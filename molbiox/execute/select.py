@@ -33,8 +33,8 @@ class CmdSelect(Command):
         # TODO: is it posible to test existence via argparse?
         return subparser
 
-    @staticmethod
-    def render(args, outfile):
+    @classmethod
+    def render(cls, args, outfile):
         def parse_key(l):
             regex = re.compile(r'[^>\s\n]+')
             mat = regex.search(l)
