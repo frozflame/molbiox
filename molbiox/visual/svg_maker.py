@@ -23,7 +23,7 @@ def new_polygon_style(style):
 
 def new_text_style(style):
     default = {
-        'font-size': 12,
+        'font-size': 14,
         'font-family': 'Times New Roman',
     }
     return from_default(default, style)
@@ -50,7 +50,7 @@ def make_polygon(points, style=None, render=True):
         points = format_points(points)
     elem = E.polygon(points=points, style=style)
     if render:
-        return tostring(elem)
+        return tostring(elem, encoding='unicode')
     else:
         return elem
 
@@ -65,7 +65,7 @@ def make_text(content, x, y, rx, ry, angle=0, style=None, render=True):
     }
     elem = E.text(content, **attributes)
     if render:
-        return tostring(elem)
+        return tostring(elem, encoding='unicode')
     else:
         return elem
 
