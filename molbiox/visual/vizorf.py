@@ -40,15 +40,15 @@ def rescale_tab_vizorf(records, scale, normalize=True):
 
 
 class TextMaker(object):
-    def __init__(self, height, angle=0, style=None):
+    def __init__(self, ypos, angle=0, style=None):
         self.angle = angle
         self.style = style
-        self.height = height
+        self.ypos = ypos
 
     def __call__(self, record):
         c = record.label
-        x = (record.head + record.tail) / 2.
-        y = self.height
+        x = record.head * .6 + record.tail * .4
+        y = self.ypos
         a = self.angle
         s = self.style
         return svg_maker.make_text(c, x=x, y=y, rx=x, ry=y, angle=a, style=s)
@@ -64,26 +64,28 @@ def new_ag_params(ag_params):
     return from_default(default, ag_params)
 
 
-def render_vizorf(filename, scale, normalize=True, ag_params=None, style=None):
-    records = tabular.read_vizorftab(filename)
+def render_vizorf(records, scale, normalize=True, ag_params=None, style=None):
     records = rescale_tab_vizorf(records, scale, normalize)
     records = list(records)
 
     ag_params = new_ag_params(ag_params)
-    h2 = ag_params['height2']
-    ypos = h2 * 4
-    arrpos = ([r.head, r.tail, ypos] for r in records)
+
+    height = ag_params['height2'] * 8
+    ypos_tx = ag_params['height2'] * 5
+    ypos_pg = ag_params['height2'] * 7
 
     arrowgen = ArrowGen(**ag_params)
-    arrpgs = arrowgen(arrpos)
+    array_pg = arrowgen([r.head, r.tail, ypos_pg] for r in records)
 
-    tm = TextMaker(h2, angle=-30, style=style)
-    texts = [tm(r) for r in records]
-    polygons = [svg_maker.make_polygon(a) for a in arrpgs]
+    textmaker = TextMaker(ypos_tx, angle=-60, style=style)
+    elements = []
+    for r, points in zip(records, array_pg):
+        text = textmaker(r)
+        pstyle = dict(fill=r.color)
+        polygon = svg_maker.make_polygon(points, pstyle)
+        elements.extend([text, polygon])
 
-    elements = streaming.alternate(texts, polygons)
     width = max(r.tail for r in records)
-    height = h2 * 5
     return svg_maker.render_svg(elements=elements, height=height, width=width)
 
 

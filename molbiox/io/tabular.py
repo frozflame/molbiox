@@ -158,12 +158,18 @@ def read_blasttab(infile, fmt='6m'):
 def read_vizorftab(infile, fmt='lwc'):
     from molbiox.kb import vizorf
     try:
-        fieldlist = getattr(vizorf, fmt)
+        structure = getattr(vizorf, fmt)
     except AttributeError:
         errmsg = 'invalid vizorf-tab format: fmt={}'.format(repr(fmt))
         raise ValueError(errmsg)
 
-    for rec in read(infile, fieldlist):
+    records = read(infile, structure)
+    return prepare_vizorftab(records)
+
+
+@interactive.castable
+def prepare_vizorftab(records):
+    for rec in records:
         head = rec.head
         tail = rec.tail
         rec.head = min(head, tail)
