@@ -48,11 +48,11 @@ class CommentState(object):
         return retval
 
 
-def iterate_chunks(fw):
+def iterate_chunks(fila):
     cmtreg = re.compile(r'>[^>]*?\n')
-    headpos = 0
     while True:
-        chunk = fw.read(2**20)
+        chunk = fila.read(2 ** 20)
+        headpos = 0
         if not chunk:
             break
         for mat in cmtreg.finditer(chunk):
